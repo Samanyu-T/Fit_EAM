@@ -1,4 +1,4 @@
-num_proc=$(nproc)
+num_proc=2
 
 for ((i = 0; i < num_proc; i++)); do
 

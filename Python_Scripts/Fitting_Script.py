@@ -7,9 +7,12 @@ import numpy as np
 from Simulate_Defect_Set import sim_defect_set
 from Handle_Dictionaries import data_dict, find_ref_binding
 import sys 
+import multiprocessing
 
-def main(output_folder = 'Optimization_Files'):
+def worker_function(proc):
     
+    output_folder = 'Optimization_Files%d' % proc
+
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
         os.mkdir(output_folder + '/Sample_Files')
@@ -50,7 +53,8 @@ def main(output_folder = 'Optimization_Files'):
 
     fitting_class = Fitting_Potential(pot_params, starting_lines)
 
-    N = 10000
+    N = 100
+
 
     final_optima = {}
     final_optima['Optima'] = np.zeros((N, fitting_class.len_sample))
@@ -85,8 +89,8 @@ def main(output_folder = 'Optimization_Files'):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) > 1:
-        main('Optimization_Files_%s' % sys.argv[1])
-    
-    else:
-        main()
+    nproc = multiprocessing.cpu_count()
+
+    with multiprocessing.Pool(processes=nproc) as pool:
+
+        pool.map(worker_function, range(nproc))
