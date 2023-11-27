@@ -25,7 +25,7 @@ class Fitting_Potential():
         self.potlines = potlines
 
         self.nf = 0
-        self.nrho = 0
+        self.nrho = -1
         self.nv = 3
 
         self.knot_pts = {}
@@ -277,7 +277,7 @@ class Fitting_Potential():
         return pot
 
 
-def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0):
+def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0, output_folder = 'Optimization_Files'):
 
     potloc = 'Potentials/test.eam.alloy'
     
@@ -307,7 +307,7 @@ def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0):
     test_rvol = np.array(test_rvol)
 
     # Open the file in 'append' mode
-    with open('Optimization_Files/Loss_Files/loss_%d.txt' % iteration, 'a') as file:
+    with open('%s/Loss_Files/loss_%d.txt' % (output_folder, iteration), 'a') as file:
         
         # Write the loss value
         file.write('Loss: %f ' % loss)
@@ -324,7 +324,7 @@ def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0):
         # Add a newline character at the end
         file.write('\n')
     
-    with open('Optimization_Files/Sample_Files/samples_%d.txt' % iteration, 'a') as file:
+    with open('%s/Sample_Files/samples_%d.txt' % (output_folder, iteration), 'a') as file:
 
         np.savetxt(file, sample, fmt='%f', newline=' ')
         file.write('\n')
