@@ -50,7 +50,7 @@ def main(output_folder = 'Optimization_Files'):
 
     fitting_class = Fitting_Potential(pot_params, starting_lines)
 
-    N = 100
+    N = 10000
 
     final_optima = {}
     final_optima['Optima'] = np.zeros((N, fitting_class.len_sample))
@@ -58,7 +58,7 @@ def main(output_folder = 'Optimization_Files'):
     final_optima['Formation Energy'] = np.zeros((N, N_H*N_Vac*N_He))
     final_optima['Relaxation Volume'] = np.zeros((N, N_H*N_Vac*N_He))
 
-    with open('Final_Optima.txt', 'w') as file:
+    with open('%s/Final_Optima.txt' % output_folder, 'w') as file:
         file.write('Start Optimization \n')
 
     for iteration in range(N):

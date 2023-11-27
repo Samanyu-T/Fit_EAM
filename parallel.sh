@@ -1,5 +1,6 @@
+num_proc=$(nproc)
 
-for i in {0..3}; do
+for ((i = 0; i < num_proc; i++)); do
 
     chmod -x "Python_Scripts/Fitting_Script.py"
 

@@ -290,8 +290,6 @@ def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0, output_folder
     ref_binding = find_ref_binding(ref_dict)
     test_binding = find_ref_binding(test_dict)
 
-    print(ref_binding, test_binding)
-
     loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
 
     loss += np.sum((test_binding - ref_binding)**2)

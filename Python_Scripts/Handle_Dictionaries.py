@@ -46,7 +46,6 @@ def find_binding(df, defect, add_element, trend_element):
 
     while key_next in df.keys():
         
-        print(key_curr, key_next)
         init_config.append(df[key_curr]['val'])
         
         final_config.append(df[key_next]['val'])
