@@ -12,6 +12,8 @@ def main(output_folder = 'Optimization_Files'):
     
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
+        os.mkdir(output_folder + '/Sample_Files')
+        os.mkdir(output_folder + '/Loss_Files')
 
     with open('refs_formations.json', 'r') as ref_file:
         ref_json = json.load(ref_file)
@@ -77,9 +79,14 @@ def main(output_folder = 'Optimization_Files'):
     for key in final_optima:
         final_optima[key] = final_optima[key].tolist()
         
-    with open('Final_Optima.json', 'w') as file:
+    with open('%s/Final_Optima.json' % output_folder, 'w') as file:
         json.dump(final_optima, file, indent=2)
 
 
 if __name__ == '__main__':
-    main('Optimization_Files_%s' % sys.argv[0])
+
+    if len(sys.argv) > 1:
+        main('Optimization_Files_%s' % sys.argv[1])
+    
+    else:
+        main()
