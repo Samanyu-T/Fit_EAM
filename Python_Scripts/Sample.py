@@ -39,7 +39,22 @@ def worker_function(proc):
     # Number of optimization instances
     N = int(1e6)
 
-    for iteration in range(N):
+    with open(sample_filepath, 'w') as file:
+        file.write('Loss ')
+
+        for i in range(fitting_class.nf + 1):
+            file.write('F(%.2f) ' % fitting_class.knot_pts['He_F(rho)'][i + 1])
+        
+        for i in range(fitting_class.nrho + 1):
+            file.write('rho(%.2f) ' % fitting_class.knot_pts['He_rho(r)'][i + 1])
+
+        for key in ['W-He', 'H-He', 'He-He']:
+            for i in range(fitting_class.nv):
+                file.write('Phi(%.2f) ' % fitting_class.knot_pts[key][i + 1])
+
+        file.write('\n')
+        
+    for i in range(N):
 
         sample = fitting_class.init_sample(isrand=True)
         loss = sample_loss(sample, fitting_class, ref_dict, sample_filepath)
