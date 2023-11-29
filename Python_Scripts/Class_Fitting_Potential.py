@@ -355,22 +355,30 @@ def sample_loss(sample, fitting_class, ref_dict, sample_filepath = 'samples.txt'
     loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
 
     # loss += (test_dict['V0H0He1']['rvol'] - ref_dict['V0H0He1']['rvol'])**2
+    binding_loss = (test_binding - ref_binding)**2
+    loss += np.sum(binding_loss)
 
-    loss += np.sum((test_binding - ref_binding)**2)
-
-    test_rvol = []
+    rvol_loss_lst = []
+    # test_rvol = []
 
     for key in ref_dict:
-        test_rvol.append(test_dict[key]['rvol'])
+        # test_rvol.append(test_dict[key]['rvol'])
 
         if ref_dict[key]['rvol'] is not None:
-            loss += (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+            
+            rvol_loss = (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+            rvol_loss_lst.append(rvol_loss)
+            loss += rvol_loss
 
-    test_rvol = np.array(test_rvol)
+    rvol_loss_lst = np.array(rvol_loss_lst)
 
     with open(sample_filepath, 'a') as file:
-        file.write('%f ' % loss)
+        file.write('%.2f ' % loss)
         np.savetxt(file, sample, fmt='%f', newline=' ')
+        file.write(' %.2f ' %  (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val']))
+        np.savetxt(file, binding_loss, fmt='%.2f', newline=' ')
+        file.write(' ')
+        np.savetxt(file, rvol_loss_lst, fmt='%.2f', newline=' ')
         file.write('\n')
 
     return loss

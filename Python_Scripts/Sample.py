@@ -53,7 +53,7 @@ def worker_function(proc):
                 file.write('Phi(%.2f) ' % fitting_class.knot_pts[key][i + 1])
 
         file.write('\n')
-        
+
     for i in range(N):
 
         sample = fitting_class.init_sample(isrand=True)
