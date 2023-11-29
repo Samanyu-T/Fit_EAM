@@ -8,7 +8,7 @@ from Handle_Dictionaries import find_ref_binding
 
 class Fitting_Potential():
 
-    def __init__(self, hyperparams, potlines):
+    def __init__(self, pot_lammps, hyperparams, potlines, proc_id = 0):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -17,6 +17,10 @@ class Fitting_Potential():
         # For Rho the knots are: [0, r_1 ... r_rho, r_c], [0, Rho(r_1) ... Rho(r_rho), Rho(r_c)] rho + 2 is the number knot points requires: 2rho + 1 params
 
         # For V (pair pot) are: [0, r_1 ... r_v, r_c], [0, V(r_1) ... V(r_v), -Z(r_c)] v + 2 is the number knot points requires: 2v params
+
+        self.pot_lammps = pot_lammps
+
+        self.proc_id = proc_id
 
         self.keys  = ['He_F(rho)','He_rho(r)', 'W-He', 'H-He', 'He-He']
 
@@ -253,7 +257,7 @@ class Fitting_Potential():
 
         return coef_dict
     
-    def sample_to_file(self, sample, pot):
+    def sample_to_file(self, sample):
 
         coef_dict = self.fit_sample(sample)
         
@@ -261,8 +265,8 @@ class Fitting_Potential():
 
         r = np.linspace(0, self.hyper['rc'], self.hyper['Nr'])
 
-        pot['He_F(rho)'] = self.polyval(rho, coef_dict['He_F(rho)'], func = True, grad = False, hess = False)
-        pot['He_rho(r)'] = self.polyval(r, coef_dict['He_rho(r)'], func = True, grad = False, hess = False)
+        self.pot_lammps['He_F(rho)'] = self.polyval(rho, coef_dict['He_F(rho)'], func = True, grad = False, hess = False)
+        self.pot_lammps['He_rho(r)'] = self.polyval(r, coef_dict['He_rho(r)'], func = True, grad = False, hess = False)
 
         charge = [[74, 2],[1, 2],[2, 2]]
         for i, key in enumerate(['W-He', 'H-He', 'He-He']):
@@ -272,35 +276,38 @@ class Fitting_Potential():
 
             poly = self.polyval(r[1:], coef_dict[key], func = True, grad = False, hess = False)
 
-            pot[key][1:] = r[1:]*(zbl + poly)
-
-        return pot
+            self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
 
-def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0, output_folder = 'Optimization_Files'):
 
-    potloc = 'Potentials/test.eam.alloy'
+def optim_loss(sample, fitting_class, ref_dict, iteration = 0, output_folder = 'Optimization_Files'):
+
+    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
-    pot = fitting_class.sample_to_file(sample, pot)
+    fitting_class.sample_to_file(sample)
      
-    write_pot(pot, fitting_class.potlines, potloc)
+    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
     test_dict = sim_defect_set(potloc, ref_dict)
     
     ref_binding = find_ref_binding(ref_dict)
     test_binding = find_ref_binding(test_dict)
 
+    loss = 0 
+
     loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
 
-    loss += np.sum((test_binding - ref_binding)**2)
+    loss += (test_dict['V0H0He1']['rvol'] - ref_dict['V0H0He1']['rvol'])**2
+
+    # loss += np.sum((test_binding - ref_binding)**2)
 
     test_rvol = []
 
     for key in ref_dict:
         test_rvol.append(test_dict[key]['rvol'])
 
-        if not np.isnan(ref_dict[key]['rvol']):
-            loss += (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+        # if ref_dict[key]['rvol'] is not None:
+        #     loss += (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
 
     test_rvol = np.array(test_rvol)
 
@@ -324,6 +331,45 @@ def loss_func(sample, fitting_class, pot, ref_dict, iteration = 0, output_folder
     
     with open('%s/Sample_Files/samples_%d.txt' % (output_folder, iteration), 'a') as file:
 
+        np.savetxt(file, sample, fmt='%f', newline=' ')
+        file.write('\n')
+
+    return loss
+
+
+def sample_loss(sample, fitting_class, ref_dict, sample_filepath = 'samples.txt'):
+
+    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
+    
+    fitting_class.sample_to_file(sample)
+     
+    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
+
+    test_dict = sim_defect_set(potloc, ref_dict)
+    
+    ref_binding = find_ref_binding(ref_dict)
+    test_binding = find_ref_binding(test_dict)
+
+    loss = 0 
+
+    loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
+
+    # loss += (test_dict['V0H0He1']['rvol'] - ref_dict['V0H0He1']['rvol'])**2
+
+    loss += np.sum((test_binding - ref_binding)**2)
+
+    test_rvol = []
+
+    for key in ref_dict:
+        test_rvol.append(test_dict[key]['rvol'])
+
+        if ref_dict[key]['rvol'] is not None:
+            loss += (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+
+    test_rvol = np.array(test_rvol)
+
+    with open(sample_filepath, 'a') as file:
+        file.write('%f ' % loss)
         np.savetxt(file, sample, fmt='%f', newline=' ')
         file.write('\n')
 

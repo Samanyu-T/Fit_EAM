@@ -64,7 +64,7 @@ class Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps()
+        lmp = lammps( cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
         lmp.command('# Lammps input file')
 
@@ -130,10 +130,10 @@ class Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps()
-
+        lmp = lammps( cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        
         lmp.command('# Lammps input file')
-
+        
         lmp.command('units metal')
 
         lmp.command('atom_style atomic')

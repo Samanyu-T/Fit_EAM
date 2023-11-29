@@ -16,12 +16,12 @@ def data_dict(ref_json, my_json, N_Vac, N_H, N_He):
 
                         ref_dict[key]['val'] = ref_json['V%dH%dHe%d' % (n_vac, n_h, n_he)]['dft']['val'][0]
 
-                        if len(ref_json['V%dH%dHe%d' % (n_vac, n_h, n_he)]['r_vol_dft']['val']) > 0:
-                            ref_dict[key]['rvol'] = ref_json['V%dH%dHe%d' % (n_vac, n_h, n_he)]['r_vol_dft']['val'][0]
+                        if len(ref_json[key]['r_vol_dft']['val']) > 0:
+                            ref_dict[key]['rvol'] = ref_json[key]['r_vol_dft']['val'][0]
                         else:
-                            ref_dict[key]['rvol'] = np.nan
+                            ref_dict[key]['rvol'] = None
 
-                        ref_dict[key]['pos'] = my_json['V%dH%dHe%d' % (n_vac, n_h, n_he)]['xyz_opt']
+                        ref_dict[key]['pos'] = my_json[key]['xyz_opt']
 
     return ref_dict
 
