@@ -2,7 +2,7 @@ import numpy as np
 
 def data_dict(ref_json, my_json, N_Vac, N_H, N_He):
 
-    ref_dict = {}
+    formation = {}
 
     for n_h in range(N_H+1):
         for n_vac in range(N_Vac+1):
@@ -12,18 +12,21 @@ def data_dict(ref_json, my_json, N_Vac, N_H, N_He):
                         
                         key = 'V%dH%dHe%d' % (n_vac, n_h, n_he)
 
-                        ref_dict[key] = {}
+                        if key in ref_json.keys() and key in my_json.keys():
+                            
+                            if len(ref_json[key]['dft']['val']) > 0:
+                                formation[key] = {}
+                                formation[key]['val'] = ref_json[key]['dft']['val'][0]
+                                    
+                                if len(ref_json[key]['r_vol_dft']['val']) > 0:
+                                    formation[key]['rvol'] = ref_json[key]['r_vol_dft']['val'][0]
+                                    
+                                else:
+                                    formation[key]['rvol'] = None
 
-                        ref_dict[key]['val'] = ref_json['V%dH%dHe%d' % (n_vac, n_h, n_he)]['dft']['val'][0]
+                                formation[key]['pos'] = my_json[key]['xyz_opt']
 
-                        if len(ref_json[key]['r_vol_dft']['val']) > 0:
-                            ref_dict[key]['rvol'] = ref_json[key]['r_vol_dft']['val'][0]
-                        else:
-                            ref_dict[key]['rvol'] = None
-
-                        ref_dict[key]['pos'] = my_json[key]['xyz_opt']
-
-    return ref_dict
+    return formation
 
 def find_binding(df, defect, add_element, trend_element):
 
@@ -45,7 +48,7 @@ def find_binding(df, defect, add_element, trend_element):
     final_config = []
 
     while key_next in df.keys():
-        
+                
         init_config.append(df[key_curr]['val'])
         
         final_config.append(df[key_next]['val'])
@@ -66,14 +69,32 @@ def find_binding(df, defect, add_element, trend_element):
 
     return binding.tolist()
 
-def find_ref_binding(ref_df):
+def binding_fitting(ref_formations):
 
     binding = []
 
-    binding.extend(find_binding(ref_df, [0, 0, 1], [0,0,1], [0,0,1]))
-    binding.extend(find_binding(ref_df, [1, 0, 0], [0,0,1], [0,0,1]))
+    binding.extend(find_binding(ref_formations, [0, 0, 1], [0,0,1], [0,0,1]))
+    binding.extend(find_binding(ref_formations, [1, 0, 0], [0,0,1], [0,0,1]))
 
-    binding.extend(find_binding(ref_df, [0, 0, 1], [0,1,0], [0,0,1]))
-    binding.extend(find_binding(ref_df, [1, 0, 1], [0,1,0], [0,0,1]))
+    binding.extend(find_binding(ref_formations, [0, 0, 1], [0,1,0], [0,0,1]))
+    binding.extend(find_binding(ref_formations, [1, 0, 1], [0,1,0], [0,0,1]))
+
+    return np.array(binding)
+
+def binding_testing(ref_formations):
+
+    binding = []
+
+    for i in range(3):
+        binding.extend(find_binding(ref_formations, [i, 0, 1], [0, 0, 1], [0,0,1]))
+
+    for i in range(1, 6):
+        binding.extend(find_binding(ref_formations, [0, 0, 1], [0, i, 0], [0,0,1]))
+
+    for i in range(1, 6):
+        binding.extend(find_binding(ref_formations, [1, 0, 0], [0, i, 0], [0,0,1]))
+
+    for i in range(1, 4):
+        binding.extend(find_binding(ref_formations, [2, 0, 0], [0, i, 0], [0,0,1]))
 
     return np.array(binding)
