@@ -6,11 +6,6 @@ from Simulate_Defect_Set import sim_defect_set
 from ZBL_Class import ZBL
 from Handle_Dictionaries import data_dict, binding_testing
 from Class_Fitting_Potential import Fitting_Potential
-
-if os.getcwd() == '/Users/cd8607/Documents/Fitting_Potential':
-    pass
-else:
-    os.chdir('../')
     
 with open('refs_formations.json', 'r') as ref_file:
     ref_json = json.load(ref_file)
@@ -37,6 +32,9 @@ fitting_class = Fitting_Potential(pot, pot_params, starting_lines, proc=0)
 
 samples = np.loadtxt('test_samples.txt')
 
+with open('test_loss.txt', 'w') as file:
+    file.write('Start \n')
+
 for sample in samples:
 
     potloc = 'Potentials/test_set.eam.alloy'
@@ -48,3 +46,11 @@ for sample in samples:
     test_dict = sim_defect_set(potloc, ref_formations)
     
     test_binding = binding_testing(ref_formations)
+
+    loss = (test_binding - ref_binding)**2
+
+    with open('test_loss.txt', 'a') as file:
+
+        file.write('%f ' % loss)
+        np.savetxt(file, sample, fmt = '%f', newline= ' ')
+
