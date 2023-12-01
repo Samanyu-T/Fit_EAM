@@ -4,7 +4,7 @@ import json
 from Handle_Files import write_pot
 from Simulate_Defect_Set import sim_defect_set
 from ZBL_Class import ZBL
-from Handle_Dictionaries import find_ref_binding
+from Handle_Dictionaries import binding_fitting
 
 class Fitting_Potential():
 
@@ -280,7 +280,7 @@ class Fitting_Potential():
 
 
 
-def optim_loss(sample, fitting_class, ref_dict, iteration = 0, output_folder = 'Optimization_Files'):
+def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_folder = 'Optimization_Files'):
 
     potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
@@ -288,26 +288,26 @@ def optim_loss(sample, fitting_class, ref_dict, iteration = 0, output_folder = '
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
-    test_dict = sim_defect_set(potloc, ref_dict)
+    test_formations = sim_defect_set(potloc, ref_formations)
     
-    ref_binding = find_ref_binding(ref_dict)
-    test_binding = find_ref_binding(test_dict)
+    ref_binding = binding_fitting(ref_formations)
+    test_binding = binding_fitting(test_formations)
 
     loss = 0 
 
-    loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
+    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
 
-    loss += (test_dict['V0H0He1']['rvol'] - ref_dict['V0H0He1']['rvol'])**2
+    # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
 
-    # loss += np.sum((test_binding - ref_binding)**2)
+    loss += np.sum((test_binding - ref_binding)**2)
 
     test_rvol = []
 
-    for key in ref_dict:
-        test_rvol.append(test_dict[key]['rvol'])
+    for key in ref_formations:
+        test_rvol.append(test_formations[key]['rvol'])
 
-        # if ref_dict[key]['rvol'] is not None:
-        #     loss += (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+        if ref_formations[key]['rvol'] is not None:
+            loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
 
     test_rvol = np.array(test_rvol)
 
@@ -317,7 +317,7 @@ def optim_loss(sample, fitting_class, ref_dict, iteration = 0, output_folder = '
         # Write the loss value
         file.write('Loss: %f ' % loss)
         
-        file.write(' SIA Ef: %f' % (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val']))
+        file.write(' SIA Ef: %f' % (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val']))
         # Use numpy.savetxt to write the NumPy array to the file
         file.write(' Binding: ')
 
@@ -337,7 +337,7 @@ def optim_loss(sample, fitting_class, ref_dict, iteration = 0, output_folder = '
     return loss
 
 
-def sample_loss(sample, fitting_class, ref_dict, sample_filepath = 'samples.txt'):
+def sample_loss(sample, fitting_class, ref_formations, sample_filepath = 'samples.txt'):
 
     potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
@@ -345,28 +345,28 @@ def sample_loss(sample, fitting_class, ref_dict, sample_filepath = 'samples.txt'
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
-    test_dict = sim_defect_set(potloc, ref_dict)
+    test_formations = sim_defect_set(potloc, ref_formations)
     
-    ref_binding = find_ref_binding(ref_dict)
-    test_binding = find_ref_binding(test_dict)
+    ref_binding = binding_fitting(ref_formations)
+    test_binding = binding_fitting(test_formations)
 
     loss = 0 
 
-    loss = (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val'])**2
+    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
 
-    # loss += (test_dict['V0H0He1']['rvol'] - ref_dict['V0H0He1']['rvol'])**2
+    # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
     binding_loss = (test_binding - ref_binding)**2
     loss += np.sum(binding_loss)
 
     rvol_loss_lst = []
     # test_rvol = []
 
-    for key in ref_dict:
-        # test_rvol.append(test_dict[key]['rvol'])
+    for key in ref_formations:
+        # test_rvol.append(test_formations[key]['rvol'])
 
-        if ref_dict[key]['rvol'] is not None:
+        if ref_formations[key]['rvol'] is not None:
             
-            rvol_loss = (test_dict[key]['rvol'] - ref_dict[key]['rvol'])**2
+            rvol_loss = (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
             rvol_loss_lst.append(rvol_loss)
             loss += rvol_loss
 
@@ -375,7 +375,7 @@ def sample_loss(sample, fitting_class, ref_dict, sample_filepath = 'samples.txt'
     with open(sample_filepath, 'a') as file:
         file.write('%.2f ' % loss)
         np.savetxt(file, sample, fmt='%f', newline=' ')
-        file.write(' %.2f ' %  (test_dict['V0H0He1']['val'] - ref_dict['V0H0He1']['val']))
+        file.write(' %.2f ' %  (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val']))
         np.savetxt(file, binding_loss, fmt='%.2f', newline=' ')
         file.write(' ')
         np.savetxt(file, rvol_loss_lst, fmt='%.2f', newline=' ')

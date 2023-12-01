@@ -29,7 +29,7 @@ def worker_function(proc):
     N_He = 3
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
-    ref_dict = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
+    ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
@@ -47,7 +47,9 @@ def worker_function(proc):
     final_optima['Optima'] = np.zeros((N, fitting_class.len_sample))
     final_optima['Loss'] = np.zeros((N,))
 
-    for iteration in range(N):
+    x_init_arr = np.loadtxt('Explore_Space/filtered_samples.%d.txt' % proc)
+
+    for iteration, x_init in enumerate(x_init_arr):
         
         # Store each sample and corresponding loss in files
         with open('%s/Sample_Files/samples_%d.txt' % (optim_folder, iteration), 'w') as file:
@@ -57,8 +59,9 @@ def worker_function(proc):
             file.write('Start Optimization \n')
 
         # Random initialization for the optimization
-        x_init = fitting_class.init_sample(isrand=True)
-        x_star = minimize(optim_loss, args=(fitting_class, ref_dict, iteration, optim_folder), x0=x_init, method = 'COBYLA')
+        # x_init = fitting_class.init_sample(isrand=True)
+        
+        x_star = minimize(optim_loss, args=(fitting_class, ref_formations, iteration, optim_folder), x0=x_init, method = 'COBYLA')
 
         # Write final optima to the output file
         final_optima['Optima'][iteration] = x_star.x
