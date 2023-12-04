@@ -399,7 +399,7 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
 
     return loss
 
-def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reproduce_coef = 0.5, mutate_coef = 0.1):
+def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reproduce_coef = 0.25, mutate_coef = 0.1):
 
     population = np.zeros((N_samples, fitting_class.len_sample))
     fitness = np.zeros((N_samples,))
