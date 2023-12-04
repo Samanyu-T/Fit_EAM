@@ -8,7 +8,7 @@ from Handle_Dictionaries import binding_fitting
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, hyperparams, potlines, proc_id = 0):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, proc_id = 0):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -27,8 +27,9 @@ class Fitting_Potential():
         self.hyper = hyperparams
 
         self.potlines = potlines
+        self.bool_fit = bool_fit
 
-        self.nf = 0
+        self.nf = -1
         self.nrho = -1
         self.nv = 3
 
@@ -42,7 +43,13 @@ class Fitting_Potential():
 
         self.map = {}
 
-        map_idx = [self.nf + 1] + [self.nrho + 1] + 3*[self.nv]
+        full_map_idx = [self.nf + 1] + [self.nrho + 1] + 3*[self.nv]
+
+        map_idx = []
+
+        for idx, key in enumerate(bool_fit):
+            if bool_fit[key]:
+                map_idx.append(full_map_idx[idx])
 
         idx = 0
         iter = 0
@@ -51,9 +58,10 @@ class Fitting_Potential():
         iter = 0
 
         for key in self.keys:
-            self.map[key] = slice(idx, idx + map_idx[iter])
-            idx += map_idx[iter]
-            iter += 1
+            if self.bool_fit[key]:
+                self.map[key] = slice(idx, idx + map_idx[iter])
+                idx += map_idx[iter]
+                iter += 1
         
         self.len_sample = idx
 
@@ -77,67 +85,26 @@ class Fitting_Potential():
             sample_dict[key] = sample_arr[self.map[key]]
 
         return sample_dict
-
-
-    def init_sample(self, isrand = False):
-
-        sample = np.zeros((self.len_sample,))
-
-        if isrand:
-            
-            sample = self.gen_rand()
-
-        else:
-            
-            with open("Init.json", "r") as json_file:
-                loaded_data = json.load(json_file)
-
-            ref = {}
-            for key, value in loaded_data.items():
-                ref[key] = np.array(value)
-
-            # Initialize based on prior beliefs
-            # Knot points are equispaced in the given range
-
-            # Assume linear relationship between F and rho
-            sample[self.map['He_F(rho)']] = 0.37*np.linspace(0, self.hyper['rho_c'], self.nf + 2)[1:]
-
-                        
-            # Assume that the electron density is zero
-            sample[self.map['He_rho(r)']] = np.zeros((self.nrho + 1,))
-
-            charge = np.array([[74, 2],
-                              [1, 2],
-                              [2, 2]])
-            
-            
-            for i, key in enumerate(['W-He', 'H-He', 'He-He']):
-                
-                zbl = ZBL(charge[i,0], charge[i,1])
-                                
-                idx = np.floor(sample[self.knot_pts[key]]/self.hyper['dr']).astype(int)
-
-                sample[self.map[key]] = ref[key][idx]/sample[self.knot_pts[key]] - zbl.eval_zbl(sample[self.knot_pts[key]])
-
-        return sample
     
     def gen_rand(self):
             
         sample = np.zeros((self.len_sample,))
-        
-        # Randomly Generate Knot Values for F(rho)
-        sample[self.map['He_F(rho)']] = self.hyper['rho_c']*np.random.rand(self.nf + 1)
 
-        # Randomly Generate Knot Values for Rho(r)
-        sample[self.map['He_rho(r)']] = np.random.randn(self.nrho + 1)*1e-1
+        if self.bool_fit['He_F(rho)']:
+            # Randomly Generate Knot Values for F(rho)
+            sample[self.map['He_F(rho)']] = self.hyper['rho_c']*np.random.rand(self.nf + 1)
 
-        for i, key in enumerate(['W-He', 'H-He', 'He-He']):
-
+        if self.bool_fit['He_rho(r)']:
             # Randomly Generate Knot Values for Rho(r)
-            scale = 2
-            shift = 0.5
+            sample[self.map['He_rho(r)']] = np.random.randn(self.nrho + 1)*1e-1
 
-            sample[self.map[key]] = scale*(np.random.rand(self.nv) - shift)
+        scale = 8
+        shift = 0.5
+
+        for key in ['W-He', 'H-He', 'He-He']:
+            if self.bool_fit[key]:
+                # Randomly Generate Knot Values for Phi(r)
+                sample[self.map[key]] = scale*(np.random.rand(self.nv) - shift)
     
         return sample
     
@@ -202,58 +169,60 @@ class Fitting_Potential():
 
         coef_dict = {}
 
-        y = np.zeros((self.nf + 2,))
+        if self.bool_fit['He_F(rho)']:
+            y = np.zeros((self.nf + 2,))
 
-        y[1:] = sample[self.map['He_F(rho)']]
+            y[1:] = sample[self.map['He_F(rho)']]
 
-        dy = np.full(y.shape, None, dtype=object)
+            dy = np.full(y.shape, None, dtype=object)
 
-        d2y = np.full(y.shape, None, dtype=object)
+            d2y = np.full(y.shape, None, dtype=object)
 
-        coef_dict['He_F(rho)'] = self.polyfit(self.knot_pts['He_F(rho)'], y, dy, d2y)
+            coef_dict['He_F(rho)'] = self.polyfit(self.knot_pts['He_F(rho)'], y, dy, d2y)
 
+        if self.bool_fit['He_rho(r)']:
+            y = np.zeros((self.nrho + 2,))
 
-        y = np.zeros((self.nrho + 2,))
-
-        y[:-1] = sample[self.map['He_rho(r)']]
-
-        dy = np.full(y.shape, None)
-
-        d2y = np.full(y.shape, None)
-
-        dy[-1] = 0
-
-        d2y[-1] = 0
-
-        coef_dict['He_rho(r)'] = self.polyfit(self.knot_pts['He_rho(r)'], y, dy, d2y)
-
-        charge = [[74, 2],[1, 2],[2, 2]]
-
-        for i, key in enumerate(['W-He', 'H-He', 'He-He']):
-
-            zbl_class = ZBL(charge[i][0], charge[i][1])
-            
-            x = self.knot_pts[key]
-
-            y = np.zeros((self.nv + 2,))
-
-            y[1:-1] = sample[self.map[key]]
+            y[:-1] = sample[self.map['He_rho(r)']]
 
             dy = np.full(y.shape, None)
 
             d2y = np.full(y.shape, None)
 
-            dy[0] = 0
+            dy[-1] = 0
 
-            d2y[0] = 0
+            d2y[-1] = 0
 
-            y[-1] = -zbl_class.eval_zbl(x[-1])[0]
+            coef_dict['He_rho(r)'] = self.polyfit(self.knot_pts['He_rho(r)'], y, dy, d2y)
 
-            dy[-1] = -zbl_class.eval_grad(x[-1])[0]
+        charge = [[74, 2],[1, 2],[2, 2]]
 
-            d2y[-1] = -zbl_class.eval_hess(x[-1])[0]
+        for i, key in enumerate(['W-He', 'H-He', 'He-He']):
 
-            coef_dict[key] = self.polyfit(x, y, dy, d2y)
+            if self.bool_fit[key]:
+                zbl_class = ZBL(charge[i][0], charge[i][1])
+                
+                x = self.knot_pts[key]
+
+                y = np.zeros((self.nv + 2,))
+
+                y[1:-1] = sample[self.map[key]]
+
+                dy = np.full(y.shape, None)
+
+                d2y = np.full(y.shape, None)
+
+                dy[0] = 0
+
+                d2y[0] = 0
+
+                y[-1] = -zbl_class.eval_zbl(x[-1])[0]
+
+                dy[-1] = -zbl_class.eval_grad(x[-1])[0]
+
+                d2y[-1] = -zbl_class.eval_hess(x[-1])[0]
+
+                coef_dict[key] = self.polyfit(x, y, dy, d2y)
 
         return coef_dict
     
@@ -265,18 +234,22 @@ class Fitting_Potential():
 
         r = np.linspace(0, self.hyper['rc'], self.hyper['Nr'])
 
-        self.pot_lammps['He_F(rho)'] = self.polyval(rho, coef_dict['He_F(rho)'], func = True, grad = False, hess = False)
-        self.pot_lammps['He_rho(r)'] = self.polyval(r, coef_dict['He_rho(r)'], func = True, grad = False, hess = False)
+        if self.bool_fit['He_F(rho)']:
+            self.pot_lammps['He_F(rho)'] = self.polyval(rho, coef_dict['He_F(rho)'], func = True, grad = False, hess = False)
+        
+        if self.bool_fit['He_rho(r)']:
+            self.pot_lammps['He_rho(r)'] = self.polyval(r, coef_dict['He_rho(r)'], func = True, grad = False, hess = False)
 
         charge = [[74, 2],[1, 2],[2, 2]]
+
         for i, key in enumerate(['W-He', 'H-He', 'He-He']):
+            if self.bool_fit[key]:
+                zbl_class = ZBL(charge[i][0], charge[i][1])
+                zbl = zbl_class.eval_zbl(r[1:])
 
-            zbl_class = ZBL(charge[i][0], charge[i][1])
-            zbl = zbl_class.eval_zbl(r[1:])
+                poly = self.polyval(r[1:], coef_dict[key], func = True, grad = False, hess = False)
 
-            poly = self.polyval(r[1:], coef_dict[key], func = True, grad = False, hess = False)
-
-            self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
+                self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
 
 
@@ -296,6 +269,7 @@ def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_fold
     loss = 0 
 
     loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
+    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
 
     # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
 
@@ -304,7 +278,8 @@ def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_fold
     test_rvol = []
 
     for key in ref_formations:
-        test_rvol.append(test_formations[key]['rvol'])
+        if key[6] == '1':
+            test_rvol.append(test_formations[key]['rvol'])
 
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
@@ -338,7 +313,6 @@ def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_fold
 
 
 def sample_loss(sample, fitting_class, ref_formations, sample_filepath = 'samples.txt'):
-
     potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
     fitting_class.sample_to_file(sample)
@@ -382,3 +356,109 @@ def sample_loss(sample, fitting_class, ref_formations, sample_filepath = 'sample
         file.write('\n')
 
     return loss
+
+def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
+
+    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
+    
+    fitting_class.sample_to_file(sample)
+     
+    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
+
+    test_formations = sim_defect_set(potloc, ref_formations)
+    
+    ref_binding = binding_fitting(ref_formations)
+    test_binding = binding_fitting(test_formations)
+
+    loss = 0 
+
+    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
+    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
+
+    loss += np.sum((test_binding - ref_binding)**2)
+
+    print_rvol = []
+
+    for key in ref_formations:
+        print_rvol.append(test_formations[key]['rvol'])
+        if ref_formations[key]['rvol'] is not None:
+            loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
+
+    print_rvol = np.array(print_rvol)
+
+    with open(output_filepath, 'a') as file:
+        file.write('Loss: %f TIS: %f OIS: %f Binding: ' % (loss,
+                                                 test_formations['V0H0He1']['val'], 
+                                                 test_formations['V0H0He1_oct']['val']
+                                                 )
+                  )
+        np.savetxt(file, test_binding - ref_binding, fmt = '%f', newline= ' ')
+        file.write('Rvol: ')
+        np.savetxt(file, print_rvol, fmt = '%f', newline= ' ')
+        file.write('\n')
+
+    return loss
+
+def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reproduce_coef = 0.5, mutate_coef = 0.1):
+
+    population = np.zeros((N_samples, fitting_class.len_sample))
+    fitness = np.zeros((N_samples,))
+
+    if not os.path.exists('Genetic_Algorithm/Data_Files%d' % fitting_class.proc_id):
+        os.mkdir('Genetic_Algorithm/Data_Files%d' % fitting_class.proc_id)
+
+    for i in range(N_samples):
+        population[i] = fitting_class.gen_rand()
+    
+    for iteration in range(N_steps):
+
+        folder = 'Genetic_Algorithm/Data_Files%d/Iteration%d' % (fitting_class.proc_id, iteration)
+
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+        with open('%s/Loss.txt' % folder, 'w') as file:
+            file.write('')
+
+        for i in range(N_samples):
+            record_path = '%s/Loss.txt' % folder
+            loss = genetic_loss(population[i], fitting_class, ref_formations, record_path)
+            fitness[i] = 1/(1+loss)
+        
+        with open('%s/Population.txt' % folder, 'w') as file:
+            for sample in population:
+                np.savetxt(file, sample, fmt = '%f', newline=' ')
+                file.write('\n')
+
+        new_population =  np.zeros((N_samples, fitting_class.len_sample))
+
+        for i in range(int(N_samples/2)):
+            
+            cprob = np.cumsum(fitness/np.sum(fitness))
+
+            rng = np.random.rand(2)
+
+            parent_idx = np.searchsorted(cprob, rng) - 1
+
+            reproduce = np.random.randint(0, 2, size = (fitting_class.len_sample))
+
+            child = np.zeros((fitting_class.len_sample,))
+
+            for j in range(fitting_class.len_sample):
+                if reproduce[j]:
+                    child[j] = reproduce_coef*population[parent_idx[0],j] + (1-reproduce_coef)*population[parent_idx[1],j]
+
+            mutate = np.random.randint(0, 2, size = (fitting_class.len_sample))
+
+            child += mutate*mutate_coef*np.random.randn(fitting_class.len_sample)
+
+            new_population[i] = child
+        
+        population = new_population
+
+    return fitness.max()
+            
+
+
+
+

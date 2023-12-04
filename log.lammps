@@ -1,0 +1,33 @@
+LAMMPS (2 Aug 2023)
+# Lammps input file
+units metal
+atom_style atomic
+atom_modify map array sort 0 0.0
+boundary p p p
+lattice bcc 3.144221 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+Lattice spacing in x,y,z = 3.144221 3.144221 3.144221
+region r_simbox block 0 7 0 7 0 7 units lattice
+region r_atombox block 0 7 0 7 0 7 units lattice
+create_box 3 r_simbox
+Created orthogonal box = (0 0 0) to (22.009547 22.009547 22.009547)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 region r_atombox
+Created 686 atoms
+  using lattice units in orthogonal box = (0 0 0) to (22.009547 22.009547 22.009547)
+  create_atoms CPU = 0.000 seconds
+region r_vac_0 sphere 3.500000 3.500000 3.500000 0.2 units lattice
+delete_atoms region r_vac_0 
+Deleted 1 atoms, new total = 685
+region r_vac_1 sphere 4.000000 4.000000 4.000000 0.2 units lattice
+delete_atoms region r_vac_1 
+Deleted 1 atoms, new total = 684
+create_atoms 3 single 3.933459 3.932729 3.933459 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (0 0 0) to (22.009547 22.009547 22.009547)
+  create_atoms CPU = 0.000 seconds
+mass 1 183.84
+mass 2 1.00784
+mass 3 4.002602
+pair_style eam/alloy
+pair_coeff * * Potentials/test.-1.eam.alloy W H He
+Total wall time: 0:00:00

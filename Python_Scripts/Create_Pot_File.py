@@ -9,7 +9,7 @@ from Handle_Dictionaries import data_dict, binding_testing
 from Class_Fitting_Potential import Fitting_Potential
 
 
-sample = np.array([6.569761, -0.285214, -0.080556, -0.147748, -0.140890, 0.178565, 0.990110, 0.783649, -0.204698, 1.011782])
+sample = np.array([4.674558, -0.674741, -0.132412, 0.014577, -0.357314, 0.985033, 0.423835, -0.025393, -0.265163, 1.895311])
 
 
 # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
@@ -21,8 +21,14 @@ pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 # Call the main fitting class
 fitting_class = Fitting_Potential(pot, pot_params, starting_lines)
 
-potloc = 'Potentials/trial.eam.alloy'
+potloc = 'Potentials/trial_new.eam.alloy'
 
 fitting_class.sample_to_file(sample)
 
 write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
+
+for key in pot:
+    pot[key] = pot[key].tolist()
+
+with open('trial.json', 'w') as file:
+    json.dump(pot, file)

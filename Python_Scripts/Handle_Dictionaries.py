@@ -75,9 +75,10 @@ def binding_fitting(ref_formations):
 
     binding.extend(find_binding(ref_formations, [0, 0, 1], [0,0,1], [0,0,1]))
     binding.extend(find_binding(ref_formations, [1, 0, 0], [0,0,1], [0,0,1]))
+    binding.extend(find_binding(ref_formations, [2, 0, 0], [0,0,1], [0,0,1]))
 
-    binding.extend(find_binding(ref_formations, [0, 0, 1], [0,1,0], [0,0,1]))
-    binding.extend(find_binding(ref_formations, [1, 0, 1], [0,1,0], [0,0,1]))
+    # binding.extend(find_binding(ref_formations, [0, 0, 1], [0,1,0], [0,0,1]))
+    # binding.extend(find_binding(ref_formations, [1, 0, 1], [0,1,0], [0,0,1]))
 
     return np.array(binding)
 
