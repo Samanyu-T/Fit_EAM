@@ -442,18 +442,23 @@ def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reprodu
 
             reproduce = np.random.randint(0, 2, size = (fitting_class.len_sample))
 
-            child = np.zeros((fitting_class.len_sample,))
+            child1 = np.zeros((fitting_class.len_sample,))
+            child2 = np.zeros((fitting_class.len_sample,))
 
             for j in range(fitting_class.len_sample):
                 if reproduce[j]:
-                    child[j] = reproduce_coef*population[parent_idx[0],j] + (1-reproduce_coef)*population[parent_idx[1],j]
 
-            mutate = np.random.randint(0, 2, size = (fitting_class.len_sample))
+                    child1[j] = reproduce_coef*population[parent_idx[0],j] + (1-reproduce_coef)*population[parent_idx[1],j]
+                    child2[j] = reproduce_coef*population[parent_idx[1],j] + (1-reproduce_coef)*population[parent_idx[0],j]
 
-            child += mutate*mutate_coef*np.random.randn(fitting_class.len_sample)
+            mutate = np.random.randint(0, 2, size = (fitting_class.len_sample,2))
 
-            new_population[i] = child
-        
+            child1 += mutate[:,0]*mutate_coef*np.random.randn(fitting_class.len_sample)
+            child1 += mutate[:,1]*mutate_coef*np.random.randn(fitting_class.len_sample)
+
+            new_population[2*i] = child1
+            new_population[2*i + 1] = child2
+
         population = new_population
 
     return fitness.max()
