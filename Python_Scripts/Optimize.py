@@ -52,7 +52,7 @@ def worker_function(proc):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,hyperparams=pot_params,potlines=starting_lines, proc_id=proc)
 
-    genetic_algorithm(ref_formations, fitting_class, N_samples=10, N_steps=50, reproduce_coef=0.75, mutate_coef=0.1)
+    genetic_algorithm(ref_formations, fitting_class, N_samples=10, N_steps=10, reproduce_coef=0.75, mutate_coef=0.1)
 
     # # Number of optimization instances
     # N = 100
