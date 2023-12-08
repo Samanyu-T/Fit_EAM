@@ -1,6 +1,6 @@
 # Import necessary packages
 from Handle_Files import read_pot
-from Class_Fitting_Potential import Fitting_Potential, optim_loss, genetic_algorithm
+from Spline_Fitting import Fitting_Potential, optim_loss, genetic_algorithm
 import json
 from scipy.optimize import minimize
 import os
@@ -11,7 +11,7 @@ import sys
 # Main Function, which takes in each core separetly
 def worker_function(proc):
 
-    optim_folder = 'Optimization_Files/Iteration_%d' % proc
+    optim_folder = '../Optimization/Iteration_%d' % proc
 
     if not os.path.exists(optim_folder):
         os.mkdir(optim_folder)
@@ -52,7 +52,7 @@ def worker_function(proc):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,hyperparams=pot_params,potlines=starting_lines, proc_id=proc)
 
-    genetic_algorithm(ref_formations, fitting_class, N_samples=10, N_steps=10, reproduce_coef=0.75, mutate_coef=0.1)
+    genetic_algorithm(ref_formations, fitting_class, N_samples=20, N_steps=25, reproduce_coef=0.75, mutate_coef=0.2)
 
     # # Number of optimization instances
     # N = 100

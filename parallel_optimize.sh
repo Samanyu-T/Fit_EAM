@@ -1,4 +1,4 @@
-nproc=16
+nproc=6
 
 for ((i = 0; i < nproc; i++)); do
     

@@ -9,17 +9,23 @@ from Handle_Dictionaries import data_dict, binding_testing
 from Class_Fitting_Potential import Fitting_Potential
 
 
-sample = np.array([4.674558, -0.674741, -0.132412, 0.014577, -0.357314, 0.985033, 0.423835, -0.025393, -0.265163, 1.895311])
+sample = np.array([-0.884224, -0.054990, -0.069627])
 
+bool_fit = {}
+
+bool_fit['He_F(rho)'] = False
+bool_fit['He_rho(r)'] = False
+bool_fit['W-He'] = True
+bool_fit['H-He'] = False
+bool_fit['He-He'] = False
 
 # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
 pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
 
 pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 
-
 # Call the main fitting class
-fitting_class = Fitting_Potential(pot, pot_params, starting_lines)
+fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,hyperparams=pot_params,potlines=starting_lines, proc_id=0)
 
 potloc = 'Potentials/trial_new.eam.alloy'
 
