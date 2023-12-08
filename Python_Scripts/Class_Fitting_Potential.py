@@ -8,7 +8,7 @@ from Handle_Dictionaries import binding_fitting
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, proc_id = 0):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, proc_id = 0):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -29,10 +29,10 @@ class Fitting_Potential():
         self.potlines = potlines
         self.bool_fit = bool_fit
 
-        self.nf = -1
-        self.nrho = -1
-        self.nv = 3
-
+        self.nf = n_knots[0]
+        self.nrho = n_knots[1]
+        self.nv = n_knots[2]
+        
         self.knot_pts = {}
 
         self.knot_pts['He_F(rho)'] = np.linspace(0, self.hyper['rho_c'], self.nf + 2)

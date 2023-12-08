@@ -10,13 +10,48 @@ import sys
 
 # Main Function, which takes in each core separetly
 def worker_function(proc):
+    
+    n_knots_lst = [[0,0,1] , [0,0,2], [1,0,1], [1,1,1], [1,0,2], [1,1,2]]
 
-    optim_folder = '../Optimization/Iteration_%d' % proc
+    for n_knots in n_knots_lst:
+
+        bool_fit = {}
+
+        bool_fit['He_F(rho)'] = bool(n_knots[0])
+        bool_fit['He_rho(r)'] = bool(n_knots[1])
+        bool_fit['W-He'] = bool(n_knots[2])
+        bool_fit['H-He'] = False
+        bool_fit['He-He'] = False
+
+        optimize(n_knots, bool_fit, proc)
+
+def optimize(n_knots, bool_fit, proc):
+
+    n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
+
+    N_genetic_samples = int(1e3*n_params)
+    N_genetic_steps = 20
+    genetic_exploration = 2
+    genetic_decay = 1.175
+
+    param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+
+    if not os.path.exists(param_folder):
+        os.mkdir(param_folder)
+
+    core_folder = '%s/Core_%d' % (param_folder, proc)
+
+    if not os.path.exists(core_folder):
+        os.mkdir(core_folder)
+
+    optim_folder = '%s/Simplex' % core_folder
+    genetic_folder = '%s/Genetic' % core_folder
 
     if not os.path.exists(optim_folder):
         os.mkdir(optim_folder)
-        os.mkdir(optim_folder + '/Sample_Files')
-        os.mkdir(optim_folder + '/Loss_Files')
+
+    if not os.path.exists(genetic_folder):
+        os.mkdir(genetic_folder)
 
     with open('refs_formations.json', 'r') as ref_file:
         ref_json = json.load(ref_file)
@@ -30,7 +65,7 @@ def worker_function(proc):
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
-    
+
     ref_formations['V0H0He1_oct'] = {}
     ref_formations['V0H0He1_oct']['val'] = 6.38
     ref_formations['V0H0He1_oct']['rvol'] = 0.37
@@ -41,55 +76,77 @@ def worker_function(proc):
 
     pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 
-    bool_fit = {}
-
-    bool_fit['He_F(rho)'] = False
-    bool_fit['He_rho(r)'] = False
-    bool_fit['W-He'] = True
-    bool_fit['H-He'] = False
-    bool_fit['He-He'] = False
-
     # Call the main fitting class
-    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,hyperparams=pot_params,potlines=starting_lines, proc_id=proc)
 
-    genetic_algorithm(ref_formations, fitting_class, N_samples=20, N_steps=25, reproduce_coef=0.75, mutate_coef=0.2)
+    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, proc_id=proc)
 
-    # # Number of optimization instances
-    # N = 100
+    genetic_algorithm(ref_formations, fitting_class, N_samples=N_genetic_samples, N_steps=N_genetic_steps, mutate_coef=genetic_exploration, mutate_decay = genetic_decay, output_folder=genetic_folder)
 
-    # # Store the final optimization results
-    # final_optima = {}
-    # final_optima['Optima'] = np.zeros((N, fitting_class.len_sample))
-    # final_optima['Loss'] = np.zeros((N,))
+    with os.scandir(genetic_folder) as entries:
+        genetic_folders = [entry.name for entry in entries if entry.is_dir()]
 
-    
-    # # x_init_arr = np.loadtxt('Explore_Space/filtered_samples.%d.txt' % proc)
+    with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'w') as file:
+        file.write('')
 
-    # # for iteration, x_init in enumerate(x_init_arr):
-    
-    # for iteration in range(N):
-    #     # Store each sample and corresponding loss in files
-    #     with open('%s/Sample_Files/samples_%d.txt' % (optim_folder, iteration), 'w') as file:
-    #         file.write('Start Optimization \n')
+    with open(os.path.join(core_folder,'Filtered_Samples.txt'), 'w') as file:
+        file.write('')
 
-    #     with open('%s/Loss_Files/loss_%d.txt' % (optim_folder, iteration), 'w') as file:
-    #         file.write('Start Optimization \n')
+    for genetic_iteration_folder in genetic_folders:
 
-    #     # Random initialization for the optimization
-    #     x_init = fitting_class.gen_rand()
+        loss_data = np.genfromtxt(os.path.join(genetic_folder, genetic_iteration_folder, 'loss.txt'), delimiter=' ')
+        samples = np.genfromtxt(os.path.join(genetic_folder, genetic_iteration_folder, 'population.txt'), delimiter=' ')
+
+        nan_columns = np.isnan(loss_data[0,:])
         
-    #     x_star = minimize(optim_loss, args=(fitting_class, ref_formations, iteration, optim_folder), x0=x_init, method = 'COBYLA')
+        loss_data = loss_data[:, ~nan_columns]
 
-    #     # Write final optima to the output file
-    #     final_optima['Optima'][iteration] = x_star.x
-    #     final_optima['Loss'][iteration] = x_star.fun
+        condition = np.logical_and.reduce([loss_data[:,0] < 5, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
 
-    # for key in final_optima:
-    #     final_optima[key] = final_optima[key].tolist()
-    
-    # # Store all the final optima in a file
-    # with open('%s/Final_Optima.json' % optim_folder, 'w') as file:
-    #     json.dump(final_optima, file, indent=2)
+        filtered_idx = np.where(condition)[0]
+
+        with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
+            for idx in filtered_idx:
+                np.savetxt(file, loss_data[idx,:], fmt='%f', newline=' ')
+                file.write('\n')
+        
+        with open(os.path.join(core_folder,'Filtered_Samples.txt'), 'a') as file:
+            for idx in filtered_idx:
+                np.savetxt(file, samples[idx,:], fmt='%f', newline=' ')
+                file.write('\n')
+
+    # Store the final optimization results
+    final_optima = {}
+    final_optima['Optima'] = []
+    final_optima['Loss'] = []
+
+    x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
+
+    for simplex_iteration, x_init in enumerate(x_init_arr):
+
+        simplex_iteration_folder = os.path.join(optim_folder, 'x_init_%d' % simplex_iteration)
+
+        if not os.path.exists(simplex_iteration_folder):
+            os.mkdir(simplex_iteration_folder)
+
+        # Store each sample and corresponding loss in files
+        with open('%s/samples.txt' % simplex_iteration_folder, 'w') as file:
+            file.write('')
+
+        with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
+            file.write('')
+
+        # Random initialization for the optimization
+        # x_init = fitting_class.gen_rand()
+        maxiter = 1000
+        x_star = minimize(optim_loss, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
+
+        # Write final optima to the output file
+        final_optima['Optima'].append(x_star.x.tolist())
+        final_optima['Loss'].append(float(x_star.fun))
+
+        # Store all the final optima in a file
+        with open('%s/Final_Optima.json' % optim_folder, 'w') as file:
+            json.dump(final_optima, file, indent=2)
 
     
 if __name__ == '__main__':

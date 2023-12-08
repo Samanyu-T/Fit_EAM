@@ -8,7 +8,7 @@ from Handle_Dictionaries import binding_fitting
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, proc_id = 0):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, proc_id = 0):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -29,17 +29,21 @@ class Fitting_Potential():
         self.potlines = potlines
         self.bool_fit = bool_fit
 
-        self.nf = -1
-        self.nrho = -1
-        self.nv = 1
+        self.nf = n_knots[0] - 1
+        self.nrho = n_knots[1] - 1
+        self.nv = n_knots[2]
+
+        high_symm_pts = np.array([2.7236, 1.7581, 3.6429])
+
+        phi_knots = np.hstack([0, high_symm_pts[:self.nv], self.hyper['rc']])
 
         self.knot_pts = {}
 
         self.knot_pts['He_F(rho)'] = np.linspace(0, self.hyper['rho_c'], self.nf + 2)
         self.knot_pts['He_rho(r)'] = np.linspace(0, self.hyper['rc'], self.nrho + 2)
-        self.knot_pts['W-He'] = np.array([0, 2.7236,self.hyper['rc']])
-        self.knot_pts['H-He'] = np.array([0, 2.7236, self.hyper['rc']])
-        self.knot_pts['He-He'] = np.array([0, 2.7236, self.hyper['rc']])
+        self.knot_pts['W-He'] = np.sort(phi_knots)
+        self.knot_pts['H-He'] = np.sort(phi_knots)
+        self.knot_pts['He-He'] = np.sort(phi_knots)
 
         self.map = {}
 
@@ -96,7 +100,7 @@ class Fitting_Potential():
 
         if self.bool_fit['He_rho(r)']:
             # Randomly Generate Knot Values for Rho(r)
-            sample[self.map['He_rho(r)']] = np.random.randn(self.nrho + 1)*1e-1
+            sample[self.map['He_rho(r)']] = np.random.rand(self.nrho + 1)
 
         ymax = 4
         dymax = 20
@@ -205,6 +209,7 @@ class Fitting_Potential():
             coef_dict['He_F(rho)'] = self.polyfit(self.knot_pts['He_F(rho)'], y, dy, d2y)
 
         if self.bool_fit['He_rho(r)']:
+
             y = np.zeros((self.nrho + 2,))
 
             y[:-1] = sample[self.map['He_rho(r)']]
@@ -278,7 +283,7 @@ class Fitting_Potential():
                 self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
 
-def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_folder = '../Optimization_Files'):
+def optim_loss(sample, fitting_class, ref_formations, output_folder = '../Optimization_Files'):
 
     potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
@@ -312,7 +317,7 @@ def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_fold
     test_rvol = np.array(test_rvol)
 
     # Open the file in 'append' mode
-    with open('%s/Loss_Files/loss_%d.txt' % (output_folder, iteration), 'a') as file:
+    with open('%s/loss.txt' % output_folder, 'a') as file:
         
         # Write the loss value
         file.write('Loss: %f ' % loss)
@@ -329,7 +334,7 @@ def optim_loss(sample, fitting_class, ref_formations, iteration = 0, output_fold
         # Add a newline character at the end
         file.write('\n')
     
-    with open('%s/Sample_Files/samples_%d.txt' % (output_folder, iteration), 'a') as file:
+    with open('%s/samples.txt' % output_folder, 'a') as file:
 
         np.savetxt(file, sample, fmt='%f', newline=' ')
         file.write('\n')
@@ -424,35 +429,34 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
 
     return loss
 
-def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reproduce_coef = 0.75, mutate_coef = 0.1):
+def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_coef = 1, mutate_decay = 1.175, output_folder = '../Genetic'):
 
     population = np.zeros((N_samples, fitting_class.len_sample))
-    fitness = np.zeros((N_samples,))
-    
-    if not os.path.exists('../Genetic/Data_Files%d' % fitting_class.proc_id):
-        os.mkdir('../Genetic/Data_Files%d' % fitting_class.proc_id)
+
 
     for i in range(N_samples):
         population[i] = fitting_class.gen_rand()
     
     for iteration in range(N_steps):
-
+        
+        mutate_coef /= mutate_decay
         N_samples = len(population)
+        fitness = np.zeros((N_samples,))
 
-        folder = '../Genetic/Data_Files%d/Iteration%d' % (fitting_class.proc_id, iteration)
+        folder = '%s/Iteration_%d' % (output_folder, iteration)
 
         if not os.path.exists(folder):
             os.mkdir(folder)
 
-        with open('%s/Loss.txt' % folder, 'w') as file:
+        with open('%s/loss.txt' % folder, 'w') as file:
             file.write('')
 
         for i in range(N_samples):
-            record_path = '%s/Loss.txt' % folder
+            record_path = '%s/loss.txt' % folder
             loss = genetic_loss(population[i], fitting_class, ref_formations, record_path)
             fitness[i] = 1/(1+loss)
         
-        with open('%s/Population.txt' % folder, 'w') as file:
+        with open('%s/population.txt' % folder, 'w') as file:
             for sample in population:
                 np.savetxt(file, sample, fmt = '%f', newline=' ')
                 file.write('\n')
@@ -486,9 +490,6 @@ def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, reprodu
             
         population = new_population
 
-        fitness = np.zeros((N_reproduce*k, ))
-
-    return fitness.max()
             
 
 
