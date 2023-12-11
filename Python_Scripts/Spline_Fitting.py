@@ -409,7 +409,7 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
     loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
 
     loss +=  100*(test_formations['V0H0He1']['val'] < test_formations['V0H0He1_oct']['val'])
-    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] < test_formations['V0H0He1_oct']['rvol'], amin=0, amax=0.1))
+    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] < test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
 
     loss += np.sum((test_binding - ref_binding)**2)
 
