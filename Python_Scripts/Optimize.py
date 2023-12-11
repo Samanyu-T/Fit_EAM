@@ -29,7 +29,7 @@ def optimize(n_knots, bool_fit, proc):
 
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
 
-    N_genetic_samples = int(1e3*n_params)
+    N_genetic_samples = int(1e2*n_params**2)
     N_genetic_steps = 20
     genetic_exploration = 2
     genetic_decay = 1.175
