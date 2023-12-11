@@ -32,7 +32,7 @@ def optimize(n_knots, bool_fit, proc):
     N_genetic_samples = int(1e2*n_params**2)
     N_genetic_steps = 20
     genetic_exploration = 2
-    genetic_decay = 1.175
+    genetic_decay = 1.25
 
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
 
