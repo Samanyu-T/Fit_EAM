@@ -301,6 +301,9 @@ def optim_loss(sample, fitting_class, ref_formations, output_folder = '../Optimi
     loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
     loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
 
+    loss +=  100*(test_formations['V0H0He1']['val'] < test_formations['V0H0He1_oct']['val'])
+    loss +=  0.01*np.exp(50*(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol']))
+
     # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
 
     loss += np.sum((test_binding - ref_binding)**2)
@@ -405,6 +408,9 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
     loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
     loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
 
+    loss +=  100*(test_formations['V0H0He1']['val'] < test_formations['V0H0He1_oct']['val'])
+    loss +=  0.01*np.exp(50*(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol']))
+
     loss += np.sum((test_binding - ref_binding)**2)
 
     print_rvol = []
@@ -432,7 +438,6 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
 def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_coef = 1, mutate_decay = 1.175, output_folder = '../Genetic'):
 
     population = np.zeros((N_samples, fitting_class.len_sample))
-
 
     for i in range(N_samples):
         population[i] = fitting_class.gen_rand()

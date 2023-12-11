@@ -100,7 +100,7 @@ def optimize(n_knots, bool_fit, proc):
         
         loss_data = loss_data[:, ~nan_columns]
 
-        condition = np.logical_and.reduce([loss_data[:,0] < 5, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
+        condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
 
         filtered_idx = np.where(condition)[0]
 
