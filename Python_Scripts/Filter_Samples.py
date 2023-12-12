@@ -43,7 +43,7 @@ for param_folder in filtered_folders:
         fitting_class = Fitting_Potential(pot, bool_fit, pot_params, starting_lines, n_knots, 0)
 
         if os.path.exists(os.path.join(*[param_folder, core, 'Simplex', 'Final_Optima.json'])):
-            
+
             filepath = os.path.join(*[param_folder, core, 'Simplex', 'Final_Optima.json'])
             
             with open(filepath, 'r') as data_file:
@@ -61,8 +61,8 @@ for param_folder in filtered_folders:
                 if not os.path.exists(savepath):
                     os.mkdir(savepath)
                 
-                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'loss.txt']), os.path.join(savepath, 'loss.txt'))
-                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'sample.txt']), os.path.join(savepath, 'sample.txt'))
+                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init_%d' % idx, 'loss.txt']), os.path.join(savepath, 'loss.txt'))
+                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init_%d' % idx, 'sample.txt']), os.path.join(savepath, 'sample.txt'))
 
                 fitting_class.sample_to_file(optima[idx])
 
