@@ -66,6 +66,7 @@ for param_folder in filtered_folders:
 
                 fitting_class.sample_to_file(optima[idx])
 
-                write_pot(fitting_class.pot_lammps, fitting_class.potlines, 'optim%d%d%d.eam.alloy' % (n_knots[0], n_knots[1], n_knots[2]) )
-
+                write_pot(fitting_class.pot_lammps, fitting_class.potlines, os.path.join(savepath, 'optim%d%d%d.eam.alloy' % (n_knots[0], n_knots[1], n_knots[2])) )
+                
+                n_chosen += 1
 
