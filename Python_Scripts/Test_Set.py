@@ -29,7 +29,7 @@ def worker_function(proc):
 
     ref_binding = binding_testing(ref_formations)
 
-    folders = [folder for folder in os.listdir('../Selected_Potentials') if os.path.isdir(os.path.join('../Selected_Potentials', folder))]
+    folders = [os.path.join('../Selected_Potentials', folder) for folder in os.listdir('../Selected_Potentials') if os.path.isdir(os.path.join('../Selected_Potentials', folder))]
 
     for folder in folders:
 
