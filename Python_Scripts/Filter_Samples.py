@@ -15,7 +15,7 @@ all_folders = [os.path.join(directory, folder) for folder in os.listdir(director
 exclude_folders = [os.path.join(directory, 'git_folder'), os.path.join(directory, 'Selected_Potentials')]
 filtered_folders = [folder for folder in all_folders if folder not in exclude_folders]
 
-os.rmdir('../Selected_Potentials')
+shutil.rmtree('../Selected_Potentials', ignore_errors=True)
 
 if not os.path.exists('../Selected_Potentials'):
     os.mkdir('../Selected_Potentials')
