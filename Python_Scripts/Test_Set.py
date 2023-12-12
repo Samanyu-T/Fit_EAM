@@ -6,7 +6,7 @@ from Simulate_Defect_Set import sim_defect_set
 from ZBL_Class import ZBL
 from Handle_Dictionaries import data_dict, binding_testing
 from Class_Fitting_Potential import Fitting_Potential
-
+import os
 def worker_function(proc):
 
     with open('refs_formations.json', 'r') as ref_file:
@@ -29,22 +29,16 @@ def worker_function(proc):
 
     ref_binding = binding_testing(ref_formations)
 
-    # Call the main fitting class
-    fitting_class = Fitting_Potential(pot, pot_params, starting_lines, proc)
+    folders = [folder for folder in os.listdir('../Selected_Potentials') if os.path.isdir(os.path.join('../Selected_Potentials', folder))]
 
-    samples = np.loadtxt('Test/Test_Samples.%d.txt' % proc, skiprows=1)
+    for folder in folders:
 
-    with open('Test_Loss.%d.txt' % proc, 'w') as file:
-        file.write('Start \n')
+        files = os.listdir(folder)
 
-    for sample in samples:
+        potfile = [file for file in files if file.endswith('.alloy')]
 
-        potloc = 'Potentials/test_set.%d.eam.alloy' % proc
-
-        fitting_class.sample_to_file(sample)
-
-        write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
-        
+        potloc = os.path.join(*['../Selected_Potentials', folder, potfile[0]])
+                              
         test_formations = sim_defect_set(potloc, ref_formations)
         
         test_binding = binding_testing(test_formations)
@@ -69,7 +63,7 @@ def worker_function(proc):
 
         rvol_loss_lst = np.array(rvol_loss_lst)
 
-        with open('Test/Test_Loss.%d.txt' % proc, 'a') as file:
+        with open(os.path.join(*['../Selected_Potentials', folder, 'Test_Loss.txt']), 'a') as file:
 
             file.write('%f ' % loss)
             np.savetxt(file, binding_loss, fmt = '%f', newline= ' ')
