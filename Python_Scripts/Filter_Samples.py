@@ -62,7 +62,7 @@ for param_folder in filtered_folders:
                     os.mkdir(savepath)
                 
                 shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init_%d' % idx, 'loss.txt']), os.path.join(savepath, 'loss.txt'))
-                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init_%d' % idx, 'sample.txt']), os.path.join(savepath, 'sample.txt'))
+                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init_%d' % idx, 'samples.txt']), os.path.join(savepath, 'sample.txt'))
 
                 fitting_class.sample_to_file(optima[idx])
 
