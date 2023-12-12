@@ -42,28 +42,30 @@ for param_folder in filtered_folders:
 
         fitting_class = Fitting_Potential(pot, bool_fit, pot_params, starting_lines, n_knots, 0)
 
-        filepath = os.path.join(*[param_folder, core, 'Simplex', 'Final_Optima.json'])
-        
-        with open(filepath, 'r') as data_file:
-            data = json.load(data_file)
-
-        optima = np.array(data['Optima'])
-        loss = np.array(data['Loss'])
-
-        chosen_idx = np.where(loss < 0.1)[0].astype(int)
-        
-        for idx in chosen_idx:
+        if os.path.exists(os.path.join(*[param_folder, core, 'Simplex', 'Final_Optima.json'])):
             
-            savepath = os.path.join('../Selected_Potentials', 'Potential_%d' % n_chosen)
-
-            if not os.path.exists(savepath):
-                os.mkdir(savepath)
+            filepath = os.path.join(*[param_folder, core, 'Simplex', 'Final_Optima.json'])
             
-            shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'loss.txt']), os.path.join(savepath, 'loss.txt'))
-            shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'sample.txt']), os.path.join(savepath, 'sample.txt'))
+            with open(filepath, 'r') as data_file:
+                data = json.load(data_file)
 
-            fitting_class.sample_to_file(optima[idx])
+            optima = np.array(data['Optima'])
+            loss = np.array(data['Loss'])
 
-            write_pot(fitting_class.pot_lammps, fitting_class.potlines, 'optim%d%d%d.eam.alloy' % (n_knots[0], n_knots[1], n_knots[2]) )
+            chosen_idx = np.where(loss < 0.1)[0].astype(int)
+            
+            for idx in chosen_idx:
+                
+                savepath = os.path.join('../Selected_Potentials', 'Potential_%d' % n_chosen)
+
+                if not os.path.exists(savepath):
+                    os.mkdir(savepath)
+                
+                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'loss.txt']), os.path.join(savepath, 'loss.txt'))
+                shutil.copy(os.path.join(*[param_folder, core, 'Simplex', 'x_init' % idx, 'sample.txt']), os.path.join(savepath, 'sample.txt'))
+
+                fitting_class.sample_to_file(optima[idx])
+
+                write_pot(fitting_class.pot_lammps, fitting_class.potlines, 'optim%d%d%d.eam.alloy' % (n_knots[0], n_knots[1], n_knots[2]) )
 
 
