@@ -54,7 +54,7 @@ for param_folder in filtered_folders:
             optima = np.array(data['Optima'])
             loss = np.array(data['Loss'])
 
-            chosen_idx = np.where(loss < 0.25)[0].astype(int)
+            chosen_idx = np.where(loss < 0.1)[0].astype(int)
             
             for idx in chosen_idx:
                 
