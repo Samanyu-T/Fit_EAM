@@ -62,7 +62,7 @@ def optimize(n_knots, bool_fit, proc):
 
     N_Vac = 2
     N_H = 0
-    N_He = 1
+    N_He = 6
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
@@ -101,9 +101,9 @@ def optimize(n_knots, bool_fit, proc):
         
         loss_data = loss_data[:, ~nan_columns]
 
-        condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
+        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
 
-        filtered_idx = np.where(condition)[0]
+        filtered_idx = np.where(loss_data[:,0] < 25)[0]
 
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:
