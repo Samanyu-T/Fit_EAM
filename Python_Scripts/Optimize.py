@@ -11,17 +11,17 @@ import sys
 # Main Function, which takes in each core separetly
 def worker_function(proc):
     
-    n_knots_lst = [[0,0,1] , [0,0,2], [1,0,1], [1,1,1], [1,0,2], [1,1,2]]
+    n_knots_lst = [[0,0,1] , [0,0,2], [0,0,3]]
 
     for n_knots in n_knots_lst:
 
         bool_fit = {}
 
-        bool_fit['He_F(rho)'] = bool(n_knots[0])
-        bool_fit['He_rho(r)'] = bool(n_knots[1])
-        bool_fit['W-He'] = bool(n_knots[2])
+        bool_fit['He_F(rho)'] = False
+        bool_fit['He_rho(r)'] = False
+        bool_fit['W-He'] = False
         bool_fit['H-He'] = False
-        bool_fit['He-He'] = False
+        bool_fit['He-He'] = bool(n_knots[2])
 
         optimize(n_knots, bool_fit, proc)
 
@@ -34,8 +34,9 @@ def optimize(n_knots, bool_fit, proc):
     genetic_exploration = 2
     genetic_decay = 1.25
 
-    param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
-
+    # param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+    param_folder = '../He-He_%d' % n_knots[2]
+    
     if not os.path.exists(param_folder):
         os.mkdir(param_folder)
 
@@ -72,7 +73,7 @@ def optimize(n_knots, bool_fit, proc):
     ref_formations['V0H0He1_oct']['pos'] = [[], [], [[3.5, 3.5, 3]]]
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
-    pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
+    pot, starting_lines, pot_params = read_pot('Potentials/Selected_Potentials/Potential_4/optim102.eam.alloy')
 
     pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 
