@@ -67,20 +67,20 @@ def find_binding(df, defect, add_element, trend_element):
     
     binding = add_int + init_config - final_config
 
-    return binding.tolist()
+    return binding
 
 def binding_fitting(ref_formations):
 
     binding = []
 
-    binding.extend(find_binding(ref_formations, [0, 0, 1], [0,0,1], [0,0,1]))
-    binding.extend(find_binding(ref_formations, [1, 0, 0], [0,0,1], [0,0,1]))
-    binding.extend(find_binding(ref_formations, [2, 0, 0], [0,0,1], [0,0,1]))
+    binding.append(find_binding(ref_formations, [0, 0, 1], [0,0,1], [0,0,1]))
+    binding.append(find_binding(ref_formations, [1, 0, 0], [0,0,1], [0,0,1]))
+    binding.append(find_binding(ref_formations, [2, 0, 0], [0,0,1], [0,0,1]))
 
     # binding.extend(find_binding(ref_formations, [0, 0, 1], [0,1,0], [0,0,1]))
     # binding.extend(find_binding(ref_formations, [1, 0, 1], [0,1,0], [0,0,1]))
 
-    return np.array(binding)
+    return binding
 
 def binding_testing(ref_formations):
 

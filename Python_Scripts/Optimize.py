@@ -11,17 +11,17 @@ import sys
 # Main Function, which takes in each core separetly
 def worker_function(proc):
     
-    n_knots_lst = [[0,0,1] , [0,0,2], [0,0,3]]
+    n_knots_lst = [[0,0,2],[1,0,2],[1,1,2]]
 
     for n_knots in n_knots_lst:
 
         bool_fit = {}
 
-        bool_fit['He_F(rho)'] = False
-        bool_fit['He_rho(r)'] = False
-        bool_fit['W-He'] = False
+        bool_fit['He_F(rho)'] = bool(n_knots[0])
+        bool_fit['He_rho(r)'] = bool(n_knots[1])
+        bool_fit['W-He'] =   bool(n_knots[2])
         bool_fit['H-He'] = False
-        bool_fit['He-He'] = bool(n_knots[2])
+        bool_fit['He-He'] = False
 
         optimize(n_knots, bool_fit, proc)
 
@@ -34,8 +34,8 @@ def optimize(n_knots, bool_fit, proc):
     genetic_exploration = 2
     genetic_decay = 1.25
 
-    # param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
-    param_folder = '../He-He_%d' % n_knots[2]
+    param_folder = '../Full_W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+    # param_folder = '../He-He_%d' % n_knots[2]
     
     if not os.path.exists(param_folder):
         os.mkdir(param_folder)
@@ -101,9 +101,9 @@ def optimize(n_knots, bool_fit, proc):
         
         loss_data = loss_data[:, ~nan_columns]
 
-        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -6] - loss_data[:, -1]) < 0.1, np.abs(loss_data[:, -6] - 0.36) < 0.2])
+        condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])
 
-        filtered_idx = np.where(loss_data[:,0] < 25)[0]
+        filtered_idx = np.where(condition)[0]
 
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:

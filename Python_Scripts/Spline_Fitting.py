@@ -282,6 +282,25 @@ class Fitting_Potential():
 
                 self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
+def loss_func(test_formations, ref_formations, test_binding, ref_binding):
+    
+    loss = 0
+
+    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
+    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
+
+    loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
+    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
+
+    for i in range(len(ref_binding)):
+        loss += np.sum((test_binding[i] - ref_binding[i])**2)
+    
+    for key in ref_formations:
+
+        if ref_formations[key]['rvol'] is not None:
+            loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
+
+    return loss
 
 def optim_loss(sample, fitting_class, ref_formations, output_folder = '../Optimization_Files'):
 
@@ -292,59 +311,28 @@ def optim_loss(sample, fitting_class, ref_formations, output_folder = '../Optimi
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
     test_formations = sim_defect_set(potloc, ref_formations)
-    
+
     ref_binding = binding_fitting(ref_formations)
     test_binding = binding_fitting(test_formations)
 
-    loss = 0 
-
-    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
-    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
-
-    loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
-    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
-    # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
-
-    loss += np.sum((test_binding - ref_binding)**2)
-
-    test_rvol = []
-
-    for key in ref_formations:
-        if key[6] == '1':
-            test_rvol.append(test_formations[key]['rvol'])
-
-        if ref_formations[key]['rvol'] is not None:
-            loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
-
-    test_rvol = np.array(test_rvol)
+    loss = loss_func(test_formations, ref_formations, test_binding, ref_binding)
 
     # Open the file in 'append' mode
     with open('%s/loss.txt' % output_folder, 'a') as file:
         
         # Write the loss value
         file.write('Loss: %f ' % loss)
-        
-        # file.write(' SIA Ef: %f' % (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val']))
-        # # Use numpy.savetxt to write the NumPy array to the file
-        # file.write(' Binding: ')
-        # np.savetxt(file, test_binding[0] - ref_binding[0], fmt='%.2f', newline=' ')
 
-        # file.write(' Rvol: ')
-        # np.savetxt(file, test_rvol, fmt='%.2f', newline=' ')
+        for i in range(len(test_binding)):
+            file.write('Binding of He to V%dHe_x: ')
+            np.savetxt(file, test_binding - ref_binding, fmt = '%f', newline=' ')
+        
+        file.write('Relaxation Volumes: ')
 
         for key in ref_formations:
             if ref_formations[key]['rvol'] is not None:
-                file.write('%s_formation_diff: %f %s_rvol_diff %f ' % 
-                            (key, 
-                            test_formations[key]['val'] - ref_formations[key]['val'],
-                            key,
-                            test_formations[key]['rvol'] - ref_formations[key]['rvol']))
-            else:
-                file.write('%s_formation_diff: %f %s_rvol: %f ' % 
-                            (key, 
-                            test_formations[key]['val'] - ref_formations[key]['val'],
-                            key,
-                            test_formations[key]['rvol']))    
+                file.write('%s %f ' % 
+                            (key, test_formations[key]['rvol'] - ref_formations[key]['rvol']))
 
         # Add a newline character at the end
         file.write('\n')
@@ -415,49 +403,31 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
     ref_binding = binding_fitting(ref_formations)
     test_binding = binding_fitting(test_formations)
 
-    loss = 0 
-
-    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
-    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
-
-    loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
-    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
-
-    loss += np.sum((test_binding - ref_binding)**2)
-
-    print_rvol = []
-
-    for key in ref_formations:
-        print_rvol.append(test_formations[key]['rvol'])
-        if ref_formations[key]['rvol'] is not None:
-            loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
-
-    print_rvol = np.array(print_rvol)
+    loss = loss_func(test_formations, ref_formations, test_binding, ref_binding)
 
     with open(output_filepath, 'a') as file:
-        # file.write('Loss: %f TIS: %f OIS: %f Binding: ' % (loss,
-        #                                          test_formations['V0H0He1']['val'], 
-        #                                          test_formations['V0H0He1_oct']['val']
-        #                                          )
-        #           )
-        # np.savetxt(file, test_binding - ref_binding, fmt = '%f', newline= ' ')
-        # file.write('Rvol: ')
-        # np.savetxt(file, print_rvol, fmt = '%f', newline= ' ')
-        # file.write('\n')
-        file.write('Loss: %f ' % loss)
-        for key in ref_formations:
-            if ref_formations[key]['rvol'] is not None:
-                file.write('%s_formation_diff: %f %s_rvol_diff %f ' % 
-                            (key, 
-                            test_formations[key]['val'] - ref_formations[key]['val'],
-                            key,
-                            test_formations[key]['rvol'] - ref_formations[key]['rvol']))
-            else:
-                file.write('%s_formation_diff: %f %s_rvol: %f ' % 
-                            (key, 
-                            test_formations[key]['val'] - ref_formations[key]['val'],
-                            key,
-                            test_formations[key]['rvol']))    
+
+        file.write('Loss: %f TIS: %f OIS: %f Interstitial_Binding: ' % (loss,
+                                                 test_formations['V0H0He1']['val'], 
+                                                 test_formations['V0H0He1_oct']['val']
+                                                 )
+                  )
+        np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
+
+        file.write('Vacancy_Binding: ')
+        
+        np.savetxt(file, test_binding[1] - ref_binding[1], fmt = '%f', newline= ' ')
+
+        file.write('Di-Vacancy_Binding: ')
+        
+        np.savetxt(file, test_binding[2] - ref_binding[2], fmt = '%f', newline= ' ')
+
+        file.write('Rvol: %f %f %f' % 
+                   (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'],
+                    test_formations['V0H0He1_oct']['rvol'] - ref_formations['V0H0He1_oct']['rvol'],
+                    test_formations['V1H0He1']['rvol'] - ref_formations['V1H0He1']['rvol']
+                    )
+                   )
 
         # Add a newline character at the end
         file.write('\n')
