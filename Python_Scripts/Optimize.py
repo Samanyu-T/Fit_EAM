@@ -101,11 +101,11 @@ def optimize(n_knots, bool_fit, proc):
         
         loss_data = loss_data[:, ~nan_columns]
 
-        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])        
-        # filtered_idx = np.where(condition)[0]
+        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])       
 
-        filtered_idx = np.where(loss_data < 25)[0]
-
+        condition = np.logical_and.reduce([loss_data[:,0] < 25, loss_data[:,2] - loss_data[:,1] < 0.5 ]) 
+        filtered_idx = np.where(condition)[0]
+        
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:
                 np.savetxt(file, loss_data[idx,:], fmt='%f', newline=' ')
