@@ -282,8 +282,20 @@ class Fitting_Potential():
 
                 self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
-def loss_func(test_formations, ref_formations, test_binding, ref_binding):
+
+def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = False):
+
+    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
+    fitting_class.sample_to_file(sample)
+     
+    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
+
+    test_formations = sim_defect_set(potloc, ref_formations)
+    
+    ref_binding = binding_fitting(ref_formations)
+    test_binding = binding_fitting(test_formations)
+
     loss = 0
 
     loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
@@ -300,112 +312,7 @@ def loss_func(test_formations, ref_formations, test_binding, ref_binding):
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
 
-    return loss
-
-def optim_loss(sample, fitting_class, ref_formations, output_folder = '../Optimization_Files'):
-
-    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
-    
-    fitting_class.sample_to_file(sample)
-     
-    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
-
-    test_formations = sim_defect_set(potloc, ref_formations)
-
-    ref_binding = binding_fitting(ref_formations)
-    test_binding = binding_fitting(test_formations)
-
-    loss = loss_func(test_formations, ref_formations, test_binding, ref_binding)
-
-    # Open the file in 'append' mode
-    with open('%s/loss.txt' % output_folder, 'a') as file:
-        
-        # Write the loss value
-        file.write('Loss: %f ' % loss)
-
-        for i in range(len(test_binding)):
-            file.write('Binding of He to V%dHe_x: ')
-            np.savetxt(file, test_binding - ref_binding, fmt = '%f', newline=' ')
-        
-        file.write('Relaxation Volumes: ')
-
-        for key in ref_formations:
-            if ref_formations[key]['rvol'] is not None:
-                file.write('%s %f ' % 
-                            (key, test_formations[key]['rvol'] - ref_formations[key]['rvol']))
-
-        # Add a newline character at the end
-        file.write('\n')
-    
-    with open('%s/samples.txt' % output_folder, 'a') as file:
-
-        np.savetxt(file, sample, fmt='%f', newline=' ')
-        file.write('\n')
-
-    return loss
-
-
-def sample_loss(sample, fitting_class, ref_formations, sample_filepath = 'samples.txt'):
-    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
-    
-    fitting_class.sample_to_file(sample)
-     
-    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
-
-    test_formations = sim_defect_set(potloc, ref_formations)
-    
-    ref_binding = binding_fitting(ref_formations)
-    test_binding = binding_fitting(test_formations)
-
-    loss = 0 
-
-    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
-
-    # loss += (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'])**2
-    binding_loss = (test_binding - ref_binding)**2
-    loss += np.sum(binding_loss)
-
-    rvol_loss_lst = []
-    # test_rvol = []
-
-    for key in ref_formations:
-        # test_rvol.append(test_formations[key]['rvol'])
-
-        if ref_formations[key]['rvol'] is not None:
-            
-            rvol_loss = (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
-            rvol_loss_lst.append(rvol_loss)
-            loss += rvol_loss
-
-    rvol_loss_lst = np.array(rvol_loss_lst)
-
-    with open(sample_filepath, 'a') as file:
-        file.write('%.2f ' % loss)
-        np.savetxt(file, sample, fmt='%f', newline=' ')
-        file.write(' %.2f ' %  (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val']))
-        np.savetxt(file, binding_loss, fmt='%.2f', newline=' ')
-        file.write(' ')
-        np.savetxt(file, rvol_loss_lst, fmt='%.2f', newline=' ')
-        file.write('\n')
-
-    return loss
-
-def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
-
-    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
-    
-    fitting_class.sample_to_file(sample)
-     
-    write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
-
-    test_formations = sim_defect_set(potloc, ref_formations)
-    
-    ref_binding = binding_fitting(ref_formations)
-    test_binding = binding_fitting(test_formations)
-
-    loss = loss_func(test_formations, ref_formations, test_binding, ref_binding)
-
-    with open(output_filepath, 'a') as file:
+    with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
 
         file.write('Loss: %f TIS: %f OIS: %f Interstitial_Binding: ' % (loss,
                                                  test_formations['V0H0He1']['val'], 
@@ -431,6 +338,15 @@ def genetic_loss(sample, fitting_class, ref_formations, output_filepath):
 
         # Add a newline character at the end
         file.write('\n')
+    
+    sample_filename = 'samples.txt'
+
+    if genetic:
+        sample_filename = 'population.txt'
+
+    with open(os.path.join(output_folder, sample_filename), 'a') as file:
+        np.savetxt(file, sample, fmt = '%f', newline=' ')
+        file.write('\n')
 
     return loss
 
@@ -454,16 +370,14 @@ def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_
 
         with open('%s/loss.txt' % folder, 'w') as file:
             file.write('')
-
-        for i in range(N_samples):
-            record_path = '%s/loss.txt' % folder
-            loss = genetic_loss(population[i], fitting_class, ref_formations, record_path)
-            fitness[i] = 1/(1+loss)
         
         with open('%s/population.txt' % folder, 'w') as file:
-            for sample in population:
-                np.savetxt(file, sample, fmt = '%f', newline=' ')
-                file.write('\n')
+            file.write('')
+
+        for i in range(N_samples):
+
+            loss = loss_func(population[i], fitting_class, ref_formations, folder, True)
+            fitness[i] = 1/(1+loss)
         
         k = 3
 

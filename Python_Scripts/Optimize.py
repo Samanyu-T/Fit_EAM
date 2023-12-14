@@ -1,6 +1,6 @@
 # Import necessary packages
 from Handle_Files import read_pot
-from Spline_Fitting import Fitting_Potential, optim_loss, genetic_algorithm
+from Spline_Fitting import Fitting_Potential, loss_func, genetic_algorithm
 import json
 from scipy.optimize import minimize
 import os
@@ -101,9 +101,10 @@ def optimize(n_knots, bool_fit, proc):
         
         loss_data = loss_data[:, ~nan_columns]
 
-        condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])
+        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])        
+        # filtered_idx = np.where(condition)[0]
 
-        filtered_idx = np.where(condition)[0]
+        filtered_idx = np.where(loss_data < 25)[0]
 
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:
@@ -139,7 +140,7 @@ def optimize(n_knots, bool_fit, proc):
         # Random initialization for the optimization
         # x_init = fitting_class.gen_rand()
         maxiter = 1000
-        x_star = minimize(optim_loss, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
+        x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
 
         # Write final optima to the output file
         final_optima['Optima'].append(x_star.x.tolist())
