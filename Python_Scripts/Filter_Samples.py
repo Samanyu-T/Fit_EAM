@@ -54,11 +54,11 @@ for param_folder in filtered_folders:
             optima = np.array(data['Optima'])
             loss = np.array(data['Loss'])
 
-            chosen_idx = np.where(loss < 0.1)[0].astype(int)
+            chosen_idx = np.where(loss < 4)[0].astype(int)
             
             for idx in chosen_idx:
                 
-                savepath = os.path.join('../Selected_Potentials', 'Potential_%d' % n_chosen)
+                savepath = os.path.join('../Selected_Potentials_Full', 'Potential_%d' % n_chosen)
 
                 if not os.path.exists(savepath):
                     os.mkdir(savepath)
