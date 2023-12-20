@@ -11,7 +11,7 @@ import sys
 # Main Function, which takes in each core separetly
 def worker_function(proc):
     
-    n_knots_lst = [[0,0,2],[1,0,2],[1,1,2]]
+    n_knots_lst = [[1,0,2]]
 
     for n_knots in n_knots_lst:
 
@@ -34,7 +34,7 @@ def optimize(n_knots, bool_fit, proc):
     genetic_exploration = 2
     genetic_decay = 1.25
 
-    param_folder = '../Full_W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+    param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
     # param_folder = '../He-He_%d' % n_knots[2]
     
     if not os.path.exists(param_folder):
@@ -62,7 +62,7 @@ def optimize(n_knots, bool_fit, proc):
 
     N_Vac = 2
     N_H = 0
-    N_He = 6
+    N_He = 1
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
@@ -71,6 +71,13 @@ def optimize(n_knots, bool_fit, proc):
     ref_formations['V0H0He1_oct']['val'] = 6.38
     ref_formations['V0H0He1_oct']['rvol'] = 0.37
     ref_formations['V0H0He1_oct']['pos'] = [[], [], [[3.5, 3.5, 3]]]
+
+    
+    ref_formations['V0H0He1_inter'] = {}
+    ref_formations['V0H0He1_inter']['val'] = None
+    ref_formations['V0H0He1_inter']['rvol'] = None
+    ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
+
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/Selected_Potentials/Potential_4/optim102.eam.alloy')
@@ -103,8 +110,9 @@ def optimize(n_knots, bool_fit, proc):
 
         # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])       
 
-        condition = np.logical_and.reduce([loss_data[:,0] < 10, loss_data[:,2] - loss_data[:,1] < 1.0 ]) 
-        filtered_idx = np.where(condition)[0]
+        # condition = np.logical_and.reduce([loss_data[:,0] < 10, loss_data[:,2] - loss_data[:,1] < 1.0 ]) 
+
+        filtered_idx = np.where(loss_data < 2.0)[0]
         
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:

@@ -305,6 +305,8 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     # Soft Constraint to ensure correct ordering of formation energies and relaxation volumes
     loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
     loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
+    loss +=  100*( np.round(test_formations['V0H0He1']['val'],3) >= np.round(test_formations['V0H0He1_inter']['val'], 3) )
+    loss +=  100*( test_formations['V0H0He1_inter']['val'] > test_formations['V0H0He1_oct']['val'])
 
     # Quadratic Loss of Binding Energies
     for i in range(len(ref_binding)):
@@ -318,8 +320,9 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     # Write the Loss and the Sample Data to files for archiving
     with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
 
-        file.write('Loss: %f TIS: %f OIS: %f Interstitial_Binding: ' % (loss,
+        file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
                                                  test_formations['V0H0He1']['val'], 
+                                                 test_formations['V0H0He1_inter']['val'], 
                                                  test_formations['V0H0He1_oct']['val']
                                                  )
                   )
