@@ -1,0 +1,165 @@
+LAMMPS (2 Aug 2023)
+Processor partition = 4
+
+units metal
+
+atom_style atomic
+
+atom_modify map array sort 0 0.0
+
+read_data Lammps_Dump/Surface/111/Depth_9.data
+Reading data file ...
+  orthogonal box = (0.088842503 0.11770511 -22.325705) to (65.262564 61.496192 75.684905)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  14401 atoms
+  reading velocities ...
+  14401 velocities
+  read_data CPU = 0.036 seconds
+
+mass 1 183.84
+
+mass 2 1.00784
+
+mass 3 4.002602
+
+pair_style eam/alloy
+
+pair_coeff * * Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy W H He
+
+thermo 10
+
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 6.8513889
+  ghost atom cutoff = 6.8513889
+  binsize = 3.4256945, bins = 20 18 29
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -127111.67      0             -127111.67      0.28232119   
+Loop time of 3.33e-07 on 1 procs for 0 steps with 14401 atoms
+
+0.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 3.33e-07   |            |       |100.00
+
+Nlocal:          14401 ave       14401 max       14401 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           6973 ave        6973 max        6973 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         581784 ave      581784 max      581784 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 581784
+Ave neighs/atom = 40.398861
+Neighbor list builds = 0
+Dangerous builds = 0
+
+fix 1 all neb 1e-4
+
+timestep 1e-3
+
+min_style quickmin
+
+thermo 100
+
+variable i equal part
+
+neb 10e-8 10e-10 5000 5000 100 final Lammps_Dump/Surface/111/Depth_10.atom
+Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -127111.67      0             -127111.67     -0.88655162   
+         6   6.1134995e-05 -127111.67      0             -127111.67     -0.77016257   
+Loop time of 0.0980203 on 1 procs for 6 steps with 14401 atoms
+
+95.8% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -127111.674440815  -127111.674459507  -127111.674468481
+  Force two-norm initial, final = 0.090419291 0.081303135
+  Force max component initial, final = 0.017905012 0.017952152
+  Final line search alpha, max atom move = 0 0
+  Iterations, force evaluations = 6 6
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.05626    | 0.05626    | 0.05626    |   0.0 | 57.40
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00022579 | 0.00022579 | 0.00022579 |   0.0 |  0.23
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0.036851   | 0.036851   | 0.036851   |   0.0 | 37.60
+Other   |            | 0.004683   |            |       |  4.78
+
+Nlocal:          14401 ave       14401 max       14401 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           6973 ave        6973 max        6973 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         581786 ave      581786 max      581786 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 581786
+Ave neighs/atom = 40.399
+Neighbor list builds = 0
+Dangerous builds = 0
+Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         6   0             -127111.67      0             -127111.67     -0.77047258   
+        12   6.7671697e-05 -127111.67      0             -127111.67     -0.65048397   
+Loop time of 0.116945 on 1 procs for 6 steps with 14401 atoms
+
+97.3% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -127111.674468481  -127111.674486335   -127111.67449486
+  Force two-norm initial, final = 0.081303135 0.072090064
+  Force max component initial, final = 0.017952152 0.017996392
+  Final line search alpha, max atom move = 0 0
+  Iterations, force evaluations = 6 6
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.05642    | 0.05642    | 0.05642    |   0.0 | 48.24
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00025167 | 0.00025167 | 0.00025167 |   0.0 |  0.22
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0.053808   | 0.053808   | 0.053808   |   0.0 | 46.01
+Other   |            | 0.006466   |            |       |  5.53
+
+Nlocal:          14401 ave       14401 max       14401 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           6973 ave        6973 max        6973 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         581786 ave      581786 max      581786 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 581786
+Ave neighs/atom = 40.399
+Neighbor list builds = 0
+Dangerous builds = 0
+
+write_dump all custom Lammps_Dump/Neb/neb.$i.dump id type x y z 
+write_dump all custom Lammps_Dump/Neb/neb.4.dump id type x y z 
+Total wall time: 0:00:00
