@@ -112,7 +112,7 @@ def optimize(n_knots, bool_fit, proc):
 
         # condition = np.logical_and.reduce([loss_data[:,0] < 10, loss_data[:,2] - loss_data[:,1] < 1.0 ]) 
 
-        filtered_idx = np.where(loss_data < 2.0)[0]
+        filtered_idx = np.where(loss_data[:,0] < 2.0)[0]
         
         with open(os.path.join(core_folder,'Filtered_Loss.txt'), 'a') as file:
             for idx in filtered_idx:
@@ -134,7 +134,7 @@ def optimize(n_knots, bool_fit, proc):
         x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
         if x_init_arr.ndim == 1:
             x_init_arr = x_init_arr.reshape(1, -1)
-            
+
         for simplex_iteration, x_init in enumerate(x_init_arr):
 
             simplex_iteration_folder = os.path.join(optim_folder, 'x_init_%d' % simplex_iteration)
