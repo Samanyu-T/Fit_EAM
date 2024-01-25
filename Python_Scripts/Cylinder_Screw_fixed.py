@@ -248,7 +248,7 @@ if __name__ == '__main__':
         mode = 'Serial'
     alattice = 3.144221296574379
     size = 21
-    init_screw(alattice, size) 
+    # init_screw(alattice, size) 
 
     binding(sys.argv[1], alattice, size)
 

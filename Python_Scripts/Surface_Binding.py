@@ -117,7 +117,7 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
 
     climb = climb_sites(alattice, tet_arr, R, R_inv, init_pos)
     
-    depth = np.linspace(-2 , 2, 4)
+    depth = np.arange(4)
 
     test_sites = np.vstack([climb +  np.array([0,0,1])* z * alattice * np.linalg.norm(R_inv, axis = 0)[-1] for z in depth])
     

@@ -190,7 +190,7 @@ def binding(potfile, alattice, size):
 
     N = 8
 
-    z = np.linspace(0,30, N)
+    z = np.linspace(0,16, N)
     
     d_pos = np.array([5.2082, -1.2843, tet_new[-1]*alattice*np.linalg.norm(orientz)])
 
@@ -299,10 +299,10 @@ if __name__ == '__main__':
     # for i, _f in enumerate(freeze):
 
     #     k = _f
-    init_screw(alattice, size)
+    # init_screw(alattice, size)
 
         # e.append(binding(sys.argv[1], alattice, size))
-    # binding(sys.argv[1], alattice, size)
+    binding(sys.argv[1], alattice, size)
     # if me == 0:
     #     plt.plot(freeze, np.array(e))
     #     plt.show()
