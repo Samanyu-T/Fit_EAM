@@ -129,35 +129,37 @@ def optimize(n_knots, bool_fit, proc):
     final_optima['Optima'] = []
     final_optima['Loss'] = []
 
-    x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
+    if os.path.getsize(os.path.join(core_folder,'Filtered_Samples.txt')) > 0:
+        
+        x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
 
-    for simplex_iteration, x_init in enumerate(x_init_arr):
+        for simplex_iteration, x_init in enumerate(x_init_arr):
 
-        simplex_iteration_folder = os.path.join(optim_folder, 'x_init_%d' % simplex_iteration)
+            simplex_iteration_folder = os.path.join(optim_folder, 'x_init_%d' % simplex_iteration)
 
-        if not os.path.exists(simplex_iteration_folder):
-            os.mkdir(simplex_iteration_folder)
+            if not os.path.exists(simplex_iteration_folder):
+                os.mkdir(simplex_iteration_folder)
 
-        # Store each sample and corresponding loss in files
-        with open('%s/samples.txt' % simplex_iteration_folder, 'w') as file:
-            file.write('')
+            # Store each sample and corresponding loss in files
+            with open('%s/samples.txt' % simplex_iteration_folder, 'w') as file:
+                file.write('')
 
-        with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
-            file.write('')
+            with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
+                file.write('')
 
-        # Random initialization for the optimization
-        # x_init = fitting_class.gen_rand()
-        maxiter = 1000
-        x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
+            # Random initialization for the optimization
+            # x_init = fitting_class.gen_rand()
+            maxiter = 1000
+            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
 
-        # Write final optima to the output file
-        final_optima['Optima'].append(x_star.x.tolist())
-        final_optima['Loss'].append(float(x_star.fun))
+            # Write final optima to the output file
+            final_optima['Optima'].append(x_star.x.tolist())
+            final_optima['Loss'].append(float(x_star.fun))
 
-        # Store all the final optima in a file
-        with open('%s/Final_Optima.json' % optim_folder, 'w') as file:
-            json.dump(final_optima, file, indent=2)
-
+            # Store all the final optima in a file
+            with open('%s/Final_Optima.json' % optim_folder, 'w') as file:
+                json.dump(final_optima, file, indent=2)
+        
     
 if __name__ == '__main__':
 

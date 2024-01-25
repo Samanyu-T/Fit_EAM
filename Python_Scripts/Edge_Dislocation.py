@@ -120,8 +120,7 @@ def create_dislocation():
                 file.write('%d %d ' % (data[i,0], data[i,1]))
                 np.savetxt(file, pos, fmt = '%.5f', newline=' ')
                 file.write('\n')
-    exit()
-
+                
     lmp.command('read_dump Lammps_Dump/Dislocations/Edge/Edge_Single.atom %d x y z' % timestep)
 
     lmp.command('thermo 50')

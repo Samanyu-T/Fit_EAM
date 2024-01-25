@@ -80,7 +80,7 @@ def init_screw(alattice, size):
 
     lmp.command('pair_coeff * * %s W H He' % potfile)
 
-    lmp.command('variable radius atom sqrt(x^2+y^2)')
+    lmp.command('variable radius atom (x^%d+y^%d)^(1/%d)' % (norm, norm, norm))
 
     lmp.command('variable select atom "v_radius  > %f" ' % (alattice*(size - k)))
 
@@ -91,6 +91,19 @@ def init_screw(alattice, size):
     lmp.command('run 0')
 
     lmp.command('write_dump all custom Lammps_Dump/Dislocations/Edge/Box.atom id type x y z')
+
+
+    lmp.command('thermo 50')
+
+    lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
+
+    lmp.command('minimize 1e-15 1e-18 10 10')
+
+    lmp.command('minimize 1e-15 1e-18 10 100')
+
+    lmp.command('minimize 1e-15 1e-18 1000 10000')
+
+    pe0 = lmp.get_thermo('pe')
 
     b = alattice
 
@@ -143,11 +156,7 @@ def init_screw(alattice, size):
     lmp.command('read_dump Lammps_Dump/Dislocations/Edge/Box_Init.atom %d x y z' % timestep)
 
     # lmp.command('fix 1 all box/relax aniso 0.0')
-
-    lmp.command('thermo 50')
-
-    lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
-
+    
     lmp.command('minimize 1e-15 1e-18 10 10')
 
     lmp.command('minimize 1e-15 1e-18 10 100')
@@ -157,6 +166,10 @@ def init_screw(alattice, size):
     lmp.command('write_dump all custom Lammps_Dump/Dislocations/Edge/Box_Relaxed.atom id type x y z')
 
     lmp.command('write_data Lammps_Dump/Dislocations/Edge/Box_Relaxed.data')
+
+    pe1 = lmp.get_thermo('pe')
+
+    print( (pe1 - pe0)/size )
 
     lmp.close()
 
@@ -175,11 +188,13 @@ def binding(potfile, alattice, size):
 
     tet_new = (tet_new + 2) % 1
 
-    N = 1
+    N = 8
 
-    z = np.linspace(0, 16, N)
+    z = np.linspace(0,30, N)
     
-    d_pos = np.array([0, 0, tet_new[-1]*alattice*np.sqrt(2)])
+    d_pos = np.array([5.2082, -1.2843, tet_new[-1]*alattice*np.linalg.norm(orientz)])
+
+    # d_pos = alattice*tet_new*np.array([np.linalg.norm(orientx),np.linalg.norm(orienty),np.linalg.norm(orientz)])
 
     pe_arr = np.zeros((N,))
 
@@ -208,7 +223,7 @@ def binding(potfile, alattice, size):
 
         lmp.command('pair_coeff * * %s W H He' % potfile)
 
-        lmp.command('variable radius atom sqrt(x^2+y^2)')
+        lmp.command('variable radius atom (x^%d+y^%d)^(1/%d)' % (norm, norm, norm))
 
         lmp.command('variable select atom "v_radius  > %f" ' % (alattice*(size - k)))
 
@@ -224,7 +239,7 @@ def binding(potfile, alattice, size):
 
         pe0 = lmp.get_thermo('pe')
             
-        lmp.command('create_atoms 3 single %f %f %f units box' % (d_pos[0], d_pos[1], d_pos[2])) 
+        lmp.command('create_atoms 3 single %f %f %f units box' % (d_pos[0] + _z, d_pos[1], d_pos[2])) 
 
         lmp.command('minimize 1e-15 1e-18 10 10')
 
@@ -244,7 +259,7 @@ def binding(potfile, alattice, size):
 
         pe1 = lmp.get_thermo('pe')
 
-        pe_arr[i] = pe0 + - pe1
+        pe_arr[i] = pe0 - pe1
 
     if me == 0:
         save = np.hstack([z_arr.reshape(N, 1), pe_arr.reshape(N,1)])
@@ -262,7 +277,9 @@ if __name__ == '__main__':
         global comm
         global me
         global k 
-        k = 10
+        global norm
+        norm = 10*2
+        k = 5
         comm = MPI.COMM_WORLD
 
         me = comm.Get_rank()
@@ -277,19 +294,19 @@ if __name__ == '__main__':
     alattice = 3.144221296574379
     size = 21
 
-    freeze = np.arange(3,20)
-    e = []
-    for i, _f in enumerate(freeze):
+    # freeze = np.arange(3,10)
+    # e = []
+    # for i, _f in enumerate(freeze):
 
-        k = _f
-        init_screw(alattice, size)
+    #     k = _f
+    init_screw(alattice, size)
 
-        e.append(binding(sys.argv[1], alattice, size))
-    
-    if me == 0:
-        plt.plot(freeze, np.array(e))
-        plt.show()
-    comm.barrier()
+        # e.append(binding(sys.argv[1], alattice, size))
+    # binding(sys.argv[1], alattice, size)
+    # if me == 0:
+    #     plt.plot(freeze, np.array(e))
+    #     plt.show()
+    # comm.barrier()
 
     if mode =='MPI':
         MPI.Finalize()
