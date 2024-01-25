@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline, PchipInterpolator
 import sys
-
+from scipy.signal import find_peaks
 def Spline(x, y, bool):
     x_filtered = [x[0]]
     y_filtered = [y[0]]
@@ -48,14 +48,22 @@ def main(potfile, N_images):
         x = data[:,0]
         y = data[:,1]
 
-        axs[0,i].scatter(x, y)
+        # axs[0,i].scatter(x, y)
 
         pi = Spline(x, y, True)
 
         x_plt = np.linspace(x.min(),x.max(), 100)
         y_plt = pi(x_plt)
 
+        maxima_idx = find_peaks(y_plt)[0]
+
+        minima_idx = find_peaks(-y_plt)[0]
+
+
+
         axs[0,i].plot(x_plt,y_plt)
+        axs[0,i].scatter(x_plt[maxima_idx], y_plt[maxima_idx])
+        axs[0,i].scatter(x_plt[minima_idx], y_plt[minima_idx])
         axs[0,i].set_title('Formation energy of Helium Interstitial on Tungsten %s Surface' % orient)
         axs[0,i].set_xlabel('Depth/A')
         axs[0,i].set_ylabel('Formation Energy/eV')
@@ -127,6 +135,8 @@ def main(potfile, N_images):
     fig.tight_layout()
 
     fig.savefig('Test_Data/Test_Graphs/%s.png' % potname)
+
+    plt.show()
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2])

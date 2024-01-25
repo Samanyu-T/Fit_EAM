@@ -305,7 +305,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     # Soft Constraint to ensure correct ordering of formation energies and relaxation volumes
     loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
     loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
-    loss +=  100*( np.round(test_formations['V0H0He1']['val'],3) >= np.round(test_formations['V0H0He1_inter']['val'], 3) )
+    loss +=  100*( np.round(test_formations['V0H0He1']['val'],3) > np.round(test_formations['V0H0He1_inter']['val'], 3) )
     loss +=  100*( test_formations['V0H0He1_inter']['val'] > test_formations['V0H0He1_oct']['val'])
 
     # Quadratic Loss of Binding Energies

@@ -229,8 +229,6 @@ def binding(potfile, alattice, size):
     #     plt.ylabel('Binding Energy/eV')
     #     plt.xlabel('Distance in 110 direction/ A')
     #     plt.show()
-    if mode =='MPI':
-        MPI.Finalize()
 
 if __name__ == '__main__':
     try:

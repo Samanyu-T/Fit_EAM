@@ -1,13 +1,13 @@
 LAMMPS (2 Aug 2023)
 Processor partition = 2
 Reading data file ...
-  orthogonal box = (0.088842503 0.11770511 -22.325705) to (65.262564 61.496192 75.684905)
+  orthogonal box = (0.088598786 0.11745496 -22.325914) to (65.262807 61.496442 75.685114)
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   14401 atoms
   reading velocities ...
   14401 velocities
-  read_data CPU = 0.039 seconds
+  read_data CPU = 0.042 seconds
 WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -25,9 +25,9 @@ Setting up Verlet run ...
   Unit style    : metal
   Current step  : 0
   Time step     : 0.001
-Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -127111.67      0             -127111.67      0.28232119   
+         0   0             -127105.45      0             -127105.45      0.19843209   
 Loop time of 4.17e-07 on 1 procs for 0 steps with 14401 atoms
 
 0.0% CPU use with 1 MPI tasks x no OpenMP threads
@@ -46,93 +46,93 @@ Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           6973 ave        6973 max        6973 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         581784 ave      581784 max      581784 min
+Neighs:         581668 ave      581668 max      581668 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 581784
-Ave neighs/atom = 40.398861
+Total # of neighbors = 581668
+Ave neighs/atom = 40.390806
 Neighbor list builds = 0
 Dangerous builds = 0
 Setting up quickmin style minimization ...
   Unit style    : metal
   Current step  : 0
-Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -127111.67      0             -127111.67     -0.25203196   
-         6   2.5670921e-05 -127111.67      0             -127111.67     -0.19171422   
-Loop time of 0.0980172 on 1 procs for 6 steps with 14401 atoms
+         0   0             -127105.19      0             -127105.19      4.4078659    
+         6   0.056493668   -127105.21      0             -127105.1       4.1748421    
+Loop time of 0.091263 on 1 procs for 6 steps with 14401 atoms
 
-93.8% CPU use with 1 MPI tasks x no OpenMP threads
+96.3% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -127111.669799007  -127111.669808643  -127111.669813363
-  Force two-norm initial, final = 0.064608293 0.059304169
-  Force max component initial, final = 0.026293771 0.026313681
+     -127105.185364949  -127105.201762047  -127105.209356601
+  Force two-norm initial, final = 2.5352946 2.2289107
+  Force max component initial, final = 1.1173906 0.97169347
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 6 6
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.064635   | 0.064635   | 0.064635   |   0.0 | 65.94
+Pair    | 0.055978   | 0.055978   | 0.055978   |   0.0 | 61.34
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00034638 | 0.00034638 | 0.00034638 |   0.0 |  0.35
+Comm    | 0.00022992 | 0.00022992 | 0.00022992 |   0.0 |  0.25
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.022306   | 0.022306   | 0.022306   |   0.0 | 22.76
-Other   |            | 0.01073    |            |       | 10.95
+Modify  | 0.029506   | 0.029506   | 0.029506   |   0.0 | 32.33
+Other   |            | 0.005549   |            |       |  6.08
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           6973 ave        6973 max        6973 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         581785 ave      581785 max      581785 min
+Neighs:         581665 ave      581665 max      581665 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 581785
-Ave neighs/atom = 40.398931
+Total # of neighbors = 581665
+Ave neighs/atom = 40.390598
 Neighbor list builds = 0
 Dangerous builds = 0
 Setting up quickmin style minimization ...
   Unit style    : metal
   Current step  : 6
-Per MPI rank memory allocation (min/avg/max) = 8.218 | 8.218 | 8.218 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         6   0             -127111.67      0             -127111.67     -0.1918444    
-        12   2.816154e-05  -127111.67      0             -127111.67     -0.12948586   
-Loop time of 0.116943 on 1 procs for 6 steps with 14401 atoms
+         6   0             -127105.21      0             -127105.21      3.8883744    
+        12   0.046690243   -127105.23      0             -127105.14      3.6707379    
+Loop time of 0.0917374 on 1 procs for 6 steps with 14401 atoms
 
-95.4% CPU use with 1 MPI tasks x no OpenMP threads
+96.4% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -127111.669813363   -127111.66982301  -127111.669827747
-  Force two-norm initial, final = 0.059304169 0.05419064
-  Force max component initial, final = 0.026313681 0.026332558
+     -127105.209356601  -127105.222480393  -127105.228600503
+  Force two-norm initial, final = 2.2289107 1.9757335
+  Force max component initial, final = 0.97169347 0.86627331
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 6 6
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.058129   | 0.058129   | 0.058129   |   0.0 | 49.71
+Pair    | 0.059689   | 0.059689   | 0.059689   |   0.0 | 65.06
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00044087 | 0.00044087 | 0.00044087 |   0.0 |  0.38
+Comm    | 0.00033645 | 0.00033645 | 0.00033645 |   0.0 |  0.37
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.043849   | 0.043849   | 0.043849   |   0.0 | 37.50
-Other   |            | 0.01452    |            |       | 12.42
+Modify  | 0.024351   | 0.024351   | 0.024351   |   0.0 | 26.54
+Other   |            | 0.007361   |            |       |  8.02
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           6973 ave        6973 max        6973 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         581785 ave      581785 max      581785 min
+Neighs:         581667 ave      581667 max      581667 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 581785
-Ave neighs/atom = 40.398931
+Total # of neighbors = 581667
+Ave neighs/atom = 40.390737
 Neighbor list builds = 0
 Dangerous builds = 0
 Total wall time: 0:00:00
