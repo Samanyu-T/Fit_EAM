@@ -130,9 +130,11 @@ def optimize(n_knots, bool_fit, proc):
     final_optima['Loss'] = []
 
     if os.path.getsize(os.path.join(core_folder,'Filtered_Samples.txt')) > 0:
-        
-        x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
 
+        x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
+        if x_init_arr.ndim == 1:
+            x_init_arr = x_init_arr.reshape(1, -1)
+            
         for simplex_iteration, x_init in enumerate(x_init_arr):
 
             simplex_iteration_folder = os.path.join(optim_folder, 'x_init_%d' % simplex_iteration)
