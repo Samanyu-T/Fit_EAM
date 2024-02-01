@@ -1,5 +1,5 @@
-nproc=28
-time=11
+nproc=60
+time=8
 machine=""
 
 rm -rf ../Output
