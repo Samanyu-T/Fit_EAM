@@ -55,7 +55,7 @@ def optimize(n_knots, bool_fit, proc):
 
     optim_folder = '%s/Simplex' % core_folder
     genetic_folder = '%s/Genetic' % core_folder
-    sample_folder = '%s/Sample' % core_folder
+    # sample_folder = '%s/Sample' % core_folder
 
     if not os.path.exists(optim_folder):
         os.mkdir(optim_folder)
@@ -63,8 +63,8 @@ def optimize(n_knots, bool_fit, proc):
     if not os.path.exists(genetic_folder):
         os.mkdir(genetic_folder)
 
-    if not os.path.exists(sample_folder):
-        os.mkdir(sample_folder)
+    # if not os.path.exists(sample_folder):
+    #     os.mkdir(sample_folder)
 
 
     with open('refs_formations.json', 'r') as ref_file:
@@ -101,22 +101,9 @@ def optimize(n_knots, bool_fit, proc):
     machine = ''
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, machine = machine, proc_id=proc)
 
-    # Get the process ID
-    process_id = os.getpid()
+    # random_sampling(ref_formations, fitting_class, N_samples=N_genetic_samples, output_folder=sample_folder)
 
-    # Get the process object
-    process = psutil.Process(process_id)
-
-    # Get the number of CPU cores used by the process
-    cpu_cores = psutil.cpu_count(logical=False)  # logical=False gives you physical cores
-
-    print(f"The process is using {cpu_cores} core(s).")
-
-    random_sampling(ref_formations, fitting_class, N_samples=N_genetic_samples, output_folder=sample_folder)
-
-    exit()
-
-    # genetic_algorithm(ref_formations, fitting_class, N_samples=N_genetic_samples, N_steps=N_genetic_steps, mutate_coef=genetic_exploration, mutate_decay = genetic_decay, output_folder=genetic_folder)
+    genetic_algorithm(ref_formations, fitting_class, N_samples=N_genetic_samples, N_steps=N_genetic_steps, mutate_coef=genetic_exploration, mutate_decay = genetic_decay, output_folder=genetic_folder)
 
     with os.scandir(genetic_folder) as entries:
         genetic_folders = [entry.name for entry in entries if entry.is_dir()]
