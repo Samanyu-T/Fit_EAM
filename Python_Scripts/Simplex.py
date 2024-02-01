@@ -1,16 +1,18 @@
 # Import necessary packages
 from random import sample
 from Handle_Files import read_pot
-from Spline_Fitting import Fitting_Potential, random_sampling
+from Spline_Fitting import Fitting_Potential, loss_func
 import json
 import os
 from Handle_Dictionaries import data_dict
 import sys 
 from Lmp_PDefect import Point_Defect
 import psutil
+import numpy as np
+from scipy.optimize import minimize
 
 # Main Function, which takes in each core separetly
-def worker_function(proc, machine, max_time):
+def worker_function(proc, machine):
     
     n_knots_lst = [[1,0,2]]
 
@@ -24,23 +26,16 @@ def worker_function(proc, machine, max_time):
         bool_fit['H-He'] = False
         bool_fit['He-He'] = False
 
-        optimize(n_knots, bool_fit, proc, machine, max_time)
+        optimize(n_knots, bool_fit, proc, machine)
 
-def optimize(n_knots, bool_fit, proc, machine, max_time=11):
+def optimize(n_knots, bool_fit, proc, machine):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
-
-    # Init Optimization Parameter
-    n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
-
-    T_max = 3600*max_time
-
-    N_samples = int(T_max//t_iter)
-    
-    if proc <=0:
-        print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
+    # Init a Perfect Tungsten Crystal as a starting point
+    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
+    t_iter = lmp_inst.Perfect_Crystal()
 
     # Init Output locations
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
@@ -50,7 +45,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     if not os.path.exists(param_folder):
         os.mkdir(param_folder)
 
-    sample_folder = '%s/Random_Samples' % param_folder
+    sample_folder = '%s/Simplex' % param_folder
 
     if not os.path.exists(sample_folder):
         os.mkdir(sample_folder)
@@ -94,13 +89,53 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, machine = machine, proc_id=proc)
 
-    random_sampling(ref_formations, fitting_class, N_samples=N_samples, output_folder=core_folder)
+    # Store the final optimization results
+    final_optima = {}
+    final_optima['Optima'] = []
+    final_optima['Loss'] = []
+
+    # datafile = os.path.join(param_folder, 'Random_Samples', 'Core_%d' % proc ,'Filtered_Samples.txt')
+    datafile = os.path.join(param_folder, 'Core_%d' % proc ,  'Sample', 'Filtered_Samples.txt')
+
+    if os.path.getsize(datafile) > 0:
+
+        x_init_arr = np.loadtxt(datafile)
+        
+        if x_init_arr.ndim == 1:
+            x_init_arr = x_init_arr.reshape(1, -1)
+
+        for simplex_iteration, x_init in enumerate(x_init_arr):
+
+            simplex_iteration_folder = os.path.join(core_folder, 'x_init_%d' % simplex_iteration)
+
+            if not os.path.exists(simplex_iteration_folder):
+                os.mkdir(simplex_iteration_folder)
+
+            # Store each sample and corresponding loss in files
+            with open('%s/samples.txt' % simplex_iteration_folder, 'w') as file:
+                file.write('')
+
+            with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
+                file.write('')
+
+            maxiter = 1000
+            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
+
+            # Write final optima to the output file
+            final_optima['Optima'].append(x_star.x.tolist())
+            final_optima['Loss'].append(float(x_star.fun))
+
+            # Store all the final optima in a file
+            with open('%s/Final_Optima.json' % core_folder, 'w') as file:
+                json.dump(final_optima, file, indent=2)
+
+
 
 
 if __name__ == '__main__':
 
     if len(sys.argv) > 1:
-        worker_function(int(sys.argv[1]), sys.argv[2], sys.argv[3])
-
+        worker_function(int(sys.argv[1]), sys.argv[2])
+        
     else:
-        worker_function(-1, '', 0.1)
+        worker_function(-1, '')

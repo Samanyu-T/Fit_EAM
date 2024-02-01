@@ -370,7 +370,7 @@ def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
         sample = fitting_class.gen_rand()
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
 
-        if loss < 100:
+        if loss < 20:
             filtered_loss.append(loss)
             filtered_samples.append(sample)
 
@@ -379,6 +379,27 @@ def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
 
     np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), filtered_samples)
     np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), filtered_loss)
+
+
+def gaussian_sampling(ref_formations, fitting_class, N_samples, output_folder, cov, mean):
+    
+    filtered_loss = []
+    filtered_samples = []
+
+    for i in range(N_samples):
+        sample = np.random.multivariate_normal(mean=mean, cov=cov)
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
+
+        if loss < 2:
+            filtered_loss.append(loss)
+            filtered_samples.append(sample)
+
+    filtered_loss = np.array(filtered_loss)
+    filtered_samples = np.array(filtered_samples)
+
+    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), filtered_samples)
+    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), filtered_loss)
+
 
 
 def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_coef = 1, mutate_decay = 1.175, output_folder = '../Genetic'):

@@ -7,7 +7,7 @@ Reading data file ...
   14401 atoms
   reading velocities ...
   14401 velocities
-  read_data CPU = 0.029 seconds
+  read_data CPU = 0.034 seconds
 WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -28,9 +28,9 @@ Setting up Verlet run ...
 Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -127105.45      0             -127105.45      0.19843209   
-Loop time of 3.33e-07 on 1 procs for 0 steps with 14401 atoms
+Loop time of 5.42e-07 on 1 procs for 0 steps with 14401 atoms
 
-0.0% CPU use with 1 MPI tasks x no OpenMP threads
+184.5% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
@@ -40,7 +40,7 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 3.33e-07   |            |       |100.00
+Other   |            | 5.42e-07   |            |       |100.00
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -60,9 +60,9 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -127105.19      0             -127105.19      4.4078659    
          6   0.056493668   -127105.21      0             -127105.1       4.1748421    
-Loop time of 0.112417 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.0959403 on 1 procs for 6 steps with 14401 atoms
 
-95.1% CPU use with 1 MPI tasks x no OpenMP threads
+96.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -76,12 +76,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.067388   | 0.067388   | 0.067388   |   0.0 | 59.94
+Pair    | 0.063264   | 0.063264   | 0.063264   |   0.0 | 65.94
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00037083 | 0.00037083 | 0.00037083 |   0.0 |  0.33
+Comm    | 0.00025758 | 0.00025758 | 0.00025758 |   0.0 |  0.27
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.040497   | 0.040497   | 0.040497   |   0.0 | 36.02
-Other   |            | 0.004161   |            |       |  3.70
+Modify  | 0.023488   | 0.023488   | 0.023488   |   0.0 | 24.48
+Other   |            | 0.008931   |            |       |  9.31
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -101,9 +101,9 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          6   0             -127105.21      0             -127105.21      3.8883744    
         12   0.046690243   -127105.23      0             -127105.14      3.6707379    
-Loop time of 0.101089 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.0964045 on 1 procs for 6 steps with 14401 atoms
 
-93.3% CPU use with 1 MPI tasks x no OpenMP threads
+97.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -117,12 +117,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.064257   | 0.064257   | 0.064257   |   0.0 | 63.56
+Pair    | 0.058056   | 0.058056   | 0.058056   |   0.0 | 60.22
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00025779 | 0.00025779 | 0.00025779 |   0.0 |  0.26
+Comm    | 0.00025275 | 0.00025275 | 0.00025275 |   0.0 |  0.26
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.031093   | 0.031093   | 0.031093   |   0.0 | 30.76
-Other   |            | 0.005482   |            |       |  5.42
+Modify  | 0.03148    | 0.03148    | 0.03148    |   0.0 | 32.65
+Other   |            | 0.006616   |            |       |  6.86
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0

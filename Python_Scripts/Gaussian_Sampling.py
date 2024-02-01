@@ -1,13 +1,14 @@
 # Import necessary packages
 from random import sample
 from Handle_Files import read_pot
-from Spline_Fitting import Fitting_Potential, random_sampling
+from Spline_Fitting import Fitting_Potential, gaussian_sampling
 import json
 import os
 from Handle_Dictionaries import data_dict
 import sys 
 from Lmp_PDefect import Point_Defect
 import psutil
+import numpy as np
 
 # Main Function, which takes in each core separetly
 def worker_function(proc, machine, max_time):
@@ -50,7 +51,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     if not os.path.exists(param_folder):
         os.mkdir(param_folder)
 
-    sample_folder = '%s/Random_Samples' % param_folder
+    sample_folder = '%s/Gaussian_Samples' % param_folder
 
     if not os.path.exists(sample_folder):
         os.mkdir(sample_folder)
@@ -93,9 +94,17 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, machine = machine, proc_id=proc)
+    
+    files = os.listdir('%s/GMM' % param_folder)
 
-    random_sampling(ref_formations, fitting_class, N_samples=N_samples, output_folder=core_folder)
+    N = int(len(files)/2)
 
+    select = proc % N
+    
+    mean = np.loadtxt('%s/GMM/Mean_%d.txt' % (param_folder, select))
+    cov = np.loadtxt('%s/GMM/Cov_%d.txt' % (param_folder, select))
+
+    gaussian_sampling(ref_formations, fitting_class, N_samples=N_samples, output_folder=core_folder, mean=mean, cov=cov)
 
 if __name__ == '__main__':
 

@@ -3,7 +3,7 @@ from lammps import lammps
 from mpi4py import MPI
 import itertools
 import copy 
-
+import time
 
 # template to replace MPI functionality for single threaded use
 class MPI_to_serial():
@@ -63,6 +63,8 @@ class Point_Defect():
 
     def Perfect_Crystal(self):
 
+        t1 = time.perf_counter()
+
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
@@ -114,6 +116,9 @@ class Point_Defect():
 
         lmp.close()
 
+        t2  = time.perf_counter()
+
+        return t2 - t1
     def Build_Defect(self, xyz_inter = [[], [], []]):
 
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
