@@ -100,7 +100,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 if __name__ == '__main__':
 
     if len(sys.argv) > 1:
-        worker_function(proc = int(sys.argv[1]), machine = sys.argv[2], time = int(sys.argv[3]))
+        worker_function(proc = int(sys.argv[1]), machine = sys.argv[2], max_time = int(sys.argv[3]))
 
     else:
         worker_function(-1, '', 0.1)
