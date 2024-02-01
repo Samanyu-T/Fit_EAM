@@ -18,18 +18,26 @@ numtasks=$SLURM_NTASKS
 mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).*$/\1/')
  
 . /etc/profile.d/modules.sh
+
 module purge
 module load rhel8/default-icl
-source ~/py382cpu/bin/activate
+module load intel/mkl
+module load fftw
+
+export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRARY_PATH 
+export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib:$LD_LIBRARY_PATH 
+export PATH=$HOME/lammps/src/:$PATH
+
+conda activate pylammps
 
 #! Full path to application executable:
-application="python srim_simple.py"
+application="python Python_Scripts/python_gmm_optim.py"
  
 #! Run options for the application:
-options="json/srim_neg0p5_0.json"
+options="optim_param.json"
 
 #! Work directory (i.e. where the job will run):
-workdir=/home/dc-bole2/Simulations/TungstenWire/Simulations
+workdir=/home/ir-tiru1/Samanyu/WHHe_Fitting/git_folder
  
 #! Are you using OpenMP (NB this is unrelated to OpenMPI)? If so increase this
 #! safe value to no more than 228:

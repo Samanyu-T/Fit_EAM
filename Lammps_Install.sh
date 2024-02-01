@@ -31,6 +31,7 @@ module purge; module load rhel8/default-icl; module load intel/mkl; module load 
 make yes-intel; make yes-basic; make yes-extra-fix; make yes-replica;  make yes-python; 
 make -j 8 mode=shared intel_cpu_intelmpi
 
-export LD_LIBRARY_PATH=$HOME/lammps/src/:$LD_LIBRARY_PATH 
-export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib/:$LD_LIBRARY_PATH 
-export LD_LIBRARY_PATH=$HOME/lammps/src/:$LD_LIBRARY_PATH 
+export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRARY_PATH 
+export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib:$LD_LIBRARY_PATH 
+export PATH=$HOME/lammps/src/:$PATH
+
