@@ -121,7 +121,7 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
         climb = None
 
     comm.barrier()
-    comm.bcast(climb, root = 0)
+    climb = comm.bcast(climb, root = 0)
 
     depth = np.arange(4)
 
@@ -250,7 +250,7 @@ write_dump all custom Lammps_Dump/Neb/neb.$i.dump id type x y z ''' % (potfile, 
                 file.write(txt)
 
     comm.barrier()
-    
+
     if mode == 'MPI':
         MPI.Finalize()
 
