@@ -18,7 +18,7 @@ class MPI_to_serial():
 
 class Point_Defect():
 
-    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0):
+    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, machine=''):
 
         # try running in parallel, otherwise single thread
         try:
@@ -57,14 +57,16 @@ class Point_Defect():
 
         self.potfile = potfile
         
-        self.Perfect_Crystal()
+        self.alattice = 3.144221
 
-    def Perfect_Crystal(self, alattice = 3.14484257):
+        self.machine = machine
+
+    def Perfect_Crystal(self):
 
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
         lmp.command('# Lammps input file')
 
@@ -76,7 +78,7 @@ class Point_Defect():
 
         lmp.command('boundary p p p')
 
-        lmp.command('lattice bcc %f orient x 1 0 0 orient y 0 1 0 orient z 0 0 1' % alattice)
+        lmp.command('lattice bcc %f orient x 1 0 0 orient y 0 1 0 orient z 0 0 1' % self.alattice)
 
         lmp.command('region r_simbox block 0 %d 0 %d 0 %d units lattice' % (self.size, self.size, self.size + self.surface))
 
@@ -104,36 +106,23 @@ class Point_Defect():
 
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
         
-        lmp.command('minimize 1e-9 1e-12 100 1000')
+        lmp.command('minimize 1e-12 1e-16 10000 100000')
 
         lmp.command('write_data Lammps_Dump/perfect.data')
         
-        pxx = lmp.get_thermo('pxx')
-        pyy = lmp.get_thermo('pyy')
-        pzz = lmp.get_thermo('pzz')
-        pxy = lmp.get_thermo('pxy')
-        pxz = lmp.get_thermo('pxz')
-        pyz = lmp.get_thermo('pyz')
-
-        self.stress0 = np.array([pxx, pyy, pzz, pxy, pxz, pyz]) 
-        
-        self.alattice = (lmp.get_thermo('xhi') - lmp.get_thermo('xlo'))/self.size
-
-        self.pe0 = lmp.get_thermo('pe')
-
-        self.vol0 = lmp.get_thermo('vol')
+        self.alattice = lmp.get_thermo('xlat')
 
         lmp.close()
 
-    def Build_Defect(self, xyz_inter = [[], [], []], alattice = 3.14484257):
+    def Build_Defect(self, xyz_inter = [[], [], []]):
 
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
         
         lmp.command('# Lammps input file')
-        
+
         lmp.command('units metal')
 
         lmp.command('atom_style atomic')
@@ -152,6 +141,34 @@ class Point_Defect():
         
         lmp.command('create_atoms 1 region r_atombox')
 
+        lmp.command('mass 1 183.84')
+
+        lmp.command('mass 2 1.00784')
+
+        lmp.command('mass 3 4.002602')
+
+        lmp.command('pair_style eam/alloy' )
+
+        lmp.command('pair_coeff * * %s W H He' % self.potfile)
+
+        lmp.command('thermo 50')
+
+        lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
+
+        lmp.command('run 0')
+
+        pxx = lmp.get_thermo('pxx')
+        pyy = lmp.get_thermo('pyy')
+        pzz = lmp.get_thermo('pzz')
+        pxy = lmp.get_thermo('pxy')
+        pxz = lmp.get_thermo('pxz')
+        pyz = lmp.get_thermo('pyz')
+
+        self.stress0 = np.array([pxx, pyy, pzz, pxy, pxz, pyz]) 
+        
+        self.pe0 = lmp.get_thermo('pe')
+
+        self.vol0 = lmp.get_thermo('vol')
 
         #Create a Vacancy of n-atoms along the <1,1,1> direction the vacancy will be at the centre of the cell
 
@@ -170,27 +187,11 @@ class Point_Defect():
             for xyz in xyz_element:
                 lmp.command('create_atoms %d single %f %f %f units lattice' % (element + 1, xyz[0], xyz[1], xyz[2]))
 
-        lmp.command('mass 1 183.84')
-
-        lmp.command('mass 2 1.00784')
-
-        lmp.command('mass 3 4.002602')
-
-        lmp.command('pair_style eam/alloy' )
-
-        lmp.command('pair_coeff * * %s W H He' % self.potfile)
-
-        lmp.command('run 0')
-
-        lmp.command('thermo 50')
-
-        lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
-
         # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        lmp.command('minimize 1e-3 1e-9 5 10')
-        lmp.command('minimize 1e-4 1e-9 5 100')
-        lmp.command('minimize 1e-6 1e-9 10 100')
+        lmp.command('minimize 1e-1 1e-9 5 10')
+        lmp.command('minimize 1e-2 1e-9 5 100')
+        lmp.command('minimize 1e-3 1e-9 10 1000')
         
         pe = lmp.get_thermo('pe')
 
@@ -209,8 +210,6 @@ class Point_Defect():
 
         self.relaxation_volume = 2*np.trace(self.strain_tensor)*self.vol/self.alattice**3
 
-        # self.relaxation_volume = 2*(self.vol - self.vol0)/self.alattice**3
-
         pe = lmp.get_thermo('pe')
 
         xyz_system = np.array(lmp.gather_atoms('x',1,3))
@@ -225,7 +224,7 @@ class Point_Defect():
 
         for element, xyz_element in enumerate(xyz_inter):
             for i in range(len(xyz_element)):
-                vec = (xyz_system[N_atoms + idx]/alattice)
+                vec = (xyz_system[N_atoms + idx]/self.alattice)
                 xyz_inter_relaxed[element].append(vec.tolist())
                 idx += 1
 
@@ -233,7 +232,7 @@ class Point_Defect():
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
-
+        
         return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume, xyz_inter_relaxed
     
     def get_octahedral_sites(self):

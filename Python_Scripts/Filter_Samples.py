@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import json
-from Spline_Fitting import Fitting_Potential, optim_loss, genetic_algorithm
+from Spline_Fitting import Fitting_Potential
 from Handle_Files import read_pot, write_pot
 import shutil
 
@@ -54,7 +54,7 @@ for param_folder in filtered_folders:
             optima = np.array(data['Optima'])
             loss = np.array(data['Loss'])
 
-            chosen_idx = np.where(loss < 4)[0].astype(int)
+            chosen_idx = np.where(loss < 0.2)[0].astype(int)
             
             for idx in chosen_idx:
                 

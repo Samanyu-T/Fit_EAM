@@ -55,7 +55,7 @@ class MPI_to_serial():
 class Lammps_Point_Defect():
 
     def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, 
-                 orientx = [1, 0, 0], orienty=[0,1,0], orientz=[0, 0, 1], conv = 1000):
+                 orientx = [1, 0, 0], orienty=[0,1,0], orientz=[0, 0, 1], conv = 1000, machine = ''):
 
         # try running in parallel, otherwise single thread
         try:
@@ -102,14 +102,16 @@ class Lammps_Point_Defect():
         
         self.conv = conv
 
-        self.Perfect_Crystal()
+        self.machine = machine
 
-    def Perfect_Crystal(self, alattice = 3.144221296574379):
+        self.Perfect_Crystal()  
+
+    def Perfect_Crystal(self,alattice = 3.144221296574379):
 
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
         lmp.command('# Lammps input file')
 
@@ -197,7 +199,7 @@ class Lammps_Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
         lmp.command('# Lammps input file')
 

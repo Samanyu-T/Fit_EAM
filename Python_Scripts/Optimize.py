@@ -1,12 +1,14 @@
 # Import necessary packages
 from Handle_Files import read_pot
-from Spline_Fitting import Fitting_Potential, loss_func, genetic_algorithm
+from Spline_Fitting import Fitting_Potential, loss_func, genetic_algorithm, random_sampling
 import json
 from scipy.optimize import minimize
 import os
 import numpy as np
 from Handle_Dictionaries import data_dict
 import sys 
+from Lmp_PDefect import Point_Defect
+import psutil
 
 # Main Function, which takes in each core separetly
 def worker_function(proc):
@@ -27,6 +29,11 @@ def worker_function(proc):
 
 def optimize(n_knots, bool_fit, proc):
 
+    # Init a Perfect Tungsten Crystal as a starting point
+    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
+    lmp_inst.Perfect_Crystal()
+
+    # Init Optimization Parameter
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
 
     N_genetic_samples = int(1e2*n_params**2)
@@ -34,6 +41,7 @@ def optimize(n_knots, bool_fit, proc):
     genetic_exploration = 2
     genetic_decay = 1.25
 
+    # Init Output locations
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
     # param_folder = '../He-He_%d' % n_knots[2]
     
@@ -47,12 +55,17 @@ def optimize(n_knots, bool_fit, proc):
 
     optim_folder = '%s/Simplex' % core_folder
     genetic_folder = '%s/Genetic' % core_folder
+    sample_folder = '%s/Sample' % core_folder
 
     if not os.path.exists(optim_folder):
         os.mkdir(optim_folder)
 
     if not os.path.exists(genetic_folder):
         os.mkdir(genetic_folder)
+
+    if not os.path.exists(sample_folder):
+        os.mkdir(sample_folder)
+
 
     with open('refs_formations.json', 'r') as ref_file:
         ref_json = json.load(ref_file)
@@ -85,10 +98,25 @@ def optimize(n_knots, bool_fit, proc):
     pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 
     # Call the main fitting class
+    machine = ''
+    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, machine = machine, proc_id=proc)
 
-    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, proc_id=proc)
+    # Get the process ID
+    process_id = os.getpid()
 
-    genetic_algorithm(ref_formations, fitting_class, N_samples=N_genetic_samples, N_steps=N_genetic_steps, mutate_coef=genetic_exploration, mutate_decay = genetic_decay, output_folder=genetic_folder)
+    # Get the process object
+    process = psutil.Process(process_id)
+
+    # Get the number of CPU cores used by the process
+    cpu_cores = psutil.cpu_count(logical=False)  # logical=False gives you physical cores
+
+    print(f"The process is using {cpu_cores} core(s).")
+
+    random_sampling(ref_formations, fitting_class, N_samples=N_genetic_samples, output_folder=sample_folder)
+
+    exit()
+
+    # genetic_algorithm(ref_formations, fitting_class, N_samples=N_genetic_samples, N_steps=N_genetic_steps, mutate_coef=genetic_exploration, mutate_decay = genetic_decay, output_folder=genetic_folder)
 
     with os.scandir(genetic_folder) as entries:
         genetic_folders = [entry.name for entry in entries if entry.is_dir()]
@@ -107,10 +135,6 @@ def optimize(n_knots, bool_fit, proc):
         nan_columns = np.isnan(loss_data[0,:])
         
         loss_data = loss_data[:, ~nan_columns]
-
-        # condition = np.logical_and.reduce([loss_data[:,0] < 10, np.abs(loss_data[:, -3]) < 0.25, np.abs(loss_data[:, -2]) < 0.25])       
-
-        # condition = np.logical_and.reduce([loss_data[:,0] < 10, loss_data[:,2] - loss_data[:,1] < 1.0 ]) 
 
         filtered_idx = np.where(loss_data[:,0] < 2.0)[0]
         
@@ -132,6 +156,7 @@ def optimize(n_knots, bool_fit, proc):
     if os.path.getsize(os.path.join(core_folder,'Filtered_Samples.txt')) > 0:
 
         x_init_arr = np.loadtxt(os.path.join(core_folder,'Filtered_Samples.txt'))
+        
         if x_init_arr.ndim == 1:
             x_init_arr = x_init_arr.reshape(1, -1)
 
@@ -149,8 +174,6 @@ def optimize(n_knots, bool_fit, proc):
             with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
                 file.write('')
 
-            # Random initialization for the optimization
-            # x_init = fitting_class.gen_rand()
             maxiter = 1000
             x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
 

@@ -20,10 +20,10 @@ for potfile in Potentials/Selected_Potentials/Potential_3/*.eam.alloy; do
 
     echo $potfile
 
-    mpiexec -n $proc python Python_Scripts/Edge_Dislocation_fixed.py $potfile
-    echo Finished
-    mpiexec -n $proc python Python_Scripts/Cylinder_Screw_fixed.py $potfile
-    echo Finished
+    # mpiexec -n $proc python Python_Scripts/Edge_Dislocation_fixed.py $potfile
+    # echo Finished
+    # mpiexec -n $proc python Python_Scripts/Cylinder_Screw_fixed.py $potfile
+    # echo Finished
     mpiexec -n $proc python Python_Scripts/Surface_Binding.py $potfile $N_images
     echo Finished
 
@@ -40,5 +40,5 @@ for potfile in Potentials/Selected_Potentials/Potential_3/*.eam.alloy; do
 
     done
 
-    python Python_Scripts/Test_Graphs.py $potfile 24
+    python Python_Scripts/Test_Graphs.py $potfile 16
 done

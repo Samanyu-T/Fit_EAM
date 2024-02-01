@@ -1,11 +1,12 @@
+from flask.scaffold import _matching_loader_thinks_module_is_package
 from Lmp_PDefect import Point_Defect
 import json
 import numpy as np
 import time
 
-def sim_defect_set(potfile, ref_dict):
+def sim_defect_set(potfile, ref_dict, machine):
 
-    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile) 
+    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile, machine=machine) 
 
     test_dict = {}
 
@@ -14,12 +15,10 @@ def sim_defect_set(potfile, ref_dict):
         test_dict[key] = {}
 
         lmp_inst.n_vac = int(key[1])
-
         ef, rvol, _ = lmp_inst.Build_Defect(ref_dict[key]['pos'])
 
         test_dict[key]['val'] = ef
         test_dict[key]['rvol'] = rvol
-
 
     return test_dict
 
@@ -45,18 +44,21 @@ def sim_defect_print(potfile):
             vac_arr.append(n_vac)
             idx += 1
 
-    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile) 
+    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile, machine='') 
 
     test_formation = np.zeros((10,))
     test_relaxation = np.zeros((10,))
 
     for i in range(len(ref_formation)):
         lmp_inst.n_vac = vac_arr[i]
+        t1 = time.perf_counter()
         test_formation[i], test_relaxation[i], _ = lmp_inst.Build_Defect(ref_positions[i])
+        t2= time.perf_counter()
+        print(t2-t1)
 
     return test_formation, ref_formation, test_relaxation, ref_relaxation
 
-# ftest, fref, rtest, rref = sim_defect_print('Potentials/test.eam.alloy')
+# ftest, fref, rtest, rref = sim_defect_print('Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy')
 
 # print(ftest, fref)
 # print(rtest, rref)

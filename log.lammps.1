@@ -15,7 +15,7 @@ Reading data file ...
   14401 atoms
   reading velocities ...
   14401 velocities
-  read_data CPU = 0.035 seconds
+  read_data CPU = 0.041 seconds
 
 mass 1 183.84
 
@@ -48,7 +48,7 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
          0   0             -127105.45      0             -127105.45      0.19843209   
 Loop time of 4.17e-07 on 1 procs for 0 steps with 14401 atoms
 
-0.0% CPU use with 1 MPI tasks x no OpenMP threads
+239.8% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
@@ -87,9 +87,9 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -127105.36      0             -127105.36      1.2528064    
          6   0.023533951   -127105.37      0             -127105.32      1.125317     
-Loop time of 0.0912615 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.112418 on 1 procs for 6 steps with 14401 atoms
 
-94.4% CPU use with 1 MPI tasks x no OpenMP threads
+97.7% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -103,12 +103,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.057599   | 0.057599   | 0.057599   |   0.0 | 63.11
+Pair    | 0.059057   | 0.059057   | 0.059057   |   0.0 | 52.53
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00030791 | 0.00030791 | 0.00030791 |   0.0 |  0.34
+Comm    | 0.000185   | 0.000185   | 0.000185   |   0.0 |  0.16
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.025907   | 0.025907   | 0.025907   |   0.0 | 28.39
-Other   |            | 0.007448   |            |       |  8.16
+Modify  | 0.046215   | 0.046215   | 0.046215   |   0.0 | 41.11
+Other   |            | 0.006961   |            |       |  6.19
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -125,9 +125,9 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          6   0             -127105.37      0             -127105.37      1.0059812    
         12   0.020503723   -127105.38      0             -127105.34      0.8873255    
-Loop time of 0.091741 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.101089 on 1 procs for 6 steps with 14401 atoms
 
-96.8% CPU use with 1 MPI tasks x no OpenMP threads
+99.4% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -141,12 +141,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.052641   | 0.052641   | 0.052641   |   0.0 | 57.38
+Pair    | 0.049306   | 0.049306   | 0.049306   |   0.0 | 48.77
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00020246 | 0.00020246 | 0.00020246 |   0.0 |  0.22
+Comm    | 0.00024058 | 0.00024058 | 0.00024058 |   0.0 |  0.24
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.032414   | 0.032414   | 0.032414   |   0.0 | 35.33
-Other   |            | 0.006483   |            |       |  7.07
+Modify  | 0.045575   | 0.045575   | 0.045575   |   0.0 | 45.08
+Other   |            | 0.005967   |            |       |  5.90
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0

@@ -8,7 +8,7 @@ from Handle_Dictionaries import binding_fitting
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, proc_id = 0):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, machine='', proc_id = 0):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -38,6 +38,7 @@ class Fitting_Potential():
         phi_knots = np.hstack([0, high_symm_pts[:self.nv], self.hyper['rc']])
 
         self.knot_pts = {}
+        self.machine = machine
 
         self.knot_pts['He_F(rho)'] = np.linspace(0, self.hyper['rho_c'], self.nf + 2)
         self.knot_pts['He_rho(r)'] = np.linspace(0, self.hyper['rc'], self.nrho + 2)
@@ -158,6 +159,8 @@ class Fitting_Potential():
     def polyval(self, x, coef, func = True, grad = False, hess = False):
 
         dof = len(coef)
+
+        Phi = np.array([])
 
         if func:
             Phi = np.array([x**i for i in range(dof)]).T
@@ -291,7 +294,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
-    test_formations = sim_defect_set(potloc, ref_formations)
+    test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine)
     
     ref_binding = binding_fitting(ref_formations)
     test_binding = binding_fitting(test_formations)
@@ -324,6 +327,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
                                                  test_formations['V0H0He1']['val'], 
                                                  test_formations['V0H0He1_inter']['val'], 
                                                  test_formations['V0H0He1_oct']['val']
+                                            
                                                  )
                   )
         np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
@@ -357,6 +361,26 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
 
     return loss
 
+def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
+    
+    filtered_loss = []
+    filtered_samples = []
+
+    for i in range(N_samples):
+        sample = fitting_class.gen_rand()
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
+
+        if loss < 100:
+            filtered_loss.append(loss)
+            filtered_samples.append(sample)
+
+    filtered_loss = np.array(filtered_loss)
+    filtered_samples = np.array(filtered_samples)
+
+    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), filtered_samples)
+    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), filtered_loss)
+
+
 def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_coef = 1, mutate_decay = 1.175, output_folder = '../Genetic'):
 
     population = np.zeros((N_samples, fitting_class.len_sample))
@@ -364,7 +388,7 @@ def genetic_algorithm(ref_formations, fitting_class, N_samples, N_steps, mutate_
     for i in range(N_samples):
         population[i] = fitting_class.gen_rand()
     
-    for iteration in range(N_steps):
+    for iteration in range(N_steps):                                                                                        
         
         mutate_coef /= mutate_decay
         N_samples = len(population)

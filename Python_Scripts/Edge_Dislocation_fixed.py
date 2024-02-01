@@ -1,6 +1,5 @@
 from lammps import lammps
 import numpy as np
-import matplotlib.pyplot as plt 
 from mpi4py import MPI
 import sys
 
