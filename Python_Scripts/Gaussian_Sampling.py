@@ -33,16 +33,6 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
 
-    # Init Optimization Parameter
-    n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
-
-    T_max = 3600*max_time
-
-    N_samples = int(T_max//t_iter)
-    
-    if proc <=0:
-        print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
-
     # Init Output locations
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
 
@@ -86,6 +76,19 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
 
+    
+    # Init Optimization Parameter
+    
+    # Init Optimization Parameter
+    t_iter *= len(ref_formations)
+    n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
+
+    T_max = 3600*max_time
+
+    N_samples = int(T_max//t_iter)
+
+    if proc <=0:
+        print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
