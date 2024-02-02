@@ -49,6 +49,8 @@ if __name__ == '__main__':
 
     nprocs = comm.Get_size() 
 
+    print(me)
+    
     if me == 0:
         print('Start on %d Procs' % nprocs)
     
