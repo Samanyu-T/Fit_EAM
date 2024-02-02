@@ -8,12 +8,6 @@ import json
 
 def main(machine, max_time):
 
-    comm = MPI.COMM_WORLD
-
-    me = comm.Get_rank()
-
-    nprocs = comm.Get_size()
-
     n_knots = [1,0,2]
 
     bool_fit = {}
@@ -46,8 +40,20 @@ def main(machine, max_time):
     MPI.Finalize()
 
 if __name__ == '__main__':
+    global comm
+    global me
 
-    print('Start')
+    comm = MPI.COMM_WORLD
+
+    me = comm.Get_rank()
+
+    nprocs = comm.Get_size() 
+
+    if me == 0:
+        print('Start on %d Procs' % nprocs)
+    
+    comm.barrier()
+    
     with open(sys.argv[1], 'r') as json_file:
         param_dict = json.load(json_file)
 
