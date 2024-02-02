@@ -87,8 +87,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 
     N_samples = int(T_max//t_iter)
 
-    if proc <=0:
-        print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
+    print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
