@@ -20,21 +20,34 @@ def main(machine, max_time):
 
     try:
         Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
-        comm.barrier()
     except Exception as e:
         if me == 0:
-            with open('../Error/error.txt', 'w') as error_file:
+            with open('../Error/random.txt', 'w') as error_file:
                 error_file.write(e)
+
+    comm.barrier()
 
     if me == 0:
         GMM.main()
 
     comm.barrier()
 
-    Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
+    try:
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
+    except Exception as e:
+        if me == 0:
+            with open('../Error/gaussian.txt', 'w') as error_file:
+                error_file.write(e)
+
     comm.barrier()
 
-    Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
+    try:
+        Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
+    except Exception as e:
+        if me == 0:
+            with open('../Error/simplex.txt', 'w') as error_file:
+                error_file.write(e)
+
     comm.barrier()
 
     MPI.Finalize()
@@ -50,7 +63,7 @@ if __name__ == '__main__':
     nprocs = comm.Get_size() 
 
     print(me)
-    
+
     if me == 0:
         print('Start on %d Procs' % nprocs)
     

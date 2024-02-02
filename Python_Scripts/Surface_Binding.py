@@ -54,10 +54,12 @@ def climb_sites(alattice, tet_arr, R, R_inv, xy_offset):
 
 def edit_dump(potfile, orient, i):
 
-    with open('Lammps_Dump/Surface/%s/Depth_%d.atom' % (orient, i), 'r') as file:
+    save_folder = 'Lammps_Dump/Surface/%s/Depth_%d.atom' % (orient, i)
+
+    with open(save_folder, 'r') as file:
         lines = file.readlines()
 
-    with open('Lammps_Dump/Surface/%s/Depth_%d.atom' % (orient, i), 'w') as file:
+    with open(save_folder % (orient, i), 'w') as file:
         file.write(lines[3])
         file.writelines(lines[9:])
                 
@@ -134,7 +136,7 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
         
         orient_str = '%d%d%d' % (orientx[0], orientx[1], orientx[2])
 
-        dump_name = 'Surface/%s/Depth_%d' % (orient_str, i)
+        dump_name = '../Lammps_Dump/Surface/%s/Depth_%d' % (orient_str, i)
 
         pe, pos = lmp.Build_Defect([[],[],[site]], dump_name=dump_name)
 
