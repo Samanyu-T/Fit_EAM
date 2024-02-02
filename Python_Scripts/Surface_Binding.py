@@ -96,7 +96,7 @@ variable i equal part
 
 neb 10e-8 10e-10 5000 5000 100 final Lammps_Dump/Surface/%s/Depth_%d.atom
 
-write_dump all custom Lammps_Dump/Neb/neb.$i.dump id type x y z ''' % (orient, i-1, potfile, orient, i)
+write_dump all custom Lammps_Dump/Neb/%s/%d/neb.$i.dump id type x y z ''' % (orient, i-1, potfile, orient, i, orient, i)
 
     with open('Lammps_Scripts/surface%d_%s.neb' % (i-1, orient), 'w') as file:
         file.write(txt)
@@ -244,7 +244,7 @@ variable i equal part
 
 neb 1e-8 1e-10 5000 5000 100 final Lammps_Dump/Bulk/%s.atom
 
-write_dump all custom Lammps_Dump/Neb/neb.$i.dump id type x y z ''' % (potfile, pos_type)
+write_dump all custom Lammps_Dump/Neb/%s/neb.$i.dump id type x y z ''' % (potfile, pos_type, pos_type)
 
             with open('Lammps_Scripts/tet_%s.neb' % pos_type, 'w') as file:
                 file.write(txt)

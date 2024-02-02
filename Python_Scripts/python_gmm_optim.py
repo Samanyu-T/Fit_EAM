@@ -24,9 +24,14 @@ def main(machine, max_time):
     bool_fit['H-He'] = False
     bool_fit['He-He'] = False
 
-    Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
-    comm.barrier()
-
+    try:
+        Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
+        comm.barrier()
+    except Exception as e:
+        if me == 0:
+            with open('../Error/error.txt', 'w') as error_file:
+                error_file.write(e)
+                
     if me == 0:
         GMM.main()
 
