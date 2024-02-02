@@ -31,7 +31,7 @@ def main(machine, max_time):
         if me == 0:
             with open('../Error/error.txt', 'w') as error_file:
                 error_file.write(e)
-                
+
     if me == 0:
         GMM.main()
 
@@ -47,6 +47,7 @@ def main(machine, max_time):
 
 if __name__ == '__main__':
 
+    print('Start')
     with open(sys.argv[1], 'r') as json_file:
         param_dict = json.load(json_file)
 
