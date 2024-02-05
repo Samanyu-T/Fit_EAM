@@ -23,7 +23,7 @@ def main(machine, max_time):
     except Exception as e:
         if me == 0:
             with open('../Error/random.txt', 'w') as error_file:
-                error_file.write(e)
+                error_file.write(str(e))
 
     comm.barrier()
 
@@ -37,7 +37,7 @@ def main(machine, max_time):
     except Exception as e:
         if me == 0:
             with open('../Error/gaussian.txt', 'w') as error_file:
-                error_file.write(e)
+                error_file.write(str(e))
 
     comm.barrier()
 
@@ -46,7 +46,7 @@ def main(machine, max_time):
     except Exception as e:
         if me == 0:
             with open('../Error/simplex.txt', 'w') as error_file:
-                error_file.write(e)
+                error_file.write(str(e))
 
     comm.barrier()
 
