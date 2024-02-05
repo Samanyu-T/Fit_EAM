@@ -24,11 +24,13 @@ module load rhel8/default-icl
 module load intel/mkl
 module load fftw
 
+conda init
+conda activate pylammps
+
 export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRARY_PATH 
 export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib:$LD_LIBRARY_PATH 
 export PATH=$HOME/lammps/src/:$PATH
 
-conda activate pylammps
 
 #! Full path to application executable:
 application="python Python_Scripts/python_gmm_optim.py"
