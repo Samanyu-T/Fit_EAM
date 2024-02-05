@@ -289,11 +289,12 @@ class Lammps_Point_Defect():
 
 
         if dump_name == '':
-            dump_name = 'Surface/Orient_%d%d%d_Depth(%.2f)' %(self.orientx[0], self.orientx[1], self.orientx[2], self.depth)
+            
+            dump_name = '../Lammps_Dump/Surface/Orient_%d%d%d_Depth(%.2f)' %(self.orientx[0], self.orientx[1], self.orientx[2], self.depth)
         
-        lmp.command('write_data Lammps_Dump/%s.data' % dump_name)
+        lmp.command('write_data %s.data' % dump_name)
 
-        lmp.command('write_dump all custom Lammps_Dump/%s.atom id x y z' % dump_name)
+        lmp.command('write_dump all custom %s.atom id x y z' % dump_name)
 
         lmp.close()
 

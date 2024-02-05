@@ -1,0 +1,36 @@
+
+units metal 
+
+atom_style atomic
+
+atom_modify map array sort 0 0.0
+
+read_data ../Lammps_Dump/Surface/111/Depth_16.data
+
+mass 1 183.84
+
+mass 2 1.00784
+
+mass 3 4.002602
+
+pair_style eam/alloy
+
+pair_coeff * * Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy W H He
+
+thermo 10
+
+run 0
+
+fix 1 all neb 1e-4
+
+timestep 1e-3
+
+min_style quickmin
+
+thermo 100 
+
+variable i equal part
+
+neb 10e-8 10e-10 5000 5000 100 final ../Lammps_Dump/Surface/111/Depth_17.atom
+
+write_dump all custom ../Lammps_Dump/Surface/111/16_17/neb.$i.dump id type x y z 

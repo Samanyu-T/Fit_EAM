@@ -7,7 +7,7 @@ atom_style atomic
 
 atom_modify map array sort 0 0.0
 
-read_data Lammps_Dump/Surface/111/Depth_9.data
+read_data ../Lammps_Dump/Surface/111/Depth_9.data
 Reading data file ...
   orthogonal box = (0.088598786 0.11745496 -22.325914) to (65.262807 61.496442 75.685114)
   1 by 1 by 1 MPI processor grid
@@ -46,9 +46,9 @@ Neighbor list info ...
 Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -127105.45      0             -127105.45      0.19843209   
-Loop time of 8.33e-07 on 1 procs for 0 steps with 14401 atoms
+Loop time of 3.75e-07 on 1 procs for 0 steps with 14401 atoms
 
-120.0% CPU use with 1 MPI tasks x no OpenMP threads
+0.0% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
@@ -58,7 +58,7 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 8.33e-07   |            |       |100.00
+Other   |            | 3.75e-07   |            |       |100.00
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -82,14 +82,14 @@ thermo 100
 
 variable i equal part
 
-neb 10e-8 10e-10 5000 5000 100 final Lammps_Dump/Surface/111/Depth_10.atom
+neb 10e-8 10e-10 5000 5000 100 final ../Lammps_Dump/Surface/111/Depth_10.atom
 Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -127105.06      0             -127105.06      6.6666686    
          6   0.07785758    -127105.1       0             -127104.95      6.3671974    
-Loop time of 0.0959414 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.104646 on 1 procs for 6 steps with 14401 atoms
 
-96.4% CPU use with 1 MPI tasks x no OpenMP threads
+95.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -103,12 +103,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.056299   | 0.056299   | 0.056299   |   0.0 | 58.68
+Pair    | 0.059226   | 0.059226   | 0.059226   |   0.0 | 56.60
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00026058 | 0.00026058 | 0.00026058 |   0.0 |  0.27
+Comm    | 0.00034516 | 0.00034516 | 0.00034516 |   0.0 |  0.33
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.032577   | 0.032577   | 0.032577   |   0.0 | 33.96
-Other   |            | 0.006804   |            |       |  7.09
+Modify  | 0.039068   | 0.039068   | 0.039068   |   0.0 | 37.33
+Other   |            | 0.006008   |            |       |  5.74
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -125,9 +125,9 @@ Per MPI rank memory allocation (min/avg/max) = 8.204 | 8.204 | 8.204 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          6   0             -127105.1       0             -127105.1       5.9723978    
         12   0.062361973   -127105.12      0             -127105.01      5.7309325    
-Loop time of 0.0964067 on 1 procs for 6 steps with 14401 atoms
+Loop time of 0.0945915 on 1 procs for 6 steps with 14401 atoms
 
-98.4% CPU use with 1 MPI tasks x no OpenMP threads
+97.6% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -141,12 +141,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.051477   | 0.051477   | 0.051477   |   0.0 | 53.40
+Pair    | 0.055333   | 0.055333   | 0.055333   |   0.0 | 58.50
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0003025  | 0.0003025  | 0.0003025  |   0.0 |  0.31
+Comm    | 0.0002965  | 0.0002965  | 0.0002965  |   0.0 |  0.31
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.039797   | 0.039797   | 0.039797   |   0.0 | 41.28
-Other   |            | 0.004831   |            |       |  5.01
+Modify  | 0.033546   | 0.033546   | 0.033546   |   0.0 | 35.46
+Other   |            | 0.005416   |            |       |  5.73
 
 Nlocal:          14401 ave       14401 max       14401 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -160,6 +160,6 @@ Ave neighs/atom = 40.390459
 Neighbor list builds = 0
 Dangerous builds = 0
 
-write_dump all custom Lammps_Dump/Neb/neb.$i.dump id type x y z 
-write_dump all custom Lammps_Dump/Neb/neb.3.dump id type x y z 
+write_dump all custom ../Lammps_Dump/Surface/111/9_10/neb.$i.dump id type x y z 
+write_dump all custom ../Lammps_Dump/Surface/111/9_10/neb.3.dump id type x y z 
 Total wall time: 0:00:00

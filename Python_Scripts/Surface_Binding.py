@@ -54,15 +54,21 @@ def climb_sites(alattice, tet_arr, R, R_inv, xy_offset):
 
 def edit_dump(potfile, orient, i):
 
-    save_folder = 'Lammps_Dump/Surface/%s/Depth_%d.atom' % (orient, i)
+    neb_folder = '../Lammps_Dump/Surface/%s/%d_%d' % (orient, i-1, i)
+    os.makedirs(neb_folder, exist_ok=True)
 
-    with open(save_folder, 'r') as file:
+    init_pos = '../Lammps_Dump/Surface/%s/Depth_%d.data' % (orient, i-1)
+
+    final_pos = '../Lammps_Dump/Surface/%s/Depth_%d.atom' % (orient, i)
+
+    with open(final_pos, 'r') as file:
         lines = file.readlines()
 
-    with open(save_folder % (orient, i), 'w') as file:
+    with open(final_pos, 'w') as file:
         file.write(lines[3])
         file.writelines(lines[9:])
-                
+            
+
     txt = '''
 units metal 
 
@@ -70,7 +76,7 @@ atom_style atomic
 
 atom_modify map array sort 0 0.0
 
-read_data Lammps_Dump/Surface/%s/Depth_%d.data
+read_data %s
 
 mass 1 183.84
 
@@ -96,9 +102,9 @@ thermo 100
 
 variable i equal part
 
-neb 10e-8 10e-10 5000 5000 100 final Lammps_Dump/Surface/%s/Depth_%d.atom
+neb 10e-8 10e-10 5000 5000 100 final %s
 
-write_dump all custom Lammps_Dump/Neb/%s/%d/neb.$i.dump id type x y z ''' % (orient, i-1, potfile, orient, i, orient, i)
+write_dump all custom %s/neb.$i.dump id type x y z ''' % (init_pos, potfile, final_pos, neb_folder)
 
     with open('Lammps_Scripts/surface%d_%s.neb' % (i-1, orient), 'w') as file:
         file.write(txt)
@@ -138,6 +144,8 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
 
         dump_name = '../Lammps_Dump/Surface/%s/Depth_%d' % (orient_str, i)
 
+        os.makedirs(os.path.dirname(dump_name), exist_ok=True)
+
         pe, pos = lmp.Build_Defect([[],[],[site]], dump_name=dump_name)
 
         pe_arr[i] = pe
@@ -161,16 +169,21 @@ def main(potfile, N_images):
                             orientx=[1,0,0], orienty=[0,1,0], orientz=[0,0,1], conv = 1000)
 
     xyz = alattice*np.hstack([6.25, 6.5, 6])
-    pe_t, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='Bulk/tet_1')
 
-    with open('Test_Data/Bulk_tet.txt','w') as file:
+    os.makedirs('../Lammps_Dump/Bulk', exist_ok=True)
+
+    pe_t, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='../Lammps_Dump/Bulk/tet_1')
+
+    os.makedirs('../Test_Data', exist_ok=True)
+
+    with open('../Test_Data/Bulk_tet.txt','w') as file:
         file.write('%f' % pe_t)
 
     xyz = alattice*np.hstack([6.5,6.25, 6])
-    pe_t, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='Bulk/tet_2')
+    pe_t, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='../Lammps_Dump/Bulk/tet_2')
 
     xyz = alattice*np.hstack([6.5,6.5, 6])
-    pe_o, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='Bulk/oct')
+    pe_o, pos = lmp.Build_Defect([[],[],[xyz]], dump_name='../Lammps_Dump/Bulk/oct')
 
 
     ''' Use for 100 surface '''
@@ -195,22 +208,25 @@ def main(potfile, N_images):
     surface_profile(size,potfile, orientx, orienty, orientz, N = N_images)
 
     if me == 0:
-        with open('Lammps_Dump/Bulk/tet_2.atom', 'r') as file:
+        with open('../Lammps_Dump/Bulk/tet_2.atom', 'r') as file:
             lines = file.readlines()
 
-        with open('Lammps_Dump/Bulk/tet_2.atom', 'w') as file:
+        with open('../Lammps_Dump/Bulk/tet_2.atom', 'w') as file:
             file.write(lines[3])
             file.writelines(lines[9:])
 
-        with open('Lammps_Dump/Bulk/oct.atom', 'r') as file:
+        with open('../Lammps_Dump/Bulk/oct.atom', 'r') as file:
             lines = file.readlines()
 
-        with open('Lammps_Dump/Bulk/oct.atom', 'w') as file:
+        with open('../Lammps_Dump/Bulk/oct.atom', 'w') as file:
             file.write(lines[3])
             file.writelines(lines[9:])
 
         
         for pos_type in ['tet_2', 'oct']:
+            neb_folder = '../Lammps_Dump/Bulk/%s' % pos_type
+            os.makedirs(neb_folder, exist_ok=True)
+
             txt = '''
 units metal 
 
@@ -218,7 +234,7 @@ atom_style atomic
 
 atom_modify map array sort 0 0.0
 
-read_data Lammps_Dump/Bulk/tet_1.data
+read_data ../Lammps_Dump/Bulk/tet_1.data
 
 mass 1 183.84
 
@@ -244,9 +260,9 @@ thermo 100
 
 variable i equal part
 
-neb 1e-8 1e-10 5000 5000 100 final Lammps_Dump/Bulk/%s.atom
+neb 1e-8 1e-10 5000 5000 100 final ../Lammps_Dump/Bulk/%s.atom
 
-write_dump all custom Lammps_Dump/Neb/%s/neb.$i.dump id type x y z ''' % (potfile, pos_type, pos_type)
+write_dump all custom %s/neb.$i.dump id type x y z ''' % (potfile, pos_type, neb_folder)
 
             with open('Lammps_Scripts/tet_%s.neb' % pos_type, 'w') as file:
                 file.write(txt)
@@ -260,4 +276,4 @@ if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2])
 
 # else:
-    # main('Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy')
+    # main('Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy', 4)
