@@ -23,7 +23,7 @@ module purge
 module load rhel8/default-icl
 module load intel/mkl
 module load fftw
-
+module load miniconda/3
 conda init
 conda activate pylammps
 
