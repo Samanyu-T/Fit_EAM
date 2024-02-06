@@ -3,7 +3,6 @@ import numpy as np
 import psutil
 import os
 import glob
-
 def main():
     data_lst = []
 
@@ -13,7 +12,8 @@ def main():
     for file in glob.glob(file_pattern):
         if os.path.getsize(file) > 0:
             data_lst.append(np.loadtxt(file))
-            data = np.vstack([x for x in data_lst])
+            
+    data = np.vstack([x for x in data_lst])
 
     # Get the process ID
     process_id = os.getpid()
