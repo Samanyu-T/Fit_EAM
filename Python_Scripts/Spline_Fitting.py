@@ -5,6 +5,7 @@ from Handle_Files import write_pot
 from Simulate_Defect_Set import sim_defect_set
 from ZBL_Class import ZBL
 from Handle_Dictionaries import binding_fitting
+import time 
 
 class Fitting_Potential():
 
@@ -287,6 +288,7 @@ class Fitting_Potential():
 
 
 def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = False):
+    t1 = time.perf_counter()
 
     potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
     
@@ -358,7 +360,9 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     # with open(os.path.join(output_folder, sample_filename), 'a') as file:
     #     np.savetxt(file, sample, fmt = '%f', newline=' ')
     #     file.write('\n')
+    t2 = time.perf_counter()
 
+    print(t2 - t1)
     return loss
 
 def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
@@ -370,10 +374,10 @@ def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
         sample = fitting_class.gen_rand()
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
 
-        if loss < 20:
+        if loss < 200:
             filtered_loss.append(loss)
             filtered_samples.append(sample)
-
+        
     filtered_loss = np.array(filtered_loss)
     filtered_samples = np.array(filtered_samples)
 
@@ -390,7 +394,7 @@ def gaussian_sampling(ref_formations, fitting_class, N_samples, output_folder, c
         sample = np.random.multivariate_normal(mean=mean, cov=cov)
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
 
-        if loss < 2:
+        if loss < 20:
             filtered_loss.append(loss)
             filtered_samples.append(sample)
 

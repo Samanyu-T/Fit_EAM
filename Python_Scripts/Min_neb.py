@@ -5,7 +5,7 @@ import itertools
 import copy 
 import os 
 
-def lmp_minimize(init_file, read_file, potfile, machine = ''):
+def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
     lmp = lammps(name = machine) #,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
@@ -56,8 +56,34 @@ def lmp_minimize(init_file, read_file, potfile, machine = ''):
     xyz = lmp.numpy.extract_atom('x')
 
     he_idx= np.where(id == 3)[0]
+    pe = lmp.get_thermo('pe')
+    add_bool = True
 
-    print(xyz[he_idx][0])
+    for i in range(len(he_lst)):
+        if np.linalg.norm( he_lst[i] - he_idx[0] ) < 0.5:
+            add_bool = False
+
+    if add_bool:
+        he_lst.append(he_idx)
+        pe_lst.append(pe)
+
+        folder = os.path.dirname(os.path.dirname(read_file))
+
+        filename = 'New_Depth_%d' % (len(he_lst) - 1)
+        filepath  = os.path.join(folder, filename)
+
+        lmp.command('write_data %s.data' % filepath)
+        lmp.command('write_dump all custom %s.atom id x y z' % filepath)
+
+        with open('%s.atom' % filepath, 'r') as file:
+            lines = file.readlines()
+
+        with open('%s.atom' % filepath, 'w') as file:
+            file.write(lines[3])
+            file.writelines(lines[9:])
+    
+    lmp.close()
+    return he_lst, pe_lst
 
 if __name__ == '__main__':
 
@@ -80,8 +106,30 @@ if __name__ == '__main__':
 
     for orient_folder in os.listdir('../Lammps_Dump/Surface'):
         init_file = os.path.join(orient_folder, 'Depth_0.data')
+    
+    he_lst = []
+    pe_lst = []
+
+    surface_folder = '../Lammps_Dump/Surface'
+
+    lst_orient_folders = [os.path.join(surface_folder, folder) for folder in os.listdir(surface_folder)
+                      if os.path.isdir(os.path.join(surface_folder, folder))]
+
+    for orient_folder in lst_orient_folders:
+        init_file = os.path.join(orient_folder, 'Depth_0.data')
+
+        lst_neb_folders =  [os.path.join(orient_folder, folder) for folder in os.listdir(orient_folder)
+                        if os.path.isdir(os.path.join(orient_folder, folder))]
         
-    lmp_minimize('../Lammps_Dump/Surface/100/Depth_0.data', '../Lammps_Dump/Surface/100/0_1/neb.3.dump', 'Potentials/WHHe_test.eam.alloy')
+        sorted_idx = np.argsort(np.array([int(os.path.basename(folder).split('_')[0]) for folder in lst_neb_folders])).astype('int')
+
+        sorted_neb_folders = [lst_neb_folders[i] for i in sorted_idx]
+        
+        for neb_folder in sorted_neb_folders:
+
+            lst_neb_files = sorted([os.path.join(neb_folder,file) for file in os.listdir(neb_folder) if file.startswith('neb')])
+            for neb_file in lst_neb_files:
+                he_lst, pe_lst = lmp_minimize(init_file, neb_file, 'Potentials/WHHe_test.eam.alloy', he_lst, pe_lst)
 
     if mode == 'MPI':
         MPI.Finalize()

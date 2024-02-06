@@ -27,8 +27,13 @@ def main(machine, max_time):
 
     comm.barrier()
 
-    if me == 0:
-        GMM.main()
+    try:
+        if me == 0:
+            GMM.main()
+    except Exception as e:
+        if me == 0:
+            with open('../Error/gmm.txt', 'w') as error_file:
+                error_file.write(str(e))
 
     comm.barrier()
 

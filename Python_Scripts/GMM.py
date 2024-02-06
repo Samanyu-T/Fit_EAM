@@ -11,9 +11,9 @@ def main():
     # file_pattern = '../W-He_102/Core*/Sample/Filtered_Samples.txt'
 
     for file in glob.glob(file_pattern):
-        data_lst.append(np.loadtxt(file))
-
-    data = np.vstack([x for x in data_lst])
+        if os.path.getsize(file) > 0:
+            data_lst.append(np.loadtxt(file))
+            data = np.vstack([x for x in data_lst])
 
     # Get the process ID
     process_id = os.getpid()

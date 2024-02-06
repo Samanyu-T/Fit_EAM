@@ -196,7 +196,7 @@ class Point_Defect():
 
         lmp.command('minimize 1e-1 1e-9 5 10')
         lmp.command('minimize 1e-2 1e-9 5 100')
-        lmp.command('minimize 1e-3 1e-9 10 1000')
+        lmp.command('minimize 1e-3 1e-9 10 100')
         
         pe = lmp.get_thermo('pe')
 
