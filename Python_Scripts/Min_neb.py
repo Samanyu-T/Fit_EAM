@@ -61,34 +61,45 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
     pe = lmp.get_thermo('pe')
 
+    filepath = ''
+
     if len(he_idx) > 0:
 
-        id = comm.bcast(id, root=me)
-        xyz = comm.bcast(xyz, me)
+        print(he_lst, xyz[he_idx[0]])
 
         for i in range(len(he_lst)):
 
-            # print(read_file, he_lst,he_idx)
-            print(he_lst[i], xyz[he_idx[0]])
-
             if np.linalg.norm( he_lst[i][-1] - xyz[he_idx[0]][-1] ) < 0.5:
                 add_bool = False
-                add_bool = comm.bcast(add_bool, me)
+        
+        if add_bool:
+            he_lst.append(xyz[he_idx[0]])
+            pe_lst.append(pe)
+
+            folder = os.path.dirname(os.path.dirname(read_file))
+
+            filename = 'New_Depth_%d' % (len(he_lst) - 1)
+            filepath  = os.path.join(folder, filename)
 
     comm.barrier()
+
+    he_cores = comm.gather(len(he_idx), root=0)
+    root = None
+    if me == 0:
+        root = he_cores.index(1)
+    comm.barrier()
+
+    root = comm.bcast(root, 0)
+    add_bool = comm.bcast(add_bool, root)
+    filepath = comm.bcast(filepath, root)
+    he_lst = comm.bcast(he_lst, root)
+    pe_lst = comm.bcast(pe_lst, root)
+
     if add_bool:
-        he_lst.append(xyz[he_idx[0]])
-        pe_lst.append(pe)
-
-        folder = os.path.dirname(os.path.dirname(read_file))
-
-        filename = 'New_Depth_%d' % (len(he_lst) - 1)
-        filepath  = os.path.join(folder, filename)
-
         lmp.command('write_data %s.data' % filepath)
         lmp.command('write_dump all custom %s.atom id x y z' % filepath)
-
-        if me == 0: 
+    
+        if me == root:
             with open('%s.atom' % filepath, 'r') as file:
                 lines = file.readlines()
 
