@@ -370,11 +370,11 @@ def random_sampling(ref_formations, fitting_class, N_samples, output_folder):
     filtered_loss = []
     filtered_samples = []
     
-    for i in range(1000):
+    for i in range(100):
         sample = fitting_class.gen_rand()
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
 
-        if loss < 200:
+        if loss < 300:
             filtered_loss.append(loss)
             filtered_samples.append(sample)
         
@@ -390,7 +390,7 @@ def gaussian_sampling(ref_formations, fitting_class, N_samples, output_folder, c
     filtered_loss = []
     filtered_samples = []
 
-    for i in range(1000):
+    for i in range(100):
         sample = np.random.multivariate_normal(mean=mean, cov=cov)
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
 

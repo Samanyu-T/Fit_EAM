@@ -51,9 +51,8 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
     lmp.command('minimize 1e-15 1e-18 1000 10000')
 
     N = lmp.get_natoms()
+
     add_bool = True
-    he_idx = None
-    pe = None
 
     id = lmp.numpy.extract_atom('type')
     xyz = lmp.numpy.extract_atom('x')
@@ -61,41 +60,34 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
     he_idx= np.where(id == 3)[0]
 
     pe = lmp.get_thermo('pe')
-
-    root = 0
-
+    print('1')
     if len(he_idx) > 0:
         for i in range(len(he_lst)):
-            print(read_file, he_lst,he_idx)
-            if np.linalg.norm( he_lst[i] - xyz[he_idx[0]] ) < 0.5:
+            # print(read_file, he_lst,he_idx)
+            print(he_lst[i], xyz[he_idx[0]])
+            if np.linalg.norm( he_lst[i][-1] - xyz[he_idx[0]][-1] ) < 0.5:
                 add_bool = False
 
-        root = comm.bcast(me, me)
+        if add_bool:
+            he_lst.append(xyz[he_idx[0]])
+            pe_lst.append(pe)
 
-    print(root)
-    add_bool = comm.bcast(add_bool, root)
-    he_idx  = comm.bcast(he_idx, root)
-    pe  = comm.bcast(pe, root)
+            folder = os.path.dirname(os.path.dirname(read_file))
 
-    if add_bool:
-        he_lst.append(he_idx)
-        pe_lst.append(pe)
+            filename = 'New_Depth_%d' % (len(he_lst) - 1)
+            filepath  = os.path.join(folder, filename)
 
-        folder = os.path.dirname(os.path.dirname(read_file))
+            lmp.command('write_data %s.data' % filepath)
+            lmp.command('write_dump all custom %s.atom id x y z' % filepath)
+        
+            with open('%s.atom' % filepath, 'r') as file:
+                lines = file.readlines()
 
-        filename = 'New_Depth_%d' % (len(he_lst) - 1)
-        filepath  = os.path.join(folder, filename)
+            with open('%s.atom' % filepath, 'w') as file:
+                file.write(lines[3])
+                file.writelines(lines[9:])
+    print('2')
 
-        lmp.command('write_data %s.data' % filepath)
-        lmp.command('write_dump all custom %s.atom id x y z' % filepath)
-    
-    if add_bool == True and me == 0:
-        with open('%s.atom' % filepath, 'r') as file:
-            lines = file.readlines()
-
-        with open('%s.atom' % filepath, 'w') as file:
-            file.write(lines[3])
-            file.writelines(lines[9:])
     comm.barrier()
 
     lmp.close()
