@@ -7,8 +7,9 @@ import os
 from Handle_Dictionaries import data_dict
 import sys 
 from Lmp_PDefect import Point_Defect
-import psutil
+import time
 import numpy as np
+from Simulate_Defect_Set import sim_defect_set
 
 # Main Function, which takes in each core separetly
 def worker_function(proc, machine, max_time):
@@ -76,18 +77,21 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
 
-    
     # Init Optimization Parameter
-    
-    # Init Optimization Parameter
-    t_iter *= len(ref_formations)
+    t1 = time.perf_counter()
+    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine)
+    t2 = time.perf_counter()
+
+    t_iter = 1.25*(t2 - t1)
+
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
 
     T_max = 3600*max_time
 
     N_samples = int(T_max//t_iter)
 
-    print('The number of divisions made on each dim: %.2f' % N_samples**(1/n_params))
+    if proc == 0:
+        print('The number of Samples: %.2f' % N_samples)
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
