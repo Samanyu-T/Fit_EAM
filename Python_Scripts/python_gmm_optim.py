@@ -36,7 +36,7 @@ def main(machine, max_time):
     t2 = time.perf_counter()
 
     if me == 0:
-        print('Random Sampling took %.2f s \n Start GMM Clustering' % (t2 - t1))
+        print('\n Random Sampling took %.2f s \n Start GMM Clustering' % (t2 - t1))
         sys.stdout.flush()  
 
     t1 = time.perf_counter()
@@ -54,7 +54,7 @@ def main(machine, max_time):
     t2 = time.perf_counter()
 
     if me == 0:
-        print('Clustering took %.2f s \n Start Gaussian Sampling' % (t2 - t1))
+        print('\n Clustering took %.2f s \n Start Gaussian Sampling' % (t2 - t1))
         sys.stdout.flush()  
 
     t1 = time.perf_counter()
@@ -70,7 +70,7 @@ def main(machine, max_time):
     comm.barrier()
 
     if me == 0:
-        print('Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
+        print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
         sys.stdout.flush()  
 
     try:
