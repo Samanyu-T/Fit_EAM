@@ -67,11 +67,9 @@ if __name__ == '__main__':
 
     nprocs = comm.Get_size() 
 
-    print(me)
-
     if me == 0:
         print('Start on %d Procs' % nprocs)
-    
+        sys.stdout.flush()  
     comm.barrier()
     
     with open(sys.argv[1], 'r') as json_file:

@@ -63,7 +63,7 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
     if len(he_idx) > 0:
 
-        id = comm.bcast(id, me)
+        id = comm.bcast(id, root=me)
         xyz = comm.bcast(xyz, me)
 
         for i in range(len(he_lst)):

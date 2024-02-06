@@ -3,6 +3,7 @@ import numpy as np
 import psutil
 import os
 import glob
+import sys
 def main():
     data_lst = []
 
@@ -25,13 +26,17 @@ def main():
     cpu_cores = psutil.cpu_count(logical=False)  # logical=False gives you physical cores
 
     print(f"The process is using {cpu_cores} core(s).")
+    sys.stdout.flush()  
 
     cmp = 1
     gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=0.1)
     gmm.fit(data)
     bic_val = gmm.bic(data)
     bic_val_prev = bic_val
+
     print(cmp, bic_val)
+    sys.stdout.flush()  
+
     while True:
 
         cmp += 1
@@ -45,6 +50,8 @@ def main():
             break
 
     print(cmp - 1)
+    sys.stdout.flush()
+      
     gmm = GaussianMixture(n_components=cmp - 1 , covariance_type='full')
     gmm.fit(data)
 
