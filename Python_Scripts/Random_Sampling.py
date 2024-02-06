@@ -7,8 +7,8 @@ import os
 from Handle_Dictionaries import data_dict
 import sys 
 from Lmp_PDefect import Point_Defect
-import psutil
-
+from Simulate_Defect_Set import sim_defect_set
+import time
 # Main Function, which takes in each core separetly
 def worker_function(proc, machine, max_time):
     
@@ -30,7 +30,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
-    t_iter = lmp_inst.Perfect_Crystal()
+    t_perfect = lmp_inst.Perfect_Crystal()
 
     # Init Output locations
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
@@ -77,7 +77,12 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 
     
     # Init Optimization Parameter
-    t_iter *= len(ref_formations)
+    t1 = time.perf_counter()
+    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine)
+    t2 = time.perf_counter()
+
+    t_iter = 1.25*(t2 - t1)
+
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
 
     T_max = 3600*max_time

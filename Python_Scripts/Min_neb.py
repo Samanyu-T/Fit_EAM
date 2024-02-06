@@ -7,7 +7,7 @@ import os
 
 def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
-    lmp = lammps(name = machine) #,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -51,17 +51,31 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
     lmp.command('minimize 1e-15 1e-18 1000 10000')
 
     N = lmp.get_natoms()
+    add_bool = True
+    he_idx = None
+    pe = None
 
     id = lmp.numpy.extract_atom('type')
     xyz = lmp.numpy.extract_atom('x')
 
     he_idx= np.where(id == 3)[0]
-    pe = lmp.get_thermo('pe')
-    add_bool = True
 
-    for i in range(len(he_lst)):
-        if np.linalg.norm( he_lst[i] - he_idx[0] ) < 0.5:
-            add_bool = False
+    pe = lmp.get_thermo('pe')
+
+    root = 0
+
+    if len(he_idx) > 0:
+        for i in range(len(he_lst)):
+            print(read_file, he_lst,he_idx)
+            if np.linalg.norm( he_lst[i] - xyz[he_idx[0]] ) < 0.5:
+                add_bool = False
+
+        root = comm.bcast(me, me)
+
+    print(root)
+    add_bool = comm.bcast(add_bool, root)
+    he_idx  = comm.bcast(he_idx, root)
+    pe  = comm.bcast(pe, root)
 
     if add_bool:
         he_lst.append(he_idx)
@@ -74,14 +88,16 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
         lmp.command('write_data %s.data' % filepath)
         lmp.command('write_dump all custom %s.atom id x y z' % filepath)
-
+    
+    if add_bool == True and me == 0:
         with open('%s.atom' % filepath, 'r') as file:
             lines = file.readlines()
 
         with open('%s.atom' % filepath, 'w') as file:
             file.write(lines[3])
             file.writelines(lines[9:])
-    
+    comm.barrier()
+
     lmp.close()
     return he_lst, pe_lst
 

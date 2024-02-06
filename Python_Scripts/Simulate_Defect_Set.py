@@ -1,4 +1,3 @@
-from flask.scaffold import _matching_loader_thinks_module_is_package
 from Lmp_PDefect import Point_Defect
 import json
 import numpy as np

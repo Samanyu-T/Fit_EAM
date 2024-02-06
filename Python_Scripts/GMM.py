@@ -7,7 +7,7 @@ import glob
 def main():
     data_lst = []
 
-    file_pattern = '../W-He_102/Random_Sampling/Core_*/Filtered_Samples.txt'
+    file_pattern = '../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt'
     # file_pattern = '../W-He_102/Core*/Sample/Filtered_Samples.txt'
 
     for file in glob.glob(file_pattern):
