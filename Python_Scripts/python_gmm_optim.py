@@ -18,6 +18,10 @@ def main(machine, max_time):
     bool_fit['H-He'] = False
     bool_fit['He-He'] = False
 
+    if me == 0:
+        print('Start Random Sampling')
+        sys.stdout.flush()  
+
     try:
         Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
     except Exception as e:
@@ -26,6 +30,10 @@ def main(machine, max_time):
                 error_file.write(str(e))
 
     comm.barrier()
+
+    if me == 0:
+        print('Start GMM Clustering')
+        sys.stdout.flush()  
 
     try:
         if me == 0:
@@ -37,6 +45,11 @@ def main(machine, max_time):
 
     comm.barrier()
 
+
+    if me == 0:
+        print('Start Gaussian Sampling')
+        sys.stdout.flush()  
+
     try:
         Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
     except Exception as e:
@@ -45,6 +58,10 @@ def main(machine, max_time):
                 error_file.write(str(e))
 
     comm.barrier()
+
+    if me == 0:
+        print('Start Simplex')
+        sys.stdout.flush()  
 
     try:
         Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
