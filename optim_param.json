@@ -1,4 +1,4 @@
 {
-    "machine": "",
-    "max_time": 1
+    "machine": "serial",
+    "max_time": 6
 }
