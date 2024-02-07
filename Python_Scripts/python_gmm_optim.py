@@ -1,7 +1,5 @@
 from random import sample
-from re import L
 from mpi4py import MPI
-from sympy import use
 import Random_Sampling
 import Gaussian_Sampling
 import Simplex
