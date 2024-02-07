@@ -88,7 +88,7 @@ def main(machine, max_time):
             lst_loss.append(np.loadtxt('%s/Filtered_Loss.txt' % folder, usecols=1))
             lst_samples.append(np.loadtxt('%s/Filtered_Samples.txt' % folder))
 
-        loss = np.vstack(lst_loss)
+        loss = np.hstack(lst_loss).reshape(-1, 1)
         samples = np.vstack(lst_samples)
 
         N_simplex = 5 
@@ -114,7 +114,7 @@ def main(machine, max_time):
 
         else:
             part = N_simplex
-            sort_idx = np.argsort(loss)
+            sort_idx = np.argsort(loss).flatten()
             loss = loss[sort_idx]
             samples = samples[sort_idx]
 
