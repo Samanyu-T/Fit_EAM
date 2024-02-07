@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline, PchipInterpolator
 import sys
+import os
+import glob
 from scipy.signal import find_peaks
 def Spline(x, y, bool):
     x_filtered = [x[0]]
@@ -25,7 +27,7 @@ def Spline(x, y, bool):
 
 def main(potfile, N_images):
 
-    bulk_tet = np.loadtxt('Test_Data/Bulk_tet.txt')
+    bulk_tet = np.loadtxt('../Test_Data/Bulk_tet.txt')
     
     potname = potfile.split('/')[-2]
     
@@ -35,8 +37,8 @@ def main(potfile, N_images):
     for i, orient in enumerate(['100', '110', '111']):
 
         lst = []
-        for j in range(int(N_images) - 1):
-            lst.append(np.loadtxt('Test_Data/surface%d_%s.txt' % (j,orient)))
+        for file in glob.glob('../Test_Data/%s/*.txt' % orient):
+            lst.append(np.loadtxt(file))
 
         data = np.vstack(lst)
 
@@ -68,7 +70,7 @@ def main(potfile, N_images):
         axs[0,i].set_xlabel('Depth/A')
         axs[0,i].set_ylabel('Formation Energy/eV')
 
-    data = np.loadtxt('Test_Data/tet_tet.txt')
+    data = np.loadtxt('../Test_Data/Bulk/tet_tet.txt')
     data[:,1] -= data[0,1]
 
     x = data[:,0]
@@ -85,7 +87,7 @@ def main(potfile, N_images):
     axs[1,0].set_ylabel('Formtation Energy /eV')
     axs[1,0].set_title('Migration of a Helium interstitial in bulk Tungsten: tet-tet')
 
-    data = np.loadtxt('Test_Data/tet_oct.txt')
+    data = np.loadtxt('../Test_Data/Bulk/tet_oct.txt')
     data[:,1] -= data[0,1]
 
     x = data[:,0]
@@ -134,7 +136,8 @@ def main(potfile, N_images):
 
     fig.tight_layout()
 
-    fig.savefig('Test_Data/Test_Graphs/%s.png' % potname)
+    os.makedirs('../Test_Data/Test_Graphs')
+    fig.savefig('../Test_Data/Test_Graphs/%s.png' % potname)
 
     plt.show()
 

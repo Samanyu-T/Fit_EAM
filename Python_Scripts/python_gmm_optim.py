@@ -1,4 +1,7 @@
+from random import sample
+from re import L
 from mpi4py import MPI
+from sympy import use
 import Random_Sampling
 import Gaussian_Sampling
 import Simplex
@@ -6,7 +9,8 @@ import GMM
 import sys
 import json
 import time
-
+import glob
+import numpy as np
 def main(machine, max_time):
 
     n_knots = [1,0,2]
@@ -23,6 +27,8 @@ def main(machine, max_time):
         print('Start Random Sampling')
         sys.stdout.flush()  
 
+    comm.barrier()
+
     t1 = time.perf_counter()
 
     try:
@@ -32,12 +38,13 @@ def main(machine, max_time):
             with open('../Error/random.txt', 'w') as error_file:
                 error_file.write(str(e))
 
-    comm.barrier()
     t2 = time.perf_counter()
 
     if me == 0:
         print('\n Random Sampling took %.2f s \n Start GMM Clustering' % (t2 - t1))
         sys.stdout.flush()  
+
+    comm.barrier()
 
     t1 = time.perf_counter()
 
@@ -57,6 +64,8 @@ def main(machine, max_time):
         print('\n Clustering took %.2f s \n Start Gaussian Sampling' % (t2 - t1))
         sys.stdout.flush()  
 
+    comm.barrier()
+
     t1 = time.perf_counter()
 
     try:
@@ -73,6 +82,51 @@ def main(machine, max_time):
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
         sys.stdout.flush()  
 
+        folders = glob.glob('../W-He_102/Gaussian_Samples/Core_*')
+
+        lst_samples = []
+        lst_loss = []
+        for folder in folders:
+            lst_loss.append(np.loadtxt('%s/Filtered_Loss.txt' % folder, usecols=1))
+            lst_samples.append(np.loadtxt('%s/Filtered_Samples.txt' % folder))
+
+        loss = np.vstack(lst_loss)
+        samples = np.vstack(lst_samples)
+
+        N_simplex = 5 
+
+        if nprocs >= len(loss):
+
+            for i in range(len(loss)):
+                np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[i])
+
+            for i in range(len(loss), nprocs):
+                with open('%s/Simplex_Init.txt', 'w') as file:
+                    file.write('')
+
+        elif len(loss) > nprocs and N_simplex*nprocs > len(loss):
+            part = len(loss) // nprocs
+            idx = 0
+
+            for i in range(nprocs - 1):
+                np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx: idx + part])
+                idx += part
+
+            np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx:])
+
+        else:
+            part = N_simplex
+            sort_idx = np.argsort(loss)
+            loss = loss[sort_idx]
+            samples = samples[sort_idx]
+
+            idx = 0
+            for i in range(nprocs):
+                np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx: idx + part])
+                idx += part
+
+    comm.barrier()
+
     try:
         Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
     except Exception as e:
@@ -87,6 +141,7 @@ def main(machine, max_time):
 if __name__ == '__main__':
     global comm
     global me
+    global nprocs
 
     comm = MPI.COMM_WORLD
 

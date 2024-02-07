@@ -29,7 +29,7 @@ def main():
     sys.stdout.flush()  
 
     cmp = 1
-    gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=0.1)
+    gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=1e-6)
     gmm.fit(data)
     bic_val = gmm.bic(data)
     bic_val_prev = bic_val
@@ -41,7 +41,7 @@ def main():
 
         cmp += 1
         bic_val_prev = bic_val
-        gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=0.1)
+        gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=1e-6)
         gmm.fit(data)
         bic_val = gmm.bic(data)
         print(cmp, bic_val, bic_val_prev)

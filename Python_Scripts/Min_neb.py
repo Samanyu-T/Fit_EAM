@@ -4,6 +4,8 @@ from mpi4py import MPI
 import itertools
 import copy 
 import os 
+import glob
+import sys
 
 def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
@@ -65,11 +67,11 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
     if len(he_idx) > 0:
 
-        print(he_lst, xyz[he_idx[0]])
+        # print(he_lst, xyz[he_idx[0]])
 
         for i in range(len(he_lst)):
 
-            if np.linalg.norm( he_lst[i][-1] - xyz[he_idx[0]][-1] ) < 0.5:
+            if np.linalg.norm( he_lst[i][-1] - xyz[he_idx[0]][-1]) < 0.4:
                 add_bool = False
         
         if add_bool:
@@ -114,6 +116,11 @@ def lmp_minimize(init_file, read_file, potfile, he_lst, pe_lst, machine = ''):
 
 if __name__ == '__main__':
 
+    if len(sys.argv) > 1:
+        potfile = sys.argv[1]
+    else:
+        potfile = 'Potentials/WHHe_test.eam.alloy'
+
     global comm
     global me
     global mode
@@ -143,20 +150,80 @@ if __name__ == '__main__':
                       if os.path.isdir(os.path.join(surface_folder, folder))]
 
     for orient_folder in lst_orient_folders:
+        he_lst = []
+        pe_lst = []
         init_file = os.path.join(orient_folder, 'Depth_0.data')
 
         lst_neb_folders =  [os.path.join(orient_folder, folder) for folder in os.listdir(orient_folder)
-                        if os.path.isdir(os.path.join(orient_folder, folder))]
+                        if os.path.isdir(os.path.join(orient_folder, folder)) and not folder.startswith('new')]
         
-        sorted_idx = np.argsort(np.array([int(os.path.basename(folder).split('_')[0]) for folder in lst_neb_folders])).astype('int')
-
+        sorted_idx = np.argsort(np.array([int(os.path.basename(folder).split('_')[0]) for folder in lst_neb_folders] )).astype('int')
+        
         sorted_neb_folders = [lst_neb_folders[i] for i in sorted_idx]
-        
+
+        # print(sorted_neb_folders)
+
         for neb_folder in sorted_neb_folders:
 
             lst_neb_files = sorted([os.path.join(neb_folder,file) for file in os.listdir(neb_folder) if file.startswith('neb')])
             for neb_file in lst_neb_files:
-                he_lst, pe_lst = lmp_minimize(init_file, neb_file, 'Potentials/WHHe_test.eam.alloy', he_lst, pe_lst)
+                he_lst, pe_lst = lmp_minimize(init_file, neb_file, potfile, he_lst, pe_lst)
+
+        if me == 0:
+            neb_script_folder = os.path.join('../Lammps_Scripts' , orient_folder.split('/')[-1])
+
+            if not os.path.exists(neb_script_folder):
+                os.makedirs(neb_script_folder)      
+
+            new_neb_files = glob.glob(os.path.join(orient_folder,'New_Depth_*.data'))
+
+            for i in range(len(new_neb_files)):
+
+                if not os.path.exists(os.path.join(orient_folder, 'new_%d_%d' % (i, i + 1))):
+                    os.mkdir(os.path.join(orient_folder, 'new_%d_%d' % (i, i + 1)))
+
+                txt = '''
+units metal 
+
+atom_style atomic
+
+atom_modify map array sort 0 0.0
+
+read_data %s
+
+mass 1 183.84
+
+mass 2 1.00784
+
+mass 3 4.002602
+
+pair_style eam/alloy
+
+pair_coeff * * %s W H He
+
+thermo 10
+
+run 0
+
+fix 1 all neb 1e-4
+
+timestep 1e-3
+
+min_style quickmin
+
+thermo 100 
+
+variable i equal part
+
+neb 10e-8 10e-10 5000 5000 100 final %s
+
+write_dump all custom %s/neb.$i.dump id type x y z ''' % (new_neb_files[i], potfile, 
+                                                          os.path.join(orient_folder, 'New_Depth_%d.atom' % (i +1)), 
+                                                          os.path.join(orient_folder, 'new_%d_%d' % (i, i + 1)))
+                
+                with open(os.path.join(neb_script_folder, 'surface-new_%d_%d.neb' % (i, i + 1)), 'w') as file:
+                    file.write(txt)
+            
 
     if mode == 'MPI':
         MPI.Finalize()

@@ -33,9 +33,6 @@ def optimize(n_knots, bool_fit, proc, machine):
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
-    # Init a Perfect Tungsten Crystal as a starting point
-    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
-    t_iter = lmp_inst.Perfect_Crystal()
 
     # Init Output locations
     param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
@@ -94,8 +91,7 @@ def optimize(n_knots, bool_fit, proc, machine):
     final_optima['Optima'] = []
     final_optima['Loss'] = []
 
-    # datafile = os.path.join(param_folder, 'Random_Samples', 'Core_%d' % proc ,'Filtered_Samples.txt')
-    datafile = os.path.join(param_folder, 'Core_%d' % proc ,  'Sample', 'Filtered_Samples.txt')
+    datafile = os.path.join(param_folder, 'Gaussian_Samples' , 'Core_%d' % proc ,  'Simplex_Init.txt')
 
     if os.path.getsize(datafile) > 0:
 

@@ -105,8 +105,11 @@ variable i equal part
 neb 10e-8 10e-10 5000 5000 100 final %s
 
 write_dump all custom %s/neb.$i.dump id type x y z ''' % (init_pos, potfile, final_pos, neb_folder)
+    
+    if not os.path.exists('../Lammps_Scripts/%s' % orient):
+        os.makedirs('../Lammps_Scripts/%s' % orient, exist_ok=True)
 
-    with open('Lammps_Scripts/surface%d_%s.neb' % (i-1, orient), 'w') as file:
+    with open('../Lammps_Scripts/%s/surface-%d_%d.neb' % (orient, i-1, i), 'w') as file:
         file.write(txt)
 
 
@@ -224,7 +227,7 @@ def main(potfile, N_images):
 
         
         for pos_type in ['tet_2', 'oct']:
-            neb_folder = '../Lammps_Dump/Bulk/%s' % pos_type
+            neb_folder = '../Lammps_Dump/Bulk/%s' % pos_type.split('_')[0]
             os.makedirs(neb_folder, exist_ok=True)
 
             txt = '''
@@ -264,7 +267,10 @@ neb 1e-8 1e-10 5000 5000 100 final ../Lammps_Dump/Bulk/%s.atom
 
 write_dump all custom %s/neb.$i.dump id type x y z ''' % (potfile, pos_type, neb_folder)
 
-            with open('Lammps_Scripts/tet_%s.neb' % pos_type, 'w') as file:
+            if not os.path.exists('../Lammps_Scripts/Bulk'):
+                os.makedirs('../Lammps_Scripts/Bulk', exist_ok=True)
+            
+            with open('../Lammps_Scripts/Bulk/tet_%s.neb' % pos_type, 'w') as file:
                 file.write(txt)
 
     comm.barrier()

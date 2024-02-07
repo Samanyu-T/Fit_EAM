@@ -82,7 +82,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine)
     t2 = time.perf_counter()
 
-    t_iter = 2*(t2 - t1)
+    t_iter = (t2 - t1)
 
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
 
@@ -91,7 +91,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     N_samples = int(T_max//t_iter)
 
     if proc == 0:
-        print('The number of Samples: %.2f' % N_samples)
+        print('The Approximate number of Samples: %d \n Number of Dimensions: %d' % (N_samples, n_params))
+        sys.stdout.flush()    
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
@@ -110,7 +111,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     mean = np.loadtxt('%s/GMM/Mean_%d.txt' % (param_folder, select))
     cov = np.loadtxt('%s/GMM/Cov_%d.txt' % (param_folder, select))
 
-    gaussian_sampling(ref_formations, fitting_class, N_samples=N_samples, output_folder=core_folder, mean=mean, cov=cov)
+    gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 
 if __name__ == '__main__':
 

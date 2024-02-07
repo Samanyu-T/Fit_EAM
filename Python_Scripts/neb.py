@@ -23,28 +23,36 @@ def p_fit(x, y):
 def p_val(a, x):
     return np.sum(np.array([[a[i]*x[j]**i for i in range(len(a))] for j in range(len(x))]), axis = 1)
 
-def main(filename, proc):
+def main(filepath, n_proc):
 
-    name = filename.split('/')[-1].split('.')[0]
+    path_split = filepath.split('/')
+    filename = path_split[-1].split('.')[0]
+    type = path_split[-2]
+
+    if type[0] == '1':
+        neb_dump_loc = filename.split('-')[-1]
+    else:
+        neb_dump_loc = filename
 
     with open('log.lammps', 'r') as file:
         log = file.readlines()
 
-    n = proc
+    val = log[-1].split()[-2*n_proc:]
 
-    val = log[-1].split()[-2*n:]
+    data = np.array([float(x) for x in val]).reshape(n_proc, 2)
 
-    data = np.array([float(x) for x in val]).reshape(n, 2)
-
-    if name[0] == 's':
-        for i in range(n):
-            read = np.loadtxt('Lammps_Dump/Neb/neb.%i.dump' % i, skiprows=9)
+    if filename[0] == 's':
+        for i in range(n_proc):
+            read = np.loadtxt('../Lammps_Dump/Surface/%s/%s/neb.%i.dump' % (type, neb_dump_loc, i), skiprows=9)
 
             idx = np.where(read[:,1] == 3)[0]
 
             data[i,0] = read[idx, -1][0]
-    
-    np.savetxt(os.path.join('Test_Data',name + '.txt'), data)
+
+    if not os.path.exists('../Test_Data/%s' % type):
+        os.makedirs('../Test_Data/%s' % type, exist_ok=True)
+
+    np.savetxt(os.path.join('../Test_Data', type, filename + '.txt'), data)
 
 if __name__ == '__main__':
 
