@@ -85,7 +85,7 @@ def main(machine, max_time):
         lst_samples = []
         lst_loss = []
         for folder in folders:
-            lst_loss.append(np.loadtxt('%s/Filtered_Loss.txt' % folder, usecols=1))
+            lst_loss.append(np.loadtxt('%s/Filtered_Loss.txt' % folder))
             lst_samples.append(np.loadtxt('%s/Filtered_Samples.txt' % folder))
 
         loss = np.hstack(lst_loss).reshape(-1, 1)
