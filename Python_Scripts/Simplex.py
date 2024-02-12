@@ -122,7 +122,7 @@ def optimize(n_knots, bool_fit, proc, machine):
                 file.write('')
 
             maxiter = 1000
-            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter})
+            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter, 'tol':1e-6})
 
             # Write final optima to the output file
             final_optima['Optima'].append(x_star.x.tolist())
