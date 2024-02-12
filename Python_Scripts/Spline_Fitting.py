@@ -309,9 +309,12 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
 
     # Soft Constraint to ensure correct ordering of formation energies and relaxation volumes
     loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
+    
     loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
-    loss +=  100*( np.round(test_formations['V0H0He1']['val'],3) > np.round(test_formations['V0H0He1_inter']['val'], 3) )
-    loss +=  100*( test_formations['V0H0He1_inter']['val'] > test_formations['V0H0He1_oct']['val'])
+    loss +=  100*( np.abs(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_inter']['val']) > 0.05 )
+    loss +=  100*( np.abs(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_inter2']['val']) > 0.05 )
+    # loss +=  100*( np.round(test_formations['V0H0He1']['val'],3) > np.round(test_formations['V0H0He1_inter']['val'], 3) )
+
 
     # Quadratic Loss of Binding Energies
     for i in range(len(ref_binding)):
@@ -323,44 +326,44 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
 
     # Write the Loss and the Sample Data to files for archiving
-    with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
+    # with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
 
-        file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
-                                                 test_formations['V0H0He1']['val'], 
-                                                 test_formations['V0H0He1_inter']['val'], 
-                                                 test_formations['V0H0He1_oct']['val']
+    #     file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
+    #                                              test_formations['V0H0He1']['val'], 
+    #                                              test_formations['V0H0He1_inter']['val'], 
+    #                                              test_formations['V0H0He1_oct']['val']
                                             
-                                                 )
-                  )
-        np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
+    #                                              )
+    #               )
+    #     np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
 
-        file.write('Vacancy_Binding: ')
+    #     file.write('Vacancy_Binding: ')
         
-        np.savetxt(file, test_binding[1] - ref_binding[1], fmt = '%f', newline= ' ')
+    #     np.savetxt(file, test_binding[1] - ref_binding[1], fmt = '%f', newline= ' ')
 
-        file.write('Di-Vacancy_Binding: ')
+    #     file.write('Di-Vacancy_Binding: ')
         
-        np.savetxt(file, test_binding[2] - ref_binding[2], fmt = '%f', newline= ' ')
+    #     np.savetxt(file, test_binding[2] - ref_binding[2], fmt = '%f', newline= ' ')
 
-        file.write('Rvol: %f %f %f' % 
-                   (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'],
-                    test_formations['V0H0He1_oct']['rvol'] - ref_formations['V0H0He1_oct']['rvol'],
-                    test_formations['V1H0He1']['rvol'] - ref_formations['V1H0He1']['rvol']
-                    )
-                   )
+    #     file.write('Rvol: %f %f %f' % 
+    #                (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'],
+    #                 test_formations['V0H0He1_oct']['rvol'] - ref_formations['V0H0He1_oct']['rvol'],
+    #                 test_formations['V1H0He1']['rvol'] - ref_formations['V1H0He1']['rvol']
+    #                 )
+    #                )
 
-        # Add a newline character at the end
-        file.write('\n')
+    #     # Add a newline character at the end
+    #     file.write('\n')
     
-    sample_filename = 'samples.txt'
+    # sample_filename = 'samples.txt'
 
-    if genetic:
-        sample_filename = 'population.txt'
+    # if genetic:
+    #     sample_filename = 'population.txt'
 
-    with open(os.path.join(output_folder, sample_filename), 'a') as file:
-        np.savetxt(file, sample, fmt = '%f', newline=' ')
-        file.write('\n')
-    t2 = time.perf_counter()
+    # with open(os.path.join(output_folder, sample_filename), 'a') as file:
+    #     np.savetxt(file, sample, fmt = '%f', newline=' ')
+    #     file.write('\n')
+    # t2 = time.perf_counter()
 
     # print(t2 - t1)
     return loss

@@ -83,6 +83,12 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0):
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
 
+
+    ref_formations['V0H0He1_inter2'] = {}
+    ref_formations['V0H0He1_inter2']['val'] = None
+    ref_formations['V0H0He1_inter2']['rvol'] = None
+    ref_formations['V0H0He1_inter2']['pos'] = [[], [], [[3.375, 3.375, 3]]]
+
     # Init Optimization Parameter
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine)

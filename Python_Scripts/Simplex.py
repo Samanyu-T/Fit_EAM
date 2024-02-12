@@ -79,10 +79,17 @@ def optimize(n_knots, bool_fit, proc, machine):
     ref_formations['V0H0He1_oct']['pos'] = [[], [], [[3.5, 3.5, 3]]]
 
     
+    
     ref_formations['V0H0He1_inter'] = {}
     ref_formations['V0H0He1_inter']['val'] = None
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
+
+
+    ref_formations['V0H0He1_inter2'] = {}
+    ref_formations['V0H0He1_inter2']['val'] = None
+    ref_formations['V0H0He1_inter2']['rvol'] = None
+    ref_formations['V0H0He1_inter2']['pos'] = [[], [], [[3.375, 3.375, 3]]]
 
 
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
