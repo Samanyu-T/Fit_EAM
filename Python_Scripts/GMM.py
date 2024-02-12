@@ -4,7 +4,7 @@ import psutil
 import os
 import glob
 import sys
-def main(file_pattern):
+def main(file_pattern, iter):
     data_lst = []
 
     # file_pattern = '../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt'
@@ -66,4 +66,4 @@ def main(file_pattern):
         np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], 0)

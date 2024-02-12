@@ -1,3 +1,4 @@
+from re import S
 import numpy as np
 from lammps import lammps
 from mpi4py import MPI
@@ -53,7 +54,7 @@ class Point_Defect():
             self.surface = 0
             self.depth = size//2
 
-        self.defect_pos = np.array([self.size//2, self.size//2, self.depth])
+        self.defect_pos = np.array([0, 0, 0])
 
         self.potfile = potfile
         
@@ -119,6 +120,7 @@ class Point_Defect():
         t2  = time.perf_counter()
 
         return t2 - t1
+    
     def Build_Defect(self, xyz_inter = [[], [], []]):
 
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
@@ -194,9 +196,10 @@ class Point_Defect():
 
         # # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        lmp.command('minimize 1e-1 1e-9 10 10')
-        lmp.command('minimize 1e-2 1e-9 100 100')
-        lmp.command('minimize 1e-3 1e-9 1000 1000')
+        lmp.command('minimize 1e-9 1e-12 10 10')
+        lmp.command('minimize 1e-9 1e-12 100 100')
+        lmp.command('minimize 1e-9 1e-12 1000 1000')
+
         
         pe = lmp.get_thermo('pe')
 
@@ -234,12 +237,114 @@ class Point_Defect():
                 idx += 1
 
 
+        lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
+
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
         
         return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume, xyz_inter_relaxed
     
+    def Find_Min_Config(self, init_config, atom_to_add = 3):
+
+        sites = self.get_all_sites()
+
+        lmp = lammps(name = self.machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        
+        lmp.command('# Lammps input file')
+
+        lmp.command('units metal')
+
+        lmp.command('atom_style atomic')
+
+        lmp.command('atom_modify map array sort 0 0.0')
+
+        lmp.command('read_data Lammps_Dump/%s.data' % init_config)
+
+        lmp.command('pair_style eam/alloy' )
+
+        lmp.command('pair_coeff * * %s W H He' % self.potfile)
+
+        lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
+
+        N = lmp.get_natoms()
+
+        pe_lst = []
+        pos_lst = []
+
+        for site_type in sites:
+            for site in sites[site_type]:
+
+                lmp.command('create_atoms %d single %f %f %f units lattice' % (atom_to_add, site[0], site[1], site[2]))
+
+                lmp.command('run 0')
+
+                pe_lst.append(lmp.get_thermo('pe'))
+                pos_lst.append(site)
+
+                lmp.command('group delete id %d' % N)
+
+                lmp.command('delete_atoms group delete')
+
+        pe_arr = np.array(pe_lst)
+
+        min_idx = pe_arr.argmin()
+
+        lmp.command('create_atoms %d single %f %f %f units lattice' % 
+                    (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
+
+        lmp.command('minimize 1e-9 1e-12 10 10')
+        lmp.command('minimize 1e-9 1e-12 100 100')
+        lmp.command('minimize 1e-9 1e-12 1000 1000')
+
+        pe = lmp.get_thermo('pe')
+
+        pxx = lmp.get_thermo('pxx')
+        pyy = lmp.get_thermo('pyy')
+        pzz = lmp.get_thermo('pzz')
+        pxy = lmp.get_thermo('pxy')
+        pxz = lmp.get_thermo('pxz')
+        pyz = lmp.get_thermo('pyz')
+
+        n_inter = [int(init_config[1]), int(init_config[3]), int(init_config[-1])]
+        n_inter[atom_to_add - 1] += 1
+
+        self.vol = lmp.get_thermo('vol')
+
+        self.stress_voigt = np.array([pxx, pyy, pzz, pxy, pxz, pyz]) - self.stress0
+
+        self.strain_tensor = self.find_strain()
+
+        self.relaxation_volume = 2*np.trace(self.strain_tensor)*self.vol/self.alattice**3
+
+        pe = lmp.get_thermo('pe')
+
+        xyz_system = np.array(lmp.gather_atoms('x',1,3))
+
+        xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
+
+        xyz_inter_relaxed = [[],[],[]]
+
+        N_atoms = 2*self.size**3 - self.n_vac
+
+        idx = 0
+
+        for element, n_element in enumerate(n_inter):
+            for i in range(n_element):
+                vec = (xyz_system[N_atoms + idx]/self.alattice)
+                xyz_inter_relaxed[element].append(vec.tolist())
+                idx += 1
+
+
+        lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, n_inter[1], n_inter[2]))
+
+        lmp.close()
+
+        e0 = self.pe0/(2*self.size**3)
+        
+        return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume, xyz_inter_relaxed
+    
+
     def get_octahedral_sites(self):
 
         oct_sites_0 = np.zeros((3,3))
