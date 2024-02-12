@@ -81,7 +81,7 @@ def main(machine, max_time):
 
     ### START GAUSSIAN SAMPLING LOOP ###
     
-    N_gaussian = 5
+    N_gaussian = 3
 
     for i in range(N_gaussian):
 
@@ -124,8 +124,10 @@ def main(machine, max_time):
             print('\n Clustering took %.2f s ' % (t2 - t1))
             sys.stdout.flush()  
 
+    comm.Barrier()
+    
     ### END GAUSSIAN SAMPLING LOOP ###
-
+    exit()
 
 
 
