@@ -78,8 +78,7 @@ def optimize(n_knots, bool_fit, proc, machine):
     ref_formations['V0H0He1_oct']['rvol'] = 0.37
     ref_formations['V0H0He1_oct']['pos'] = [[], [], [[3.5, 3.5, 3]]]
 
-    
-    
+
     ref_formations['V0H0He1_inter'] = {}
     ref_formations['V0H0He1_inter']['val'] = None
     ref_formations['V0H0He1_inter']['rvol'] = None
