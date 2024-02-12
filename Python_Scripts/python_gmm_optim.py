@@ -9,6 +9,7 @@ import json
 import time
 import glob
 import numpy as np
+
 def main(machine, max_time):
 
     n_knots = [1,0,2]
@@ -21,11 +22,14 @@ def main(machine, max_time):
     bool_fit['H-He'] = False
     bool_fit['He-He'] = False
 
+
+
+    ### START RANDOM SAMPLING ###
     if me == 0:
-        print('Start Random Sampling')
+        print('Start Random Sampling \n')
         sys.stdout.flush()  
 
-    comm.barrier()
+    comm.Barrier()
 
     t1 = time.perf_counter()
 
@@ -39,48 +43,98 @@ def main(machine, max_time):
     t2 = time.perf_counter()
 
     if me == 0:
-        print('\n Random Sampling took %.2f s \n Start GMM Clustering' % (t2 - t1))
+        print('Random Sampling took %.2f s \n' % (t2 - t1))
+        sys.stdout.flush()  
+    ### END RANDOM SAMPLING ###
+
+    comm.Barrier()
+
+
+
+    ### START CLUSTERING ALGORITHM ###
+    if me == 0:
+        print('Start GMM Clustering \n')
         sys.stdout.flush()  
 
-    comm.barrier()
+    comm.Barrier()
 
     t1 = time.perf_counter()
 
     try:
         if me == 0:
-            GMM.main()
+            GMM.main('../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt', 0)
     except Exception as e:
         if me == 0:
             with open('../Error/gmm.txt', 'w') as error_file:
                 error_file.write(str(e))
 
-    comm.barrier()
-
     t2 = time.perf_counter()
 
     if me == 0:
-        print('\n Clustering took %.2f s \n Start Gaussian Sampling' % (t2 - t1))
+        print('\n Clustering took %.2f s ' % (t2 - t1))
         sys.stdout.flush()  
 
-    comm.barrier()
+    ### END CLUSTERING ALGORITHM ###
+        
+    comm.Barrier()
 
-    t1 = time.perf_counter()
 
-    try:
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
-    except Exception as e:
+
+    ### START GAUSSIAN SAMPLING LOOP ###
+    
+    N_gaussian = 5
+
+    for i in range(N_gaussian):
+
         if me == 0:
-            with open('../Error/gaussian.txt', 'w') as error_file:
-                error_file.write(str(e))
-    t2 = time.perf_counter()
+            print('Start Gaussian Sampling %dth iteration' % i)
+            sys.stdout.flush()  
 
-    comm.barrier()
+        comm.Barrier()
+
+        t1 = time.perf_counter()
+
+        try:
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i)
+        except Exception as e:
+            if me == 0:
+                with open('../Error/gaussian.txt', 'w') as error_file:
+                    error_file.write(str(e))
+
+        t2 = time.perf_counter()
+
+        if me == 0:
+            print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
+            sys.stdout.flush()  
+
+        comm.Barrier()
+
+        t1 = time.perf_counter()
+
+        try:
+            if me == 0:
+                GMM.main('../W-He_102/Gaussian_Samples_%d/Core_*/Filtered_Samples.txt' % i, i + 1)
+        except Exception as e:
+            if me == 0:
+                with open('../Error/gmm.txt', 'w') as error_file:
+                    error_file.write(str(e))
+
+        t2 = time.perf_counter()
+
+        if me == 0:
+            print('\n Clustering took %.2f s ' % (t2 - t1))
+            sys.stdout.flush()  
+
+        comm.Barrier()
+    ### END GAUSSIAN SAMPLING LOOP ###
+
+
 
     if me == 0:
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
         sys.stdout.flush()  
 
-        folders = glob.glob('../W-He_102/Gaussian_Samples/Core_*')
+        folders = glob.glob('../W-He_102/Gaussian_Samples_%d/Core_*' % (N_gaussian - 1))
 
         lst_samples = []
         lst_loss = []
@@ -123,7 +177,7 @@ def main(machine, max_time):
                 np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx: idx + part])
                 idx += part
 
-    comm.barrier()
+    comm.Barrier()
 
     try:
         Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
@@ -132,16 +186,12 @@ def main(machine, max_time):
             with open('../Error/simplex.txt', 'w') as error_file:
                 error_file.write(str(e))
 
-    comm.barrier()
-
-    MPI.Finalize()
-
 if __name__ == '__main__':
     global comm
     global me
     global nprocs
 
-    comm = MPI.COMM_WORLD
+    comm = MPI.Comm()
 
     me = comm.Get_rank()
 
@@ -150,7 +200,7 @@ if __name__ == '__main__':
     if me == 0:
         print('Start on %d Procs' % nprocs)
         sys.stdout.flush()  
-    comm.barrier()
+    comm.Barrier()
     
     with open(sys.argv[1], 'r') as json_file:
         param_dict = json.load(json_file)

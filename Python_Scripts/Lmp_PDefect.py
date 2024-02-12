@@ -192,11 +192,11 @@ class Point_Defect():
             for xyz in xyz_element:
                 lmp.command('create_atoms %d single %f %f %f units lattice' % (element + 1, xyz[0], xyz[1], xyz[2]))
 
-        # lmp.command('fix 3 all box/relax  aniso 0.0')
+        # # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        lmp.command('minimize 1e-1 1e-9 5 10')
-        lmp.command('minimize 1e-2 1e-9 5 100')
-        lmp.command('minimize 1e-3 1e-9 10 1000')
+        # lmp.command('minimize 1e-1 1e-9 5 10')
+        # lmp.command('minimize 1e-2 1e-9 5 100')
+        # lmp.command('minimize 1e-3 1e-9 1000 1000')
         
         pe = lmp.get_thermo('pe')
 

@@ -4,10 +4,10 @@ import psutil
 import os
 import glob
 import sys
-def main():
+def main(file_pattern):
     data_lst = []
 
-    file_pattern = '../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt'
+    # file_pattern = '../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt'
     # file_pattern = '../W-He_102/Core*/Sample/Filtered_Samples.txt'
 
     for file in glob.glob(file_pattern):
@@ -56,7 +56,7 @@ def main():
     gmm.fit(data)
 
     param_folder = '../W-He_102' 
-    gmm_folder = '%s/GMM' % param_folder
+    gmm_folder = '%s/GMM_%d' % (param_folder, iter)
 
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
@@ -66,4 +66,4 @@ def main():
         np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])

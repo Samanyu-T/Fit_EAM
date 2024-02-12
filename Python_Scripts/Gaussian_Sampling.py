@@ -28,7 +28,7 @@ def worker_function(proc, machine, max_time):
 
         optimize(n_knots, bool_fit, proc, machine, max_time)
 
-def optimize(n_knots, bool_fit, proc, machine, max_time=11):
+def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
@@ -42,7 +42,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
     if not os.path.exists(param_folder):
         os.mkdir(param_folder)
 
-    sample_folder = '%s/Gaussian_Samples' % param_folder
+    sample_folder = '%s/Gaussian_Samples_%d' % (param_folder, iter)
 
     if not os.path.exists(sample_folder):
         os.mkdir(sample_folder)
@@ -108,8 +108,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11):
 
     select = proc % N
     
-    mean = np.loadtxt('%s/GMM/Mean_%d.txt' % (param_folder, select))
-    cov = np.loadtxt('%s/GMM/Cov_%d.txt' % (param_folder, select))
+    mean = np.loadtxt('%s/GMM_%d/Mean_%d.txt' % (param_folder, iter, select))
+    cov = np.loadtxt('%s/GMM_%d/Cov_%d.txt' % (param_folder, iter, select))
 
     gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 
