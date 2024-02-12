@@ -23,7 +23,6 @@ def main(machine, max_time):
     bool_fit['He-He'] = False
 
 
-
     ### START RANDOM SAMPLING ###
     if me == 0:
         print('Start Random Sampling \n')
@@ -128,7 +127,11 @@ def main(machine, max_time):
         comm.Barrier()
     ### END GAUSSIAN SAMPLING LOOP ###
 
-
+    bool_fit['He_F(rho)'] = bool(n_knots[0])
+    bool_fit['He_rho(r)'] = bool(n_knots[1])
+    bool_fit['W-He'] =   bool(n_knots[2])
+    bool_fit['H-He'] = False
+    bool_fit['He-He'] = True
 
     if me == 0:
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))

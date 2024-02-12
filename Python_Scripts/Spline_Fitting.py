@@ -393,8 +393,8 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
 
     n = int( len(lst_loss) * 0.001 )
 
-    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_loss[:n])
-    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_samples[:n])
+    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
+    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
 
 def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, cov, mean):
     
@@ -425,8 +425,8 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
 
     n = int( len(lst_loss) * 0.001 )
 
-    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_loss[:n])
-    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_samples[:n])
+    np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
+    np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
 
 
 

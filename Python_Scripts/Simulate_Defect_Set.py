@@ -10,14 +10,36 @@ def sim_defect_set(potfile, ref_dict, machine):
     test_dict = {}
 
     for key in ref_dict:
-        
-        test_dict[key] = {}
+        n_vac = int(key[1])
+        n_h = int(key[3])
+        n_he = int(key[6])
 
-        lmp_inst.n_vac = int(key[1])
-        ef, rvol, _ = lmp_inst.Build_Defect(ref_dict[key]['pos'])
+        if n_h + n_he <= 1: 
+            test_dict[key] = {}
 
-        test_dict[key]['val'] = ef
-        test_dict[key]['rvol'] = rvol
+            lmp_inst.n_vac = int(key[1])
+            ef, rvol = lmp_inst.Build_Defect(ref_dict[key]['pos'])
+
+            test_dict[key]['val'] = ef
+            test_dict[key]['rvol'] = rvol
+
+        else:
+            atom_to_add = 3
+
+            if n_h > 0:
+                atom_to_add = 2
+
+            if n_he > 1:
+                init_file = 'V%dH%dHe%d' % (n_vac, n_h, n_he-1)
+            else:
+                init_file = 'V%dH%dHe%d' % (n_vac, n_h - 1, n_he)
+
+            lmp_inst.n_vac = int(key[1])
+
+            ef, rvol = lmp_inst.Find_Min_Config(init_file, atom_to_add)
+            test_dict[key] = {}
+            test_dict[key]['val'] = ef
+            test_dict[key]['rvol'] = rvol      
 
     return test_dict
 

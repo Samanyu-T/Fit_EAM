@@ -54,7 +54,7 @@ class Point_Defect():
             self.surface = 0
             self.depth = size//2
 
-        self.defect_pos = np.array([0, 0, 0])
+        self.defect_pos = np.array([size//2, size//2, size//2])
 
         self.potfile = potfile
         
@@ -220,30 +220,13 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        xyz_system = np.array(lmp.gather_atoms('x',1,3))
-
-        xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
-
-        xyz_inter_relaxed = [[],[],[]]
-
-        N_atoms = 2*self.size**3 - self.n_vac
-
-        idx = 0
-
-        for element, xyz_element in enumerate(xyz_inter):
-            for i in range(len(xyz_element)):
-                vec = (xyz_system[N_atoms + idx]/self.alattice)
-                xyz_inter_relaxed[element].append(vec.tolist())
-                idx += 1
-
-
         lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
 
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
         
-        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume, xyz_inter_relaxed
+        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume
     
     def Find_Min_Config(self, init_config, atom_to_add = 3):
 
@@ -268,21 +251,26 @@ class Point_Defect():
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
 
         N = lmp.get_natoms()
+        n_inter = [int(init_config[1]), int(init_config[3]), int(init_config[-1])]
+        n_inter[atom_to_add - 1] += 1
 
         pe_lst = []
         pos_lst = []
 
         for site_type in sites:
             for site in sites[site_type]:
+                
+                site *= self.alattice
 
-                lmp.command('create_atoms %d single %f %f %f units lattice' % (atom_to_add, site[0], site[1], site[2]))
+                lmp.command('create_atoms %d single %f %f %f units box' % (atom_to_add, site[0], site[1], site[2]))
 
                 lmp.command('run 0')
-
+                
                 pe_lst.append(lmp.get_thermo('pe'))
+
                 pos_lst.append(site)
 
-                lmp.command('group delete id %d' % N)
+                lmp.command('group delete id %d' % (N + 1) )
 
                 lmp.command('delete_atoms group delete')
 
@@ -290,7 +278,7 @@ class Point_Defect():
 
         min_idx = pe_arr.argmin()
 
-        lmp.command('create_atoms %d single %f %f %f units lattice' % 
+        lmp.command('create_atoms %d single %f %f %f units box' % 
                     (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
 
         lmp.command('minimize 1e-9 1e-12 10 10')
@@ -306,8 +294,6 @@ class Point_Defect():
         pxz = lmp.get_thermo('pxz')
         pyz = lmp.get_thermo('pyz')
 
-        n_inter = [int(init_config[1]), int(init_config[3]), int(init_config[-1])]
-        n_inter[atom_to_add - 1] += 1
 
         self.vol = lmp.get_thermo('vol')
 
@@ -319,30 +305,13 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        xyz_system = np.array(lmp.gather_atoms('x',1,3))
-
-        xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
-
-        xyz_inter_relaxed = [[],[],[]]
-
-        N_atoms = 2*self.size**3 - self.n_vac
-
-        idx = 0
-
-        for element, n_element in enumerate(n_inter):
-            for i in range(n_element):
-                vec = (xyz_system[N_atoms + idx]/self.alattice)
-                xyz_inter_relaxed[element].append(vec.tolist())
-                idx += 1
-
-
         lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, n_inter[1], n_inter[2]))
 
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
         
-        return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume, xyz_inter_relaxed
+        return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume 
     
 
     def get_octahedral_sites(self):

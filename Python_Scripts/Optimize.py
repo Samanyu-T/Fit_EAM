@@ -9,7 +9,8 @@ from Handle_Dictionaries import data_dict
 import sys 
 from Lmp_PDefect import Point_Defect
 import psutil
-
+from Simulate_Defect_Set import sim_defect_set
+import time
 # Main Function, which takes in each core separetly
 def worker_function(proc):
     
@@ -74,8 +75,8 @@ def optimize(n_knots, bool_fit, proc):
         my_json = json.load(my_file)
 
     N_Vac = 2
-    N_H = 2
-    N_He = 3
+    N_H = 5
+    N_He = 5
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
@@ -90,8 +91,15 @@ def optimize(n_knots, bool_fit, proc):
     ref_formations['V0H0He1_inter']['val'] = None
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
+    
+    t1 = time.perf_counter()
+    test_dict = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, '')
+    t2 = time.perf_counter()
 
-    print(ref_formations.keys())
+    print("Dictionary:")
+    for key, value in test_dict.items():
+        print(f"{key}: {value}")    
+    print(t2 - t1)
     exit()
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/Selected_Potentials/Potential_4/optim102.eam.alloy')
