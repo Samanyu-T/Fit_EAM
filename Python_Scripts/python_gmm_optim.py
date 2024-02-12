@@ -191,7 +191,7 @@ if __name__ == '__main__':
     global me
     global nprocs
 
-    comm = MPI.Comm()
+    comm = MPI.COMM_WORLD
 
     me = comm.Get_rank()
 
