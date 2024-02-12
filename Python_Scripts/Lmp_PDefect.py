@@ -194,9 +194,9 @@ class Point_Defect():
 
         # # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        # lmp.command('minimize 1e-1 1e-9 5 10')
-        # lmp.command('minimize 1e-2 1e-9 5 100')
-        # lmp.command('minimize 1e-3 1e-9 1000 1000')
+        lmp.command('minimize 1e-1 1e-9 10 10')
+        lmp.command('minimize 1e-2 1e-9 100 100')
+        lmp.command('minimize 1e-3 1e-9 1000 1000')
         
         pe = lmp.get_thermo('pe')
 

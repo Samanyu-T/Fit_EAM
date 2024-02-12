@@ -74,8 +74,8 @@ def optimize(n_knots, bool_fit, proc):
         my_json = json.load(my_file)
 
     N_Vac = 2
-    N_H = 0
-    N_He = 1
+    N_H = 2
+    N_He = 3
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
@@ -91,7 +91,8 @@ def optimize(n_knots, bool_fit, proc):
     ref_formations['V0H0He1_inter']['rvol'] = None
     ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
 
-
+    print(ref_formations.keys())
+    exit()
     # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
     pot, starting_lines, pot_params = read_pot('Potentials/Selected_Potentials/Potential_4/optim102.eam.alloy')
 
