@@ -205,4 +205,4 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'r') as json_file:
         param_dict = json.load(json_file)
 
-    main(param_dict['machine'], int(param_dict['max_time']) )
+    main(param_dict['machine'], float(param_dict['max_time']) )
