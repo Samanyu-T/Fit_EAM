@@ -2,5 +2,5 @@
     "machine": "serial",
     "max_time": 6,
     "write_dir": "/ramdisks/",
-    "save_dir": "~/rds"
+    "save_dir": "/local/"
 }
