@@ -114,7 +114,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit, hyperparams=pot_params, potlines=starting_lines, n_knots = n_knots, machine = machine, proc_id=proc)
     
-    files = os.listdir('%s/GMM' % param_folder)
+    files = os.listdir('%s/GMM_%d' % (param_folder, iter))
 
     N = int(len(files)/2)
 
