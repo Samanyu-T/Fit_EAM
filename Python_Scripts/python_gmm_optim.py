@@ -18,7 +18,7 @@ def main(machine, max_time, write_dir, save_dir):
 
     if me == 0:
         # Init Output locations
-        data_folder = '%s/data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+        data_folder = '%s/data_%d%d%d' % (save_dir, n_knots[0], n_knots[1], n_knots[2])
         
         if not os.path.exists(data_folder):
             os.mkdir(data_folder)
