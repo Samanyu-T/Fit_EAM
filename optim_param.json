@@ -1,5 +1,5 @@
 {
-    "machine": "",
+    "machine": "serial",
     "max_time": 6,
-    "write_dir": "../"
+    "write_dir": "/local/"
 }
