@@ -63,7 +63,7 @@ class Point_Defect():
         self.machine = machine
 
         self.lammps_folder = lammps_folder
-        
+
     def Perfect_Crystal(self):
 
         t1 = time.perf_counter()
@@ -244,7 +244,7 @@ class Point_Defect():
 
         lmp.command('atom_modify map array sort 0 0.0')
 
-        lmp.command('read_data Lammps_Dump/%s.data' % init_config)
+        lmp.command('read_data %s/%s.data' % (self.lammps_folder, init_config))
 
         lmp.command('pair_style eam/alloy' )
 
