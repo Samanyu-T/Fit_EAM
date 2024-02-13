@@ -10,7 +10,7 @@ import time
 import glob
 import numpy as np
 import os
-def main(machine, max_time, write_dir):
+def main(machine, max_time, write_dir, save_dir):
 
     n_knots = [1,0,2]
 
@@ -18,7 +18,7 @@ def main(machine, max_time, write_dir):
 
     if me == 0:
         # Init Output locations
-        data_folder = '../data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
+        data_folder = '%s/data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
         
         if not os.path.exists(data_folder):
             os.mkdir(data_folder)
@@ -433,6 +433,6 @@ if __name__ == '__main__':
     
     comm.Barrier()
 
-    main(param_dict['machine'], float(param_dict['max_time']), param_dict['write_dir'])
+    main(param_dict['machine'], float(param_dict['max_time']), param_dict['write_dir'],param_dict['save_dir'])
 
 
