@@ -220,7 +220,7 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
+        # lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
 
         lmp.close()
 

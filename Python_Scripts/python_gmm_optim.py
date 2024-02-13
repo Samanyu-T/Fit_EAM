@@ -145,7 +145,7 @@ def main(machine, max_time):
     if me == 0:
         for cov_file in glob.glob('../W-He_102/GMM_%d/Cov*' % (N_gaussian - 1)):
             cov_0 = np.loadtxt(cov_file)
-            cov_1 = np.diag([4, 8, 16, 4, 8, 16])
+            cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
             cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
                            [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
@@ -225,7 +225,7 @@ def main(machine, max_time):
     if me == 0:
         for cov_file in glob.glob('../W-He_102/GMM_%d/Cov*' % (2*N_gaussian - 1)):
             cov_0 = np.loadtxt(cov_file)
-            cov_1 = np.diag([4, 8, 16, 4, 8, 16])
+            cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
             cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
                            [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
