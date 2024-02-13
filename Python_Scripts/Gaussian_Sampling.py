@@ -28,24 +28,13 @@ def worker_function(proc, machine, max_time):
 
         optimize(n_knots, bool_fit, proc, machine, max_time)
 
-def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0, write_dir = ''):
+def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', sample_folder='../W-He_102/Gaussian_Samples'):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
 
-    # Init Output locations
-    param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
-
-    # param_folder = '../He-He_%d' % n_knots[2]
-    
-    if not os.path.exists(param_folder):
-        os.mkdir(param_folder)
-
-    sample_folder = '%s/Gaussian_Samples_%d' % (param_folder, iter)
-
-    if not os.path.exists(sample_folder):
-        os.mkdir(sample_folder)
+    data_folder = os.path.dirname(sample_folder)
 
     core_folder = '%s/Core_%d' % (sample_folder, proc)
 
@@ -94,7 +83,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0, write_dir = 
 
     if not os.path.exists(lammps_folder):
         os.makedirs(lammps_folder, exist_ok=True)
-        
+
     # Init Optimization Parameter
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine, lammps_folder)
@@ -122,14 +111,14 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, iter=0, write_dir = 
                                       hyperparams=pot_params, potlines=starting_lines,
                                       n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
 
-    files = os.listdir('%s/GMM_%d' % (param_folder, iter))
+    files = os.listdir('%s/GMM_%d' % (data_folder, iter))
 
     N = int(len(files)/2)
 
     select = proc % N
     
-    mean = np.loadtxt('%s/GMM_%d/Mean_%d.txt' % (param_folder, iter, select))
-    cov = np.loadtxt('%s/GMM_%d/Cov_%d.txt' % (param_folder, iter, select))
+    mean = np.loadtxt('%s/GMM_%d/Mean_%d.txt' % (data_folder, iter, select))
+    cov = np.loadtxt('%s/GMM_%d/Cov_%d.txt' % (data_folder, iter, select))
 
     gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 

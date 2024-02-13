@@ -26,24 +26,11 @@ def worker_function(proc, machine, max_time):
 
         optimize(n_knots, bool_fit, proc, machine, max_time)
 
-def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = ''):
+def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', sample_folder='../W-He_102/Random_Samples'):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     _ = lmp_inst.Perfect_Crystal()
-
-    # Init Output locations
-    param_folder = '../W-He_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2])
-
-    # param_folder = '../He-He_%d' % n_knots[2]
-    
-    if not os.path.exists(param_folder):
-        os.mkdir(param_folder)
-
-    sample_folder = '%s/Random_Samples' % param_folder
-
-    if not os.path.exists(sample_folder):
-        os.mkdir(sample_folder)
 
     core_folder = '%s/Core_%d' % (sample_folder, proc)
 

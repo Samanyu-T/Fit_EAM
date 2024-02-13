@@ -4,11 +4,8 @@ import psutil
 import os
 import glob
 import sys
-def main(file_pattern, iter):
+def main(file_pattern, data_folder, iter):
     data_lst = []
-
-    # file_pattern = '../W-He_102/Random_Samples/Core_*/Filtered_Samples.txt'
-    # file_pattern = '../W-He_102/Core*/Sample/Filtered_Samples.txt'
 
     for file in glob.glob(file_pattern):
         if os.path.getsize(file) > 0:
@@ -55,8 +52,7 @@ def main(file_pattern, iter):
     gmm = GaussianMixture(n_components=cmp - 1 , covariance_type='full')
     gmm.fit(data)
 
-    param_folder = '../W-He_102' 
-    gmm_folder = '%s/GMM_%d' % (param_folder, iter)
+    gmm_folder = '%s/GMM_%d' % (data_folder, iter)
 
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)

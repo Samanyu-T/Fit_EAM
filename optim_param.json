@@ -1,5 +1,5 @@
 {
     "machine": "serial",
     "max_time": 6,
-    "write_dir": "/local/"
+    "write_dir": "/ramdisks/"
 }
