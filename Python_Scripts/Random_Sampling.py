@@ -26,12 +26,7 @@ def worker_function(proc, machine, max_time):
 
         optimize(n_knots, bool_fit, proc, machine, max_time)
 
-def optimize(n_knots, bool_fit, proc, machine, max_time=11, lammps_dir = ''):
-
-    lammps_folder = os.path.join(lammps_dir,'Lammps_Dump_%d' % proc)
-
-    if not os.path.exists(lammps_folder):
-        os.makedirs(lammps_folder, exist_ok=True)
+def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = ''):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
@@ -92,6 +87,11 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, lammps_dir = ''):
     ref_formations['V0H0He1_inter2']['rvol'] = None
     ref_formations['V0H0He1_inter2']['pos'] = [[], [], [[3.375, 3.375, 3]]]
 
+    lammps_folder = os.path.join(write_dir, 'Lammps_Dump_%d' % proc)
+
+    if not os.path.exists(lammps_folder):
+        os.makedirs(lammps_folder, exist_ok=True)
+
     # Init Optimization Parameter
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine, lammps_folder)
@@ -116,7 +116,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, lammps_dir = ''):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
                                       hyperparams=pot_params, potlines=starting_lines,
-                                      n_knots = n_knots, machine = machine, proc_id=proc, lammps_folder=lammps_folder)
+                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
 
     random_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder)
 

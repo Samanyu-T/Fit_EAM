@@ -28,7 +28,7 @@ def worker_function(proc, machine):
 
         optimize(n_knots, bool_fit, proc, machine)
 
-def optimize(n_knots, bool_fit, proc, machine, lammps_dir = ''):
+def optimize(n_knots, bool_fit, proc, machine, write_dir = ''):
 
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
@@ -96,7 +96,7 @@ def optimize(n_knots, bool_fit, proc, machine, lammps_dir = ''):
 
     pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
 
-    lammps_folder = os.path.join(lammps_dir,'Lammps_Dump_%d' % proc)
+    lammps_folder = os.path.join(write_dir,'Lammps_Dump_%d' % proc)
 
     if not os.path.exists(lammps_folder):
         os.makedirs(lammps_folder, exist_ok=True)
@@ -105,7 +105,7 @@ def optimize(n_knots, bool_fit, proc, machine, lammps_dir = ''):
     # Call the main fitting class
     fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
                                       hyperparams=pot_params, potlines=starting_lines,
-                                      n_knots = n_knots, machine = machine, proc_id=proc, lammps_folder=lammps_folder)
+                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
 
     # Store the final optimization results
     final_optima = {}

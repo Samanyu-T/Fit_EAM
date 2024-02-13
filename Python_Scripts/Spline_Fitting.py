@@ -9,7 +9,7 @@ import time
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, machine='', proc_id = 0, lammps_folder = 'Lammps_Dump'):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, machine='', proc_id = 0, write_dir = ''):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -21,7 +21,11 @@ class Fitting_Potential():
 
         self.pot_lammps = pot_lammps
 
-        self.lammps_folder = lammps_folder
+        self.write_dir = write_dir
+
+        self.lammps_folder = os.path.join(write_dir, 'Lammps_Dump_%d' % proc_id)
+
+        self.pot_folder = os.path.join(write_dir, 'Potentials')
 
         self.proc_id = proc_id
 
@@ -42,7 +46,6 @@ class Fitting_Potential():
 
         self.knot_pts = {}
         self.machine = machine
-        self.lammps_folder = lammps_folder
 
         self.knot_pts['He_F(rho)'] = np.linspace(0, self.hyper['rho_c'], self.nf + 2)
         self.knot_pts['He_rho(r)'] = np.linspace(0, self.hyper['rc'], self.nrho + 2)
@@ -293,7 +296,7 @@ class Fitting_Potential():
 def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = False):
     # t1 = time.perf_counter()
 
-    potloc = 'Potentials/test.%d.eam.alloy' % fitting_class.proc_id
+    potloc = '%s/test.%d.eam.alloy' % (fitting_class.pot_folder, fitting_class.proc_id)
     
     fitting_class.sample_to_file(sample)
      
