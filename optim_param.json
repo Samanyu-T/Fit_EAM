@@ -1,4 +1,5 @@
 {
-    "machine": "",
-    "max_time": 6
+    "machine": "serial",
+    "max_time": 6,
+    "lammps_dir": "/local/"
 }

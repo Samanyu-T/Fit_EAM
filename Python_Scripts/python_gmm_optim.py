@@ -10,7 +10,7 @@ import time
 import glob
 import numpy as np
 import os
-def main(machine, max_time):
+def main(machine, max_time, lammps_dir):
 
     n_knots = [1,0,2]
 
@@ -33,7 +33,7 @@ def main(machine, max_time):
     t1 = time.perf_counter()
 
     try:
-        Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time)
+        Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, lammps_dir=lammps_dir)
     except Exception as e:
         if me == 0:
             with open('../Error/random.txt', 'w') as error_file:
@@ -94,7 +94,7 @@ def main(machine, max_time):
         t1 = time.perf_counter()
 
         try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i)
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i, lammps_dir=lammps_dir)
         except Exception as e:
             if me == 0:
                 with open('../Error/gaussian.txt', 'w') as error_file:
@@ -177,7 +177,7 @@ def main(machine, max_time):
         t1 = time.perf_counter()
 
         try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i)
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i, lammps_dir=lammps_dir)
         except Exception as e:
             if me == 0:
                 with open('../Error/gaussian.txt', 'w') as error_file:
@@ -257,7 +257,7 @@ def main(machine, max_time):
         t1 = time.perf_counter()
 
         try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i)
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, iter=i, lammps_dir=lammps_dir)
         except Exception as e:
             if me == 0:
                 with open('../Error/gaussian.txt', 'w') as error_file:
@@ -342,7 +342,7 @@ def main(machine, max_time):
     comm.Barrier()
 
     try:
-        Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine)
+        Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, lammps_dir=lammps_dir)
     except Exception as e:
         if me == 0:
             with open('../Error/simplex.txt', 'w') as error_file:
@@ -367,4 +367,4 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'r') as json_file:
         param_dict = json.load(json_file)
 
-    main(param_dict['machine'], float(param_dict['max_time']) )
+    main(param_dict['machine'], float(param_dict['max_time']), param_dict['lammps_dir'])

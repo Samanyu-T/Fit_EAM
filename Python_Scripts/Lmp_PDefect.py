@@ -19,7 +19,7 @@ class MPI_to_serial():
 
 class Point_Defect():
 
-    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, machine=''):
+    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, machine='', lammps_folder = 'Lammps_Dump'):
 
         # try running in parallel, otherwise single thread
         try:
@@ -62,6 +62,8 @@ class Point_Defect():
 
         self.machine = machine
 
+        self.lammps_folder = lammps_folder
+        
     def Perfect_Crystal(self):
 
         t1 = time.perf_counter()
@@ -220,7 +222,7 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        # lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
+        lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
 
         lmp.close()
 
@@ -305,7 +307,7 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        lmp.command('write_data Lammps_Dump/V%dH%dHe%d.data' % (self.n_vac, n_inter[1], n_inter[2]))
+        lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, n_inter[1], n_inter[2]))
 
         lmp.close()
 

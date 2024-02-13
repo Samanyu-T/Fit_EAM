@@ -9,7 +9,7 @@ import time
 
 class Fitting_Potential():
 
-    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, machine='', proc_id = 0):
+    def __init__(self, pot_lammps, bool_fit, hyperparams, potlines, n_knots, machine='', proc_id = 0, lammps_folder = 'Lammps_Dump'):
 
         # Decompose Sample as follows: [ F, Rho, W-He, H-He, He-He ]
 
@@ -20,6 +20,8 @@ class Fitting_Potential():
         # For V (pair pot) are: [0, r_1 ... r_v, r_c], [0, V(r_1) ... V(r_v), -Z(r_c)] v + 2 is the number knot points requires: 2v params
 
         self.pot_lammps = pot_lammps
+
+        self.lammps_folder = lammps_folder
 
         self.proc_id = proc_id
 
@@ -40,6 +42,7 @@ class Fitting_Potential():
 
         self.knot_pts = {}
         self.machine = machine
+        self.lammps_folder = lammps_folder
 
         self.knot_pts['He_F(rho)'] = np.linspace(0, self.hyper['rho_c'], self.nf + 2)
         self.knot_pts['He_rho(r)'] = np.linspace(0, self.hyper['rc'], self.nrho + 2)
@@ -296,7 +299,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
-    test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine)
+    test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine, fitting_class.lammps_folder)
     
     ref_binding = binding_fitting(ref_formations)
     test_binding = binding_fitting(test_formations)
