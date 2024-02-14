@@ -1,7 +1,7 @@
 # Import necessary packages
 from random import sample
 from Handle_Files import read_pot
-from Spline_Fitting import Fitting_Potential, random_sampling
+from Spline_Fitting import Fitting_Potential, loss_func, random_sampling
 import json
 import os
 from Handle_Dictionaries import data_dict
@@ -79,9 +79,20 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
     if not os.path.exists(lammps_folder):
         os.makedirs(lammps_folder, exist_ok=True)
 
+# Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
+    pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
+
+    pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
+        
+    # Call the main fitting class
+    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
+                                      hyperparams=pot_params, potlines=starting_lines,
+                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
+
     # Init Optimization Parameter
     t1 = time.perf_counter()
-    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine, lammps_folder)
+    sample = fitting_class.gen_rand()
+    _ = loss_func(sample, fitting_class, ref_formations, core_folder)
     t2 = time.perf_counter()
 
     t_iter = (t2 - t1)
@@ -95,16 +106,6 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
         print('The Approximate number of Samples: %d \n Number of Dimensions: %d' % (N_samples, n_params))
         sys.stdout.flush()    
         
-# Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
-    pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
-
-    pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
-        
-    # Call the main fitting class
-    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
-                                      hyperparams=pot_params, potlines=starting_lines,
-                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
-
     random_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder)
 
 
