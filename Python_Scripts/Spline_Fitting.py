@@ -378,10 +378,12 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
     lst_loss = []
     lst_samples = []
     t_init = time.perf_counter()
+    idx = 0
 
     while True:
         sample = fitting_class.gen_rand()
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
+        idx += 1
 
         lst_loss.append(loss)
         lst_samples.append(sample)
@@ -390,6 +392,9 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
         
         if t_end - t_init > max_time:
             break
+
+        if idx % 1000 == 0:
+            print(t_end - t_init)
 
     lst_loss = np.array(lst_loss)
     lst_samples = np.array(lst_samples)
@@ -410,11 +415,12 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
     lst_samples = []
     
     t_init = time.perf_counter()
-
+    idx = 0
     while True:
         sample = np.random.multivariate_normal(mean=mean, cov=cov)
         loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
-
+        idx += 1
+        
         lst_loss.append(loss)
         lst_samples.append(sample)
         
@@ -422,6 +428,9 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
         
         if t_end - t_init > max_time:
             break
+
+        if idx % 1000 == 0:
+            print(t_end - t_init)
 
     lst_loss = np.array(lst_loss)
     lst_samples = np.array(lst_samples)
