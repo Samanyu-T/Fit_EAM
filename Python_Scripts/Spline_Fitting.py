@@ -393,7 +393,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
         if t_end - t_init > max_time:
             break
 
-        if idx % 10 == 0:
+        if idx % 1000 == 0:
             print(t_end - t_init)
             sys.stdout.flush()  
 
@@ -405,7 +405,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
     lst_loss = lst_loss[idx]
     lst_samples = lst_samples[idx]
 
-    n = int( len(lst_loss) * 0.001 )
+    n = int( len(lst_loss) * 0.0025 )
 
     np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
     np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
@@ -430,7 +430,7 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
         if t_end - t_init > max_time:
             break
 
-        if idx % 10 == 0:
+        if idx % 1000 == 0:
             print(t_end - t_init)
             sys.stdout.flush()  
 
@@ -442,7 +442,7 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
     lst_loss = lst_loss[idx]
     lst_samples = lst_samples[idx]
 
-    n = int( len(lst_loss) * 0.001 )
+    n = int( len(lst_loss) * 0.0025 )
 
     np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
     np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
