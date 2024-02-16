@@ -395,6 +395,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
 
         if idx % 10 == 0:
             print(t_end - t_init)
+            sys.stdout.flush()  
 
     lst_loss = np.array(lst_loss)
     lst_samples = np.array(lst_samples)
