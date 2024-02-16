@@ -393,7 +393,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
         if t_end - t_init > max_time:
             break
 
-        if idx % 1000 == 0:
+        if idx % 10 == 0:
             print(t_end - t_init)
 
     lst_loss = np.array(lst_loss)
