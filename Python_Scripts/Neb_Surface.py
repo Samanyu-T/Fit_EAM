@@ -94,9 +94,10 @@ variable i equal part
 
 neb 10e-8 10e-10 5000 5000 100 final %s
 
-write_dump all custom %s/neb.$i.dump id type x y z ''' % (init_path, potfile, final_path, neb_image_folder)
-    
-    with open('%s/in.neb' % neb_script_folder, 'w') as file:
+write_dump all custom %s/neb.$i.atom id type x y z ''' % (init_path, potfile, final_path, neb_image_folder)
+
+
+    with open('%s/simple.neb' % neb_script_folder, 'w') as file:
         file.write(txt)
 
 
@@ -124,37 +125,22 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
 
     test_sites = np.vstack([climb +  np.array([0,0,1])* z * alattice * np.linalg.norm(R_inv, axis = 0)[-1] for z in depth])
     
-    pe_arr = []
-    pos_arr = []
+    threshold = 10
 
-    for i, site in enumerate(test_sites):
-        
-        orient_str = '%d%d%d' % (orientx[0], orientx[1], orientx[2])
+    idx = np.where(test_sites[:, -1] > threshold)[0]
 
-        dump_name = '../Neb_Dump/Surface/%s/Depth_%d' % (orient_str, i)
+    orient_str = '%d%d%d' % (orientx[0], orientx[1], orientx[2])
 
-        os.makedirs(os.path.dirname(dump_name), exist_ok=True)
+    if not os.path.exists('../Neb_Dump/Surface/%s' % orient_str):
+        os.makedirs('../Neb_Dump/Surface/%s' % orient_str, exist_ok=True)
 
-        pe, pos = lmp.Build_Defect([[],[],[site]], dump_name=dump_name)
-
-        pe_arr.append(pe)
-        pos_arr.append(pos[-1][0])
-
-        if pos_arr[-1][-1] > 10:
-            break
-    
-    pe_arr = np.array(pe_arr)
-    pos_arr = np.array(pos_arr)
-
-    pe_init, pos_init = lmp.Build_Defect([[],[],[pos_arr[0]]], dump_name='../Neb_Dump/Surface/%s/init' % (orient_str))
-    pe_final, pos_final = lmp.Build_Defect([[],[],[pos_arr[-1]]], dump_name='../Neb_Dump/Surface/%s/final' % (orient_str))
+    pe_init, pos_init = lmp.Build_Defect([[],[],[test_sites[0]]], dump_name='../Neb_Dump/Surface/%s/init_simple' % (orient_str))
+    pe_final, pos_final = lmp.Build_Defect([[],[],[test_sites[idx[0]]]], dump_name='../Neb_Dump/Surface/%s/final_simple' % (orient_str))
 
     if me == 0:
-        edit_dump('../Neb_Dump/Surface/%s/init.data' % orient_str, '../Neb_Dump/Surface/%s/final.atom' % orient_str)
+        edit_dump('../Neb_Dump/Surface/%s/init_simple.data' % orient_str, '../Neb_Dump/Surface/%s/final_simple.atom' % orient_str)
 
     comm.barrier()
-
-    return pe_arr, pos_arr
 
 
 def main(potfile):
@@ -176,19 +162,19 @@ def main(potfile):
     orientx = [1, 0, 0]
     orienty = [0, 1, 0]
     orientz = [0 ,0, 1]
-    pe_arr, pos_arr = surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1)
 
     ''' Use for 110 surface '''
     orientx = [1, 1, 0]
     orienty = [0, 0,-1]
     orientz = [-1,1, 0]
-    pe_arr, pos_arr = surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1)
 
     ''' Use for 111 surface '''
     orientx = [1, 1, 1]
     orienty = [-1,2,-1]
     orientz = [-1,0, 1]
-    pe_arr, pos_arr = surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1)
 
     comm.Barrier()
 if __name__ == '__main__':
