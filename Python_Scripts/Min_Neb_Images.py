@@ -8,7 +8,7 @@ import shutil
 
 def min_image(init_file, read_file, potfile, machine = ''):
 
-    lmp = lammps(name = machine)#,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine,cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -67,7 +67,8 @@ if __name__ == '__main__':
     global comm
     global me
     global nprocs
-    
+    global potfile
+
     try:
         comm = MPI.COMM_WORLD
 
@@ -76,11 +77,18 @@ if __name__ == '__main__':
         nprocs = comm.Get_size() 
     except:
         me = 0
-
         nprocs = 1
+         
+    potfile = 'Potentials/WHHe_test.eam.alloy'
+
+    if len(sys.argv) > 1:
+        potfile = sys.argv[1]
+
+    if me == 0:
+        print(potfile)
+    comm.Barrier()
+
     for orient_folder in ['100', '110', '111']:
         init_file = '../Neb_Dump/Surface/%s/init_simple.data' % orient_folder
-        print(orient_folder)
-
         for read_file in sorted(glob.glob('../Neb_Dump/Surface/%s/Neb_Images/neb.*.atom' % orient_folder)):
-            min_image(init_file, read_file, potfile='Potentials/WHHe_test.eam.alloy', machine = '')
+            min_image(init_file, read_file, potfile=potfile, machine = '')

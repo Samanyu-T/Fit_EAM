@@ -35,67 +35,67 @@ def main(machine, max_time, write_dir, save_dir):
     bool_fit['He-He'] = False
 
 
-    ### START RANDOM SAMPLING ###
-    rsamples_folder = ''
+    # ### START RANDOM SAMPLING ###
+    # rsamples_folder = ''
 
-    if me == 0:
-        print('Start Random Sampling \n')
-        sys.stdout.flush()  
+    # if me == 0:
+    #     print('Start Random Sampling \n')
+    #     sys.stdout.flush()  
 
-        rsamples_folder = '%s/Random_Samples' % data_folder
+    #     rsamples_folder = '%s/Random_Samples' % data_folder
 
-        if not os.path.exists(rsamples_folder):
-            os.mkdir(rsamples_folder)
+    #     if not os.path.exists(rsamples_folder):
+    #         os.mkdir(rsamples_folder)
 
-    comm.Barrier()
-    rsamples_folder = comm.bcast(rsamples_folder, root = 0)
+    # comm.Barrier()
+    # rsamples_folder = comm.bcast(rsamples_folder, root = 0)
 
-    t1 = time.perf_counter()
+    # t1 = time.perf_counter()
 
-    try:
-        Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.5*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
-    except Exception as e:
-        if me == 0:
-            with open('../Error/random.txt', 'w') as error_file:
-                error_file.write(str(e))
+    # try:
+    #     Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.5*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
+    # except Exception as e:
+    #     if me == 0:
+    #         with open('../Error/random.txt', 'w') as error_file:
+    #             error_file.write(str(e))
 
-    t2 = time.perf_counter()
+    # t2 = time.perf_counter()
 
-    if me == 0:
-        print('Random Sampling took %.2f s \n' % (t2 - t1))
-        sys.stdout.flush()  
-    ### END RANDOM SAMPLING ###
+    # if me == 0:
+    #     print('Random Sampling took %.2f s \n' % (t2 - t1))
+    #     sys.stdout.flush()  
+    # ### END RANDOM SAMPLING ###
 
-    comm.Barrier()
+    # comm.Barrier()
 
 
 
-    ### START CLUSTERING ALGORITHM ###
-    if me == 0:
-        print('Start GMM Clustering \n')
-        sys.stdout.flush()  
+    # ### START CLUSTERING ALGORITHM ###
+    # if me == 0:
+    #     print('Start GMM Clustering \n')
+    #     sys.stdout.flush()  
 
-    comm.Barrier()
+    # comm.Barrier()
 
-    t1 = time.perf_counter()
+    # t1 = time.perf_counter()
 
-    try:
-        if me == 0:
-            GMM.main('%s/Core_*/Filtered_Samples.txt' % rsamples_folder, data_folder, 0)
-    except Exception as e:
-        if me == 0:
-            with open('../Error/gmm.txt', 'w') as error_file:
-                error_file.write(str(e))
+    # try:
+    #     if me == 0:
+    #         GMM.main('%s/Core_*/Filtered_Samples.txt' % rsamples_folder, data_folder, 0)
+    # except Exception as e:
+    #     if me == 0:
+    #         with open('../Error/gmm.txt', 'w') as error_file:
+    #             error_file.write(str(e))
 
-    t2 = time.perf_counter()
+    # t2 = time.perf_counter()
 
-    if me == 0:
-        print('\n Clustering took %.2f s ' % (t2 - t1))
-        sys.stdout.flush()  
+    # if me == 0:
+    #     print('\n Clustering took %.2f s ' % (t2 - t1))
+    #     sys.stdout.flush()  
 
     ### END CLUSTERING ALGORITHM ###
         
-    comm.Barrier()
+    # comm.Barrier()
 
 
 

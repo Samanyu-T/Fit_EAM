@@ -1,9 +1,7 @@
-from matplotlib.scale import scale_factory
 import numpy as np
-from lammps import lammps
-from mpi4py import MPI
 import os 
 import glob
+import sys
 
 def create_neb_script(init, final ,potfile, save_folder, neb_script_folder, idx):
     txt = '''
@@ -105,15 +103,22 @@ def find_unique_images(orient, potfile):
             save_folder = '../Neb_Dump/Surface/%s/Neb_Images_%d' % (orient, len(he_lst) - 1)
             if not os.path.exists(save_folder):
                 os.makedirs(save_folder, exist_ok=True)
+
             create_neb_script(init=os.path.join(folder, 'init.%d.data' % (len(he_lst) - 2)),
                               final=os.path.join(folder, 'init.%d.atom' % (len(he_lst) - 1)),
                               potfile=potfile,
                               save_folder=save_folder,
                               neb_script_folder='../Neb_Scripts/Surface/%s' % orient,
                               idx=len(he_lst) - 1)
+if __name__ == '__main__':
 
-potfile='Potentials/WHHe_test.eam.alloy'
+    potfile='Potentials/WHHe_test.eam.alloy'
 
-find_unique_images('100', potfile)
-find_unique_images('110', potfile)
-find_unique_images('111', potfile)
+    if len(sys.argv) > 1:
+        potfile=sys.argv[1]
+
+    print(potfile)
+    
+    find_unique_images('100', potfile)
+    find_unique_images('110', potfile)
+    find_unique_images('111', potfile)

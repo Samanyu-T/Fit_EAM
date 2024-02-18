@@ -1,9 +1,7 @@
-from networkx import node_clique_number
 from Lammps_PDefect_Classes import Lammps_Point_Defect
 import numpy as np
 import os
 from mpi4py import MPI
-import matplotlib.pyplot as plt
 import sys
 
 def climb_sites(alattice, tet_arr, R, R_inv, xy_offset):
@@ -135,11 +133,12 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
         os.makedirs('../Neb_Dump/Surface/%s' % orient_str, exist_ok=True)
 
     pe_init, pos_init = lmp.Build_Defect([[],[],[test_sites[0]]], dump_name='../Neb_Dump/Surface/%s/init_simple' % (orient_str))
-    pe_final, pos_final = lmp.Build_Defect([[],[],[test_sites[idx[0]]]], dump_name='../Neb_Dump/Surface/%s/final_simple' % (orient_str))
+    pe_final, pos_final = lmp.Build_Defect([[],[],[test_sites[0] + np.array([0, 0, 3*alattice*np.linalg.norm(orientz)])]],
+                                            dump_name='../Neb_Dump/Surface/%s/final_simple' % (orient_str))
 
     if me == 0:
         edit_dump('../Neb_Dump/Surface/%s/init_simple.data' % orient_str, '../Neb_Dump/Surface/%s/final_simple.atom' % orient_str)
-
+ 
     comm.barrier()
 
 
@@ -154,9 +153,6 @@ def main(potfile):
                               orientx=orientx, orienty=orienty, orientz=orientz, conv=100000, machine='')
 
     alattice = 3.144221296574379
-    tet_site = alattice*np.array([0.25, 0.5, 0])
-
-    tet, _ = bulk.Build_Defect([[], [], [tet_site]])
 
     ''' Use for 100 surface '''
     orientx = [1, 0, 0]
@@ -182,6 +178,7 @@ if __name__ == '__main__':
     global comm
     global me
     global nprocs
+    global potfile
     
     try:
         comm = MPI.COMM_WORLD
@@ -201,6 +198,13 @@ if __name__ == '__main__':
     comm.Barrier()
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
+
+    if len(sys.argv) > 1:
+        potfile = sys.argv[1]
+
+    if me == 0:
+        print(potfile)
+    comm.Barrier()
 
     main(potfile)
 
