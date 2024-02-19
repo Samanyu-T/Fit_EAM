@@ -112,14 +112,14 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
                                       hyperparams=pot_params, potlines=starting_lines,
                                       n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
 
-    files = os.listdir('%s/GMM_%d' % (data_folder, iter))
+    files = os.listdir(gmm_folder)
 
     N = int(len(files)/2)
 
     select = proc % N
     
-    mean = np.loadtxt('%s/GMM_%d/Mean_%d.txt' % (data_folder, iter, select))
-    cov = np.loadtxt('%s/GMM_%d/Cov_%d.txt' % (data_folder, iter, select))
+    mean = np.loadtxt('%s/Mean_%d.txt' % (gmm_folder, iter, select))
+    cov = np.loadtxt('%s/Cov_%d.txt' % (gmm_folder, iter, select))
 
     gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 
