@@ -86,15 +86,12 @@ def main(potfile, machine=''):
 
     _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
 
-    print(lmp.strain_tensor)
-
     _, _ = lmp.Build_Defect([[], [], [tet_1]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
 
     _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
 
     _, _ = lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
 
-    print(lmp.strain_tensor, lmp.vol)
     if me == 0:
         edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')
         edit_dump('../Neb_Dump/Bulk/Tet_Oct/tet.data', '../Neb_Dump/Bulk/Tet_Oct/oct.atom' )
@@ -132,7 +129,7 @@ if __name__ == '__main__':
         machine = sys.argv[2]
 
     if me == 0:
-        print(potfile)
+        print(potfile, machine)
 
     comm.Barrier()
 
