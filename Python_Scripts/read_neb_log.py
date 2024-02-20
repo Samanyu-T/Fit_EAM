@@ -28,7 +28,13 @@ def main(filepath, n_proc):
     path_split = filepath.split('/')
     filename = path_split[-1].split('.')[0]
     orient = path_split[-2]
-    nth_neb = int(filename.split('.')[0][-1])
+
+    nth_neb=''
+
+    if filename[0] == 's':
+        nth_neb = ''
+    else:
+        nth_neb = int(filename.split('.')[0][-1])
 
     with open('log.lammps', 'r') as file:
         log = file.readlines()
@@ -38,7 +44,10 @@ def main(filepath, n_proc):
     data = np.array([float(x) for x in val]).reshape(n_proc, 2)
 
     for i in range(n_proc):
-        read = np.loadtxt('../Neb_Dump/Surface/%s/Neb_Images_%d/neb.%d.atom' % (orient, nth_neb , i), skiprows=9)
+        if nth_neb == '':
+            read = np.loadtxt('../Neb_Dump/Surface/%s/Neb_Images/neb.%d.atom' % (orient, i), skiprows=9)
+        else:
+            read = np.loadtxt('../Neb_Dump/Surface/%s/Neb_Images_%d/neb.%d.atom' % (orient, nth_neb , i), skiprows=9)
 
         idx = np.where(read[:,1] == 3)[0]
 
@@ -47,7 +56,11 @@ def main(filepath, n_proc):
     if not os.path.exists('../Test_Data/Surface/%s' % orient):
         os.makedirs('../Test_Data/Surface/%s' % orient, exist_ok=True)
 
-    np.savetxt(os.path.join('../Test_Data/Surface', orient, 'neb_split_%d.txt' % nth_neb), data)
+    if nth_neb == '':
+        np.savetxt(os.path.join('../Test_Data/Surface', orient, 'simple.txt'), data)
+
+    else:
+        np.savetxt(os.path.join('../Test_Data/Surface', orient, 'neb_split_%d.txt' % nth_neb), data)
 
 if __name__ == '__main__':
 

@@ -14,7 +14,7 @@ fig, axs = plt.subplots(1, len(surface_folders), figsize = (20,5))
 
 for i, surface_orient in enumerate(surface_folders):
     data_lst = []
-    for file in glob.glob('%s/*.txt' % surface_orient):
+    for file in glob.glob('%s/neb_split*.txt' % surface_orient):
         data = np.loadtxt(file)
         data_lst.append(data)
 

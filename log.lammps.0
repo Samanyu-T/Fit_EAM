@@ -9,13 +9,13 @@ atom_modify map array sort 0 0.0
 
 read_data ../Neb_Dump/Bulk/Tet_Tet/tet_0.data
 Reading data file ...
-  orthogonal box = (-0.0023797147 -0.0023645006 -0.0022710563) to (25.156148 25.156133 25.156039)
+  orthogonal box = (-1.1862975e-06 -1.1862975e-06 -1.1862975e-06) to (25.153769 25.153769 25.153769)
   1 by 1 by 1 MPI processor grid
   reading atoms ...
   1025 atoms
   reading velocities ...
   1025 velocities
-  read_data CPU = 0.014 seconds
+  read_data CPU = 0.007 seconds
 
 mass 1 183.84
 
@@ -45,8 +45,8 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 3.324 | 3.324 | 3.324 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -9157.7484      0             -9157.7484     -13.790055    
-Loop time of 4.58e-07 on 1 procs for 0 steps with 1025 atoms
+         0   0             -9157.7438      0             -9157.7438      1707.327     
+Loop time of 4.16e-07 on 1 procs for 0 steps with 1025 atoms
 
 0.0% CPU use with 1 MPI tasks x no OpenMP threads
 
@@ -58,17 +58,17 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 4.58e-07   |            |       |100.00
+Other   |            | 4.16e-07   |            |       |100.00
 
 Nlocal:           1025 ave        1025 max        1025 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2901 ave        2901 max        2901 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          34016 ave       34016 max       34016 min
+Neighs:          35732 ave       35732 max       35732 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 34016
-Ave neighs/atom = 33.186341
+Total # of neighbors = 35732
+Ave neighs/atom = 34.860488
 Neighbor list builds = 0
 Dangerous builds = 0
 
@@ -85,78 +85,78 @@ variable i equal part
 neb 10e-8 10e-10 5000 5000 100 final ../Neb_Dump/Bulk/Tet_Tet/tet_1.atom
 Per MPI rank memory allocation (min/avg/max) = 3.324 | 3.324 | 3.324 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -9157.7484      0             -9157.7484     -13.790055    
-        31   7.2700443e-05 -9157.7484      0             -9157.7484     -14.505976    
-Loop time of 0.0476603 on 1 procs for 31 steps with 1025 atoms
+         0   0             -9157.7438      0             -9157.7438      1707.327     
+        31   1.3048999e-06 -9157.7438      0             -9157.7438      1706.7752    
+Loop time of 0.0619937 on 1 procs for 31 steps with 1025 atoms
 
-98.0% CPU use with 1 MPI tasks x no OpenMP threads
+89.1% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-      -9157.7484194993  -9157.74844206006  -9157.74844233659
-  Force two-norm initial, final = 0.044656461 0.008805283
-  Force max component initial, final = 0.027124455 0.00063579333
+     -9157.74380054426  -9157.74380096374  -9157.74380096848
+  Force two-norm initial, final = 0.0081798244 0.001111332
+  Force max component initial, final = 0.0036657744 6.7208712e-05
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 31 31
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.024371   | 0.024371   | 0.024371   |   0.0 | 51.13
+Pair    | 0.027674   | 0.027674   | 0.027674   |   0.0 | 44.64
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0004425  | 0.0004425  | 0.0004425  |   0.0 |  0.93
+Comm    | 0.0013974  | 0.0013974  | 0.0013974  |   0.0 |  2.25
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.014022   | 0.014022   | 0.014022   |   0.0 | 29.42
-Other   |            | 0.008825   |            |       | 18.52
+Modify  | 0.022506   | 0.022506   | 0.022506   |   0.0 | 36.30
+Other   |            | 0.01042    |            |       | 16.80
 
 Nlocal:           1025 ave        1025 max        1025 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2901 ave        2901 max        2901 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          34016 ave       34016 max       34016 min
+Neighs:          35732 ave       35732 max       35732 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 34016
-Ave neighs/atom = 33.186341
+Total # of neighbors = 35732
+Ave neighs/atom = 34.860488
 Neighbor list builds = 0
 Dangerous builds = 0
 Per MPI rank memory allocation (min/avg/max) = 3.324 | 3.324 | 3.324 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-        31   0             -9157.7484      0             -9157.7484     -14.506621    
-        37   2.3244695e-05 -9157.7484      0             -9157.7484     -14.502244    
-Loop time of 0.011791 on 1 procs for 6 steps with 1025 atoms
+        31   0             -9157.7438      0             -9157.7438      1706.7751    
+        37   2.5807821e-07 -9157.7438      0             -9157.7438      1706.7757    
+Loop time of 0.0101516 on 1 procs for 6 steps with 1025 atoms
 
-87.8% CPU use with 1 MPI tasks x no OpenMP threads
+93.6% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -9157.74844233659  -9157.74844267104  -9157.74844282393
-  Force two-norm initial, final = 0.008805283 0.0087286873
-  Force max component initial, final = 0.00063579333 0.00062986837
+     -9157.74380096848  -9157.74380097304  -9157.74380097507
+  Force two-norm initial, final = 0.001111332 0.001105383
+  Force max component initial, final = 6.7208712e-05 6.6847732e-05
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 6 6
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.0076142  | 0.0076142  | 0.0076142  |   0.0 | 64.58
+Pair    | 0.0053775  | 0.0053775  | 0.0053775  |   0.0 | 52.97
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00011017 | 0.00011017 | 0.00011017 |   0.0 |  0.93
+Comm    | 6.3586e-05 | 6.3586e-05 | 6.3586e-05 |   0.0 |  0.63
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.0033473  | 0.0033473  | 0.0033473  |   0.0 | 28.39
-Other   |            | 0.0007193  |            |       |  6.10
+Modify  | 0.0033435  | 0.0033435  | 0.0033435  |   0.0 | 32.94
+Other   |            | 0.001367   |            |       | 13.47
 
 Nlocal:           1025 ave        1025 max        1025 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2901 ave        2901 max        2901 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          34008 ave       34008 max       34008 min
+Neighs:          35732 ave       35732 max       35732 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 34008
-Ave neighs/atom = 33.178537
+Total # of neighbors = 35732
+Ave neighs/atom = 34.860488
 Neighbor list builds = 0
 Dangerous builds = 0
 
