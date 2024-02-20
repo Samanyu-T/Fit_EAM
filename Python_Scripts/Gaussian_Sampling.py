@@ -118,8 +118,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
 
     select = proc % N
     
-    mean = np.loadtxt('%s/Mean_%d.txt' % (gmm_folder, iter, select))
-    cov = np.loadtxt('%s/Cov_%d.txt' % (gmm_folder, iter, select))
+    mean = np.loadtxt('%s/Mean_%d.txt' % (gmm_folder, select))
+    cov = np.loadtxt('%s/Cov_%d.txt' % (gmm_folder, select))
 
     gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 

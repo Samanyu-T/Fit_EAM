@@ -156,10 +156,8 @@ def main(machine, max_time, write_dir, save_dir):
     comm.Barrier()
     
     ### END GAUSSIAN SAMPLING LOOP ###
+
     exit()
-
-
-
     ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     comm.Barrier()
@@ -214,7 +212,8 @@ def main(machine, max_time, write_dir, save_dir):
         t1 = time.perf_counter()
 
         try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, write_dir=write_dir, sample_folder=gsamples_folder)
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time,
+                                       write_dir=write_dir, sample_folder=gsamples_folder, gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
         except Exception as e:
             if me == 0:
                 with open('../Error/gaussian.txt', 'w') as error_file:
@@ -282,7 +281,7 @@ def main(machine, max_time, write_dir, save_dir):
 
     comm.Barrier()
 
-    ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
+    ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
     for i in range(2*N_gaussian, 3*N_gaussian):
 
@@ -303,7 +302,8 @@ def main(machine, max_time, write_dir, save_dir):
         t1 = time.perf_counter()
 
         try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time, write_dir=write_dir, sample_folder=gsamples_folder)
+            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=2*max_time,
+                                       write_dir=write_dir, sample_folder=gsamples_folder, gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
         except Exception as e:
             if me == 0:
                 with open('../Error/gaussian.txt', 'w') as error_file:
