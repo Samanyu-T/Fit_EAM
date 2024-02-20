@@ -139,7 +139,7 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
 
     if me == 0:
         edit_dump('../Neb_Dump/Surface/%s/init_simple.data' % orient_str, '../Neb_Dump/Surface/%s/final_simple.atom' % orient_str)
- 
+        print('%s Done' % orient_str)
     comm.barrier()
 
 
