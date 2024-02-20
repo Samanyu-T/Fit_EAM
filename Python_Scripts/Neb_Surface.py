@@ -159,19 +159,22 @@ def main(potfile, machine=''):
     orientx = [1, 0, 0]
     orienty = [0, 1, 0]
     orientz = [0 ,0, 1]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
+    surface_profile(size=12, potfile=potfile, orientx=orientx, orienty=orienty, orientz=orientz,
+                    N = 1, alattice = 3.144221296574379, machine = machine)
 
     ''' Use for 110 surface '''
     orientx = [1, 1, 0]
     orienty = [0, 0,-1]
     orientz = [-1,1, 0]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
+    surface_profile(size=12, potfile=potfile, orientx=orientx, orienty=orienty, orientz=orientz,
+                    N = 1, alattice = 3.144221296574379, machine = machine)
 
     ''' Use for 111 surface '''
     orientx = [1, 1, 1]
     orienty = [-1,2,-1]
     orientz = [-1,0, 1]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
+    surface_profile(size=12, potfile=potfile, orientx=orientx, orienty=orienty, orientz=orientz,
+                    N = 1, alattice = 3.144221296574379, machine = machine)
 
     comm.Barrier()
 if __name__ == '__main__':
