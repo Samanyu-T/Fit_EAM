@@ -66,9 +66,9 @@ def find_unique_images(orient, potfile):
 
         add = True
 
-        for xyz_lst in he_lst:
-
-            if xyz[-1] > (xyz_lst[-1] + 0.5):
+        # for xyz_lst in he_lst:
+        if len(he_lst) > 0:
+            if xyz[-1] < (he_lst[-1][-1] + 0.25):
                 add = False
         
         if add:
