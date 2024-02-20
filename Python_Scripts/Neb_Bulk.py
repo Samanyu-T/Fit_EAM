@@ -95,9 +95,9 @@ def main(potfile, machine=''):
     _, _ = lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
 
     print(lmp.strain_tensor, lmp.vol)
-
-    edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')
-    edit_dump('../Neb_Dump/Bulk/Tet_Oct/tet.data', '../Neb_Dump/Bulk/Tet_Oct/oct.atom' )
+    if me == 0:
+        edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')
+        edit_dump('../Neb_Dump/Bulk/Tet_Oct/tet.data', '../Neb_Dump/Bulk/Tet_Oct/oct.atom' )
 if __name__ == '__main__':
 
     global comm
