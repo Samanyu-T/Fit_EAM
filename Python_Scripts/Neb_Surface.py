@@ -149,16 +149,6 @@ def main(potfile, machine=''):
     orientx = [1, 0, 0]
     orienty = [0, 1, 0]
     orientz = [0 ,0, 1]
-
-    bulk = Lammps_Point_Defect(size = 12, n_vac=0, potfile=potfile, surface=False, depth=0,
-                              orientx=orientx, orienty=orienty, orientz=orientz, conv=100000, machine='')
-
-    alattice = 3.144221296574379
-
-    ''' Use for 100 surface '''
-    orientx = [1, 0, 0]
-    orienty = [0, 1, 0]
-    orientz = [0 ,0, 1]
     surface_profile(size=12, potfile=potfile, orientx=orientx, orienty=orienty, orientz=orientz,
                     N = 1, alattice = 3.144221296574379, machine = machine)
 
