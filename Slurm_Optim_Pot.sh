@@ -3,8 +3,8 @@
 #SBATCH -J optim_102
 #SBATCH -A UKAEA-AP002-CPU
 #SBATCH -p sapphire
-#SBATCH --nodes=1
-#SBATCH --ntasks=112
+#SBATCH --nodes=4
+#SBATCH --ntasks=448
 
 
 #SBATCH --time=24:00:00
