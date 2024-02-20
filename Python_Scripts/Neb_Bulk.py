@@ -126,11 +126,16 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         potfile = sys.argv[1]
 
+    machine = ''
+
+    if len(sys.argv) > 2:
+        machine = sys.argv[2]
+
     if me == 0:
         print(potfile)
 
     comm.Barrier()
 
-    main(potfile)
+    main(potfile, machine)
 
     MPI.Finalize()

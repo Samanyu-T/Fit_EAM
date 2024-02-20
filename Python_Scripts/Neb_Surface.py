@@ -1,3 +1,4 @@
+from importlib import machinery
 from Lammps_PDefect_Classes import Lammps_Point_Defect
 import numpy as np
 import os
@@ -99,10 +100,10 @@ write_dump all custom %s/neb.$i.atom id type x y z ''' % (init_path, potfile, fi
         file.write(txt)
 
 
-def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 3.144221296574379):
+def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 3.144221296574379, machine = ''):
 
     lmp = Lammps_Point_Defect(size = size, n_vac=0, potfile=potfile, surface = True , depth = 0,
-                            orientx=orientx, orienty=orienty, orientz=orientz, conv = 100000)
+                            orientx=orientx, orienty=orienty, orientz=orientz, conv = 100000, machine = machine)
     
     init_pos = size//2
 
@@ -142,7 +143,7 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
     comm.barrier()
 
 
-def main(potfile):
+def main(potfile, machine=''):
 
     ''' Use for 100 surface '''
     orientx = [1, 0, 0]
@@ -158,19 +159,19 @@ def main(potfile):
     orientx = [1, 0, 0]
     orienty = [0, 1, 0]
     orientz = [0 ,0, 1]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
 
     ''' Use for 110 surface '''
     orientx = [1, 1, 0]
     orienty = [0, 0,-1]
     orientz = [-1,1, 0]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
 
     ''' Use for 111 surface '''
     orientx = [1, 1, 1]
     orienty = [-1,2,-1]
     orientz = [-1,0, 1]
-    surface_profile(12, potfile, orientx, orienty, orientz, 1)
+    surface_profile(12, potfile, orientx, orienty, orientz, 1, machine)
 
     comm.Barrier()
 if __name__ == '__main__':
@@ -198,14 +199,18 @@ if __name__ == '__main__':
     comm.Barrier()
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
+    machine = ''
 
     if len(sys.argv) > 1:
         potfile = sys.argv[1]
+
+    if len(sys.argv) > 2:
+        machine = sys.argv[2]
 
     if me == 0:
         print(potfile)
     comm.Barrier()
 
-    main(potfile)
+    main(potfile, machine)
 
     MPI.Finalize()
