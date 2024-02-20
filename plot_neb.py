@@ -14,6 +14,33 @@ fig, axs = plt.subplots(1, len(surface_folders), figsize = (20,5))
 
 for i, surface_orient in enumerate(surface_folders):
     data_lst = []
+    file = '%s/simple.txt' % surface_orient
+        
+    plot_data = np.loadtxt(file)
+    idx = np.argsort(plot_data[:,0])
+
+    plot_data[:,1] -= plot_data[:,1].min()
+
+    x_sct = plot_data[idx, 0]
+    y_sct = plot_data[idx, 1]
+
+    cs = interp1d(x_sct, y_sct)
+    x_plt = np.linspace(x_sct.min(), x_sct.max(), 1000)
+    y_plt = cs(x_plt)
+    
+    axs[i].scatter(x_sct, y_sct)
+    axs[i].plot(x_plt,y_plt)
+    axs[i].set_xlabel('Depth of He atom /A')
+    axs[i].set_ylabel('Formation Energy /eV')
+    axs[i].set_title('Surface Orientation: %s' % os.path.basename(surface_orient))
+
+fig.suptitle('Formation Energy of an Interstitial Helium atom on the Surface of a Tungsten', fontsize=18)
+plt.show()
+
+fig, axs = plt.subplots(1, len(surface_folders), figsize = (20,5))
+
+for i, surface_orient in enumerate(surface_folders):
+    data_lst = []
     for file in glob.glob('%s/neb_split*.txt' % surface_orient):
         data = np.loadtxt(file)
         data_lst.append(data)
