@@ -244,7 +244,7 @@ class Lammps_Point_Defect():
 
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
 
-        lmp.command('fix 3 all box/relax aniso 0.0')
+        # lmp.command('fix 3 all box/relax aniso 0.0')
 
         lmp.command('minimize 1e-9 1e-12 100 1000')
         lmp.command('minimize 1e-12 1e-15 100 1000')
@@ -265,9 +265,9 @@ class Lammps_Point_Defect():
 
         self.strain_tensor = self.find_strain()
 
-        # self.relaxation_volume = 2*np.trace(self.strain_tensor)*self.vol/self.alattice**3
+        self.relaxation_volume = 2*np.trace(self.strain_tensor)*self.vol/self.alattice**3
 
-        self.relaxation_volume = 2*(self.vol - self.vol0)/self.alattice**3
+        # self.relaxation_volume = 2*(self.vol - self.vol0)/self.alattice**3
 
         pe = lmp.get_thermo('pe')
 
