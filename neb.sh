@@ -1,5 +1,5 @@
 # Create Test set
-proc=65
+proc=111
 lmp_exec=lmp_intel_cpu_intelmpi
 machine=intel_cpu_intelmpi
 rm -rf ../Neb_Dump
