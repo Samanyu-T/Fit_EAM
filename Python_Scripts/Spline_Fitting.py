@@ -393,7 +393,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
         if t_end - t_init > max_time:
             break
 
-        if idx % 1000 == 0 and fitting_class.proc_id:
+        if idx % 1000 == 0 and fitting_class.proc_id == 0:
             print(t_end - t_init)
             sys.stdout.flush()  
 
@@ -430,7 +430,7 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
         if t_end - t_init > max_time:
             break
 
-        if idx % 1000 == 0 and fitting_class.proc_id:
+        if idx % 1000 == 0 and fitting_class.proc_id == 0:
             print(t_end - t_init)
             sys.stdout.flush()  
 
