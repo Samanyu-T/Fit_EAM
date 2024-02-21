@@ -302,7 +302,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
 
-    test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine, fitting_class.lammps_folder)
+    test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine, fitting_class.lammps_folder, fitting_class.proc_id)
     
     ref_binding = binding_fitting(ref_formations)
     test_binding = binding_fitting(test_formations)

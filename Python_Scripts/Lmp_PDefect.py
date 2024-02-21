@@ -19,7 +19,7 @@ class MPI_to_serial():
 
 class Point_Defect():
 
-    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, machine='', lammps_folder = 'Lammps_Dump'):
+    def __init__(self, size, n_vac, potfile = 'WHHe_test.eam.alloy', surface = False, depth = 0, machine='', lammps_folder = 'Lammps_Dump', proc_id = 0):
 
         # try running in parallel, otherwise single thread
         try:
@@ -43,7 +43,7 @@ class Point_Defect():
             self.mode = 'serial'
 
         self.comm.barrier()
-
+        self.proc_id = int(proc_id)
         self.size  = int(size)
         self.n_vac = int(n_vac)
         
@@ -71,7 +71,7 @@ class Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(name = self.machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
         lmp.command('# Lammps input file')
 
@@ -128,7 +128,7 @@ class Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps(name = self.machine)#, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
         lmp.command('# Lammps input file')
 

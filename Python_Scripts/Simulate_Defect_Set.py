@@ -3,9 +3,9 @@ import json
 import numpy as np
 import time
 
-def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump'):
+def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump', proc_id = 0):
 
-    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile, machine=machine, lammps_folder=lammps_folder) 
+    lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile, machine=machine, lammps_folder=lammps_folder, proc_id=proc_id) 
 
     test_dict = {}
 
