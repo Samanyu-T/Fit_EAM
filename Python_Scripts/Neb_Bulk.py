@@ -4,6 +4,39 @@ import os
 from mpi4py import MPI
 import sys
 
+def climb_sites(alattice, tet_arr, R, R_inv, xy_offset):
+
+    tet = R @ tet_arr.T
+    
+    tet = (tet + 2) % 1
+
+    idx = np.argsort(tet[-1,:])
+
+    tet = tet[:,idx]
+
+    tet = tet.T
+
+    tet[:, :2] += xy_offset
+
+    tet = alattice * np.linalg.norm(R_inv, axis = 0) * tet
+
+    climb = [tet[0]]
+
+    for _t in tet:
+
+        if _t[2] == climb[-1][2]:
+
+            if len(climb) > 1:
+
+                if np.linalg.norm(climb[-2] - climb[-1]) > np.linalg.norm(climb[-2] - _t):
+                    climb[-1] = _t
+        
+        else:
+
+            climb.append(_t)
+        
+    return tet#np.array(climb)
+
 def edit_dump(init_path, final_path):
 
     orient_path = os.path.dirname(init_path)
@@ -71,7 +104,17 @@ def main(potfile, machine=''):
     orienty = [0, 1, 0]
     orientz = [0, 0, 1]
 
-    lmp = Lammps_Point_Defect(size = 8, n_vac = 0, potfile=potfile, surface=False, depth=0,
+    ''' Use for 110 surface '''
+    orientx = [1, 1, 0]
+    orienty = [0, 0,-1]
+    orientz = [-1,1, 0]
+
+    ''' Use for 111 surface '''
+    orientx = [1, 1, 1]
+    orienty = [-1,2,-1]
+    orientz = [-1,0, 1]
+
+    lmp = Lammps_Point_Defect(size = 10, n_vac = 0, potfile=potfile, surface=False, depth=0,
                               orientx=orientx, orienty=orienty, orientz=orientz, conv=10000, machine=machine)
 
     if not os.path.exists('../Neb_Dump/Bulk/Tet_Tet'):
@@ -84,13 +127,24 @@ def main(potfile, machine=''):
     tet_1 = lmp.alattice*np.array([3.25,3.5,3])
     oct_0 = lmp.alattice*np.array([3,3.5,3.5])
 
-    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
+    sites = lmp.get_all_sites()
+    
+    R_inv = np.vstack([orientx, orienty, orientz]).T
+    R = np.linalg.inv(R_inv)    
+    
+    climb = climb_sites(lmp.alattice, sites['tet'], R, R_inv, xy_offset=3)
 
-    _, _ = lmp.Build_Defect([[], [], [tet_1]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
+    if me == 0:
+        print(climb)
+    comm.Barrier()
 
-    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
+    _, _ = lmp.Build_Defect([[], [], [climb[0]]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
 
-    _, _ = lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
+    _, _ = lmp.Build_Defect([[], [], [climb[-1]]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
+
+    _, _ = lmp.Build_Defect([[], [], [climb[4]]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
+
+    _, _ = lmp.Build_Defect([[], [], [climb[5]]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
 
     if me == 0:
         edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')

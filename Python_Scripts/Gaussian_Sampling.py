@@ -35,8 +35,6 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
 
-    data_folder = os.path.dirname(sample_folder)
-
     core_folder = '%s/Core_%d' % (sample_folder, proc)
 
     if not os.path.exists(core_folder):
@@ -118,8 +116,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
 
     select = proc % N
     
-    mean = np.loadtxt('%s/Mean_%d.txt' % (gmm_folder, select))
-    cov = np.loadtxt('%s/Cov_%d.txt' % (gmm_folder, select))
+    mean = np.loadtxt(os.path.join(gmm_folder,'Mean_%d.txt' % select))
+    cov  = np.loadtxt(os.path.join(gmm_folder, 'Cov_%d.txt' % select))
 
     gaussian_sampling(ref_formations, fitting_class, max_time=T_max, output_folder=core_folder, mean=mean, cov=cov)
 
