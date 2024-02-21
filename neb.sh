@@ -1,7 +1,7 @@
 # Create Test set
-proc=111
-lmp_exec=lmp_intel_cpu_intelmpi
-machine=intel_cpu_intelmpi
+proc=9
+lmp_exec=lmp
+machine=""
 rm -rf ../Neb_Dump
 rm -rf ../Neb_Scripts
 rm -rf ../Test_Data
