@@ -10,6 +10,9 @@ import time
 import glob
 import numpy as np
 import os
+import psutil
+
+
 def main(machine, max_time, write_dir, save_dir):
 
     n_knots = [1,0,2]
@@ -17,6 +20,27 @@ def main(machine, max_time, write_dir, save_dir):
     data_folder = ''
 
     if me == 0:
+    # Get memory usage statistics
+        memory = psutil.virtual_memory()
+
+        # Total physical memory
+        total_memory = memory.total / (1024 ** 3)  # Convert bytes to GB
+
+        # Available physical memory
+        available_memory = memory.available / (1024 ** 3)  # Convert bytes to GB
+
+        # Used physical memory
+        used_memory = memory.used / (1024 ** 3)  # Convert bytes to GB
+
+        # Percentage of memory usage
+        memory_percent = memory.percent
+
+        print("Total Memory:", total_memory, "GB")
+        print("Available Memory:", available_memory, "GB")
+        print("Used Memory:", used_memory, "GB")
+        print("Memory Usage Percentage:", memory_percent, "%")
+
+        
         # Init Output locations
         data_folder = os.path.join(save_dir, 'data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2]))
         
