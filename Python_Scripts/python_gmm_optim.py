@@ -18,7 +18,7 @@ def main(machine, max_time, write_dir, save_dir):
 
     if me == 0:
         # Init Output locations
-        data_folder = '%s/data_%d%d%d' % (save_dir, n_knots[0], n_knots[1], n_knots[2])
+        data_folder = os.path.join(save_dir, 'data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2]))
         
         if not os.path.exists(data_folder):
             os.mkdir(data_folder)
@@ -42,7 +42,7 @@ def main(machine, max_time, write_dir, save_dir):
         print('Start Random Sampling \n')
         sys.stdout.flush()  
 
-        rsamples_folder = '%s/Random_Samples' % data_folder
+        rsamples_folder = os.path.join(data_folder, 'Random_Samples') 
 
         if not os.path.exists(rsamples_folder):
             os.mkdir(rsamples_folder)
@@ -52,21 +52,19 @@ def main(machine, max_time, write_dir, save_dir):
 
     t1 = time.perf_counter()
 
-    try:
-        Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
-    except Exception as e:
-        if me == 0:
-            with open('../Error/random.txt', 'w') as error_file:
-                error_file.write(str(e))
+    Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine,
+                             max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
 
     t2 = time.perf_counter()
 
     if me == 0:
         print('Random Sampling took %.2f s \n' % (t2 - t1))
         sys.stdout.flush()  
+    
+    comm.Barrier()
+
     ### END RANDOM SAMPLING ###
 
-    comm.Barrier()
 
 
 
@@ -75,27 +73,19 @@ def main(machine, max_time, write_dir, save_dir):
         print('Start GMM Clustering \n')
         sys.stdout.flush()  
 
-    comm.Barrier()
+        t1 = time.perf_counter()
 
-    t1 = time.perf_counter()
+        GMM.main(os.path.join(rsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, 0)
 
-    try:
-        if me == 0:
-            GMM.main('%s/Core_*/Filtered_Samples.txt' % rsamples_folder, data_folder, 0)
-    except Exception as e:
-        if me == 0:
-            with open('../Error/gmm.txt', 'w') as error_file:
-                error_file.write(str(e))
+        t2 = time.perf_counter()
 
-    t2 = time.perf_counter()
-
-    if me == 0:
         print('\n Clustering took %.2f s ' % (t2 - t1))
         sys.stdout.flush()  
 
+    comm.Barrier()
+
     ## END CLUSTERING ALGORITHM ###
         
-    comm.Barrier()
 
 
 
@@ -111,23 +101,20 @@ def main(machine, max_time, write_dir, save_dir):
             print('Start Gaussian Sampling %dth iteration' % i)
             sys.stdout.flush()  
 
-            gsamples_folder = '%s/Gaussian_Samples_%d' % (data_folder, i)
+            gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % i)
 
             if not os.path.exists(gsamples_folder):
-                os.mkdir(gsamples_folder)
+                os.makedirs(gsamples_folder, exist_ok=True)
 
         comm.Barrier()
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
         t1 = time.perf_counter()
 
-        try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.49*max_time,
-                                       write_dir=write_dir, sample_folder=gsamples_folder, gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gaussian.txt', 'w') as error_file:
-                    error_file.write(str(e))
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.49*max_time,
+                                   write_dir=write_dir, sample_folder=gsamples_folder,
+                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
+
 
         t2 = time.perf_counter()
 
@@ -135,29 +122,21 @@ def main(machine, max_time, write_dir, save_dir):
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
             sys.stdout.flush()  
 
-        comm.Barrier()
+            t1 = time.perf_counter()
 
-        t1 = time.perf_counter()
+            GMM.main(os.path.join(gsamples_folder,'/Core_*/Filtered_Samples.txt'), data_folder, i + 1)
 
-        try:
-            if me == 0:
-                GMM.main('%s/Core_*/Filtered_Samples.txt' % gsamples_folder, data_folder, i + 1)
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gmm.txt', 'w') as error_file:
-                    error_file.write(str(e))
+            t2 = time.perf_counter()
 
-        t2 = time.perf_counter()
-
-        if me == 0:
             print('\n Clustering took %.2f s ' % (t2 - t1))
-            sys.stdout.flush()  
 
-    comm.Barrier()
+            sys.stdout.flush()  
+        comm.Barrier()
     
     ### END GAUSSIAN SAMPLING LOOP ###
 
-    exit()
+
+
     ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     comm.Barrier()
@@ -201,7 +180,7 @@ def main(machine, max_time, write_dir, save_dir):
             print('Start Gaussian Sampling %dth iteration' % i)
             sys.stdout.flush()  
 
-            gsamples_folder = '%s/Gaussian_Samples_%d' % (data_folder, i)
+            gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
 
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
@@ -211,13 +190,9 @@ def main(machine, max_time, write_dir, save_dir):
 
         t1 = time.perf_counter()
 
-        try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time,
-                                       write_dir=write_dir, sample_folder=gsamples_folder, gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gaussian.txt', 'w') as error_file:
-                    error_file.write(str(e))
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time,
+                                   write_dir=write_dir, sample_folder=gsamples_folder,
+                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
 
         t2 = time.perf_counter()
 
@@ -226,32 +201,23 @@ def main(machine, max_time, write_dir, save_dir):
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
             sys.stdout.flush()  
 
-        comm.Barrier()
 
-        t1 = time.perf_counter()
+            t1 = time.perf_counter()
 
-        try:
-            if me == 0:
-                GMM.main('%s/Core_*/Filtered_Samples.txt' % gsamples_folder, data_folder,i + 1)
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gmm.txt', 'w') as error_file:
-                    error_file.write(str(e))
+            GMM.main('%s/Core_*/Filtered_Samples.txt' % gsamples_folder, data_folder,i + 1)
 
-        t2 = time.perf_counter()
+            t2 = time.perf_counter()
 
-        if me == 0:
             print('\n Clustering took %.2f s ' % (t2 - t1))
             sys.stdout.flush() 
 
+    comm.Barrier()
     ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
 
 
     ### OPTIMIZE FOR H-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
-    comm.Barrier()
-
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
     bool_fit['W-He'] =   bool(n_knots[2])
@@ -291,7 +257,7 @@ def main(machine, max_time, write_dir, save_dir):
             print('Start Gaussian Sampling %dth iteration' % i)
             sys.stdout.flush()  
 
-            gsamples_folder = '%s/Gaussian_Samples_%d' % (data_folder, i)
+            gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
 
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
@@ -301,13 +267,9 @@ def main(machine, max_time, write_dir, save_dir):
 
         t1 = time.perf_counter()
 
-        try:
-            Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=2*max_time,
-                                       write_dir=write_dir, sample_folder=gsamples_folder, gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gaussian.txt', 'w') as error_file:
-                    error_file.write(str(e))
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=2*max_time,
+                                   write_dir=write_dir, sample_folder=gsamples_folder,
+                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
         t2 = time.perf_counter()
 
@@ -316,21 +278,12 @@ def main(machine, max_time, write_dir, save_dir):
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
             sys.stdout.flush()  
 
-        comm.Barrier()
+            t1 = time.perf_counter()
 
-        t1 = time.perf_counter()
+            GMM.main('%s/Core_*/Filtered_Samples.txt' % (gsamples_folder, i), data_folder, i + 1)
 
-        try:
-            if me == 0:
-                GMM.main('%s/Core_*/Filtered_Samples.txt' % (gsamples_folder, i), data_folder, i + 1)
-        except Exception as e:
-            if me == 0:
-                with open('../Error/gmm.txt', 'w') as error_file:
-                    error_file.write(str(e))
+            t2 = time.perf_counter()
 
-        t2 = time.perf_counter()
-
-        if me == 0:
             print('\n Clustering took %.2f s ' % (t2 - t1))
             sys.stdout.flush() 
 
@@ -343,13 +296,13 @@ def main(machine, max_time, write_dir, save_dir):
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
         sys.stdout.flush()  
 
-        folders = glob.glob('%s/Gaussian_Samples_%d/Core_*' % (data_folder, 3*N_gaussian - 1))
+        folders = glob.glob(os.path.join(data_folder, 'Gaussian_Samples_%d/Core_*' % 3*N_gaussian - 1))
 
         lst_samples = []
         lst_loss = []
         for folder in folders:
-            lst_loss.append(np.loadtxt('%s/Filtered_Loss.txt' % folder))
-            lst_samples.append(np.loadtxt('%s/Filtered_Samples.txt' % folder))
+            lst_loss.append(np.loadtxt(os.path.join(folder, 'Filtered_Loss.txt')))
+            lst_samples.append(np.loadtxt(os.path.join(folder, 'Filtered_Samples.txt')))
 
         loss = np.hstack(lst_loss).reshape(-1, 1)
         samples = np.vstack(lst_samples)
@@ -357,18 +310,18 @@ def main(machine, max_time, write_dir, save_dir):
         N_simplex = 5 
 
         for proc in range(nprocs):
-            simplex_folder = '%s/Simplex/Core_%d' % (data_folder, proc)
+            simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
             if os.path.exists(simplex_folder):
                 os.makedirs(simplex_folder, exist_ok=True)
 
         if nprocs >= len(loss):
 
             for i in range(len(loss)):
-                simplex_folder = '%s/Simplex/Core_%d' % (data_folder, i)
+                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
                 np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[i])
 
             for i in range(len(loss), nprocs):
-                simplex_folder = '%s/Simplex/Core_%d' % (data_folder, i)
+                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
                 with open('%s/Simplex_Init.txt' % simplex_folder, 'w') as file:
                     file.write('')
 
@@ -377,7 +330,7 @@ def main(machine, max_time, write_dir, save_dir):
             idx = 0
 
             for i in range(nprocs - 1):
-                simplex_folder = '%s/Simplex/Core_%d' % (data_folder, i)
+                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
                 np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx: idx + part])
                 idx += part
 
@@ -392,14 +345,14 @@ def main(machine, max_time, write_dir, save_dir):
 
             idx = 0
             for i in range(nprocs):
-                simplex_folder = '%s/Simplex/Core_%d' % (data_folder, i)
+                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
                 np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
                 idx += part
 
     comm.Barrier()
 
     try:
-        simplex_folder = '%s/Simplex/Core_%d' % (data_folder, me)
+        simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % me)
         Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, core_folder = simplex_folder, write_dir=write_dir)
 
     except Exception as e:
