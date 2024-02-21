@@ -91,9 +91,22 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
 
     # Init Optimization Parameter
     t1 = time.perf_counter()
+    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, fitting_class.machine, fitting_class.lammps_folder)
+    t2 = time.perf_counter()
+
+    if proc == 0:
+        print('Without write: %.2f s' % (t2 - t1))
+        sys.stdout.flush()    
+
+    # Init Optimization Parameter
+    t1 = time.perf_counter()
     sample = fitting_class.gen_rand()
     _ = loss_func(sample, fitting_class, ref_formations, core_folder)
     t2 = time.perf_counter()
+
+    if proc == 0:
+        print('With write: %.2f s' % (t2 - t1))
+        sys.stdout.flush()    
 
     t_iter = (t2 - t1)
 
