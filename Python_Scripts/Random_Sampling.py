@@ -93,7 +93,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, fitting_class.machine, fitting_class.lammps_folder)
     t2 = time.perf_counter()
-
+    exit()
     if proc == 0:
         print('Without write: %.2f s' % (t2 - t1))
         sys.stdout.flush()    
