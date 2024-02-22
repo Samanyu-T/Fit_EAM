@@ -40,7 +40,7 @@ def main(machine, max_time, write_dir, save_dir):
         print("Used Memory:", used_memory, "GB")
         print("Memory Usage Percentage:", memory_percent, "%")
 
-        
+
         # Init Output locations
         data_folder = os.path.join(save_dir, 'data_%d%d%d' % (n_knots[0], n_knots[1], n_knots[2]))
         
@@ -148,7 +148,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main(os.path.join(gsamples_folder,'/Core_*/Filtered_Samples.txt'), data_folder, i + 1)
+            GMM.main(os.path.join(gsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, i + 1)
 
             t2 = time.perf_counter()
 
@@ -228,7 +228,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main('%s/Core_*/Filtered_Samples.txt' % gsamples_folder, data_folder,i + 1)
+            GMM.main(os.path.join(gsamples_folder, 'Core_*/Filtered_Samples.txt'), data_folder,i + 1)
 
             t2 = time.perf_counter()
 
@@ -304,7 +304,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main('%s/Core_*/Filtered_Samples.txt' % (gsamples_folder, i), data_folder, i + 1)
+            GMM.main( os.path.join(gsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, i + 1)
 
             t2 = time.perf_counter()
 
@@ -375,14 +375,8 @@ def main(machine, max_time, write_dir, save_dir):
 
     comm.Barrier()
 
-    try:
-        simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % me)
-        Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, core_folder = simplex_folder, write_dir=write_dir)
-
-    except Exception as e:
-        if me == 0:
-            with open('../Error/simplex.txt', 'w') as error_file:
-                error_file.write(str(e))
+    simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % me)
+    Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, core_folder = simplex_folder, write_dir=write_dir)
 
 if __name__ == '__main__':
     global comm
