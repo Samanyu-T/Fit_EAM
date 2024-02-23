@@ -49,7 +49,7 @@ def find_unique_images(orient, potfile):
     
     he_lst = []
 
-    file_pattern = '../Neb_Dump/Surface/%s/Min_Neb_Images/neb.*.atom' % orient
+    file_pattern = glob.glob('../Neb_Dump/Surface/%s/Min_Neb_Images/neb.*.atom' % orient)
 
     for i in range(len(file_pattern)):
 
@@ -62,15 +62,16 @@ def find_unique_images(orient, potfile):
 
         data = np.loadtxt(filename, skiprows=9)
         he_idx = np.where(data[:,0] == N)[0]
-        print(he_idx)
+        # print(he_idx)x
         xyz = data[he_idx, -3:].flatten()
 
         add = True
 
         for xyz_lst in he_lst:
-            if len(he_lst) > 0:
+            if len(he_lst) > 1:
                 if np.linalg.norm(xyz - xyz_lst)<0.5:
                     add = False
+                    break
         
         if add:
 
