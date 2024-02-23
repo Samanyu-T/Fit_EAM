@@ -104,15 +104,15 @@ def main(potfile, machine=''):
     orienty = [0, 1, 0]
     orientz = [0, 0, 1]
 
-    ''' Use for 110 surface '''
-    orientx = [1, 1, 0]
-    orienty = [0, 0,-1]
-    orientz = [-1,1, 0]
+    # ''' Use for 110 surface '''
+    # orientx = [1, 1, 0]
+    # orienty = [0, 0,-1]
+    # orientz = [-1,1, 0]
 
-    ''' Use for 111 surface '''
-    orientx = [1, 1, 1]
-    orienty = [-1,2,-1]
-    orientz = [-1,0, 1]
+    # ''' Use for 111 surface '''
+    # orientx = [1, 1, 1]
+    # orienty = [-1,2,-1]
+    # orientz = [-1,0, 1]
 
     lmp = Lammps_Point_Defect(size = 10, n_vac = 0, potfile=potfile, surface=False, depth=0,
                               orientx=orientx, orienty=orienty, orientz=orientz, conv=10000, machine=machine)
@@ -138,13 +138,13 @@ def main(potfile, machine=''):
         print(climb)
     comm.Barrier()
 
-    _, _ = lmp.Build_Defect([[], [], [climb[0]]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
+    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
 
-    _, _ = lmp.Build_Defect([[], [], [climb[-1]]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
+    _, _ = lmp.Build_Defect([[], [], [tet_1]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
 
-    _, _ = lmp.Build_Defect([[], [], [climb[4]]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
+    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
 
-    _, _ = lmp.Build_Defect([[], [], [climb[5]]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
+    _, _ = lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
 
     if me == 0:
         edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')
