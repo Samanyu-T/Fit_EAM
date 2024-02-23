@@ -23,8 +23,9 @@ mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).
 
 module purge
 module load rhel8/default-icl
-module load intel/mkl
+module load intel-oneapi-mkl
 module load fftw
+
 # module load miniconda/3
 
 # conda init
@@ -65,11 +66,11 @@ export I_MPI_PIN_ORDER=scatter # Adjacent domains have minimal sharing of caches
 #! Uncomment one choice for CMD below (add mpirun/mpiexec options if necessary):
  
 #! Choose this for a MPI code (possibly using OpenMP) using Intel MPI.
-CMD="mpirun -ppn $mpi_tasks_per_node -np $np $application $options"
+# CMD="mpirun -ppn $mpi_tasks_per_node -np $np $application $options"
 
 #! Choose this for a pure shared-memory OpenMP parallel program on a single node:
-#! (OMP_NUM_THREADS threads will be created):
-#CMD="$application $options"
+# ! (OMP_NUM_THREADS threads will be created):
+CMD="$application $mpi_tasks_per_node"
  
 #! Choose this for a MPI code (possibly using OpenMP) using OpenMPI:
 #CMD="mpirun -npernode $mpi_tasks_per_node -np $np $application $options"

@@ -15,7 +15,7 @@ Reading data file ...
   8001 atoms
   reading velocities ...
   8001 velocities
-  read_data CPU = 0.029 seconds
+  read_data CPU = 0.019 seconds
 
 mass 1 183.84
 
@@ -46,9 +46,9 @@ Neighbor list info ...
 Per MPI rank memory allocation (min/avg/max) = 7.397 | 7.397 | 7.397 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -71571.216      0             -71571.216      127.26961    
-Loop time of 8.33e-07 on 1 procs for 0 steps with 8001 atoms
+Loop time of 3.75e-07 on 1 procs for 0 steps with 8001 atoms
 
-120.0% CPU use with 1 MPI tasks x no OpenMP threads
+266.7% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
@@ -58,7 +58,7 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 8.33e-07   |            |       |100.00
+Other   |            | 3.75e-07   |            |       |100.00
 
 Nlocal:           8001 ave        8001 max        8001 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -86,29 +86,29 @@ neb 10e-8 10e-10 5000 5000 100 final ../Neb_Dump/Bulk/Tet_Tet/tet_1.atom
 Per MPI rank memory allocation (min/avg/max) = 7.397 | 7.397 | 7.397 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
          0   0             -71571.216      0             -71571.216      127.26961    
-        19   6.8294516e-09 -71571.216      0             -71571.216      127.26929    
-Loop time of 0.222297 on 1 procs for 19 steps with 8001 atoms
+        19   6.7814957e-09 -71571.216      0             -71571.216      127.26928    
+Loop time of 0.197673 on 1 procs for 19 steps with 8001 atoms
 
-96.1% CPU use with 1 MPI tasks x no OpenMP threads
+99.5% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -71571.2161550376  -71571.2161550472   -71571.216155046
-  Force two-norm initial, final = 0.00033085141 7.5673877e-05
-  Force max component initial, final = 2.833188e-05 6.7794473e-06
+     -71571.2161550376  -71571.2161550467  -71571.2161550471
+  Force two-norm initial, final = 0.00033085141 7.7357096e-05
+  Force max component initial, final = 2.833188e-05 7.0884216e-06
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 19 19
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.13539    | 0.13539    | 0.13539    |   0.0 | 60.90
+Pair    | 0.093984   | 0.093984   | 0.093984   |   0.0 | 47.55
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.001285   | 0.001285   | 0.001285   |   0.0 |  0.58
+Comm    | 0.00071513 | 0.00071513 | 0.00071513 |   0.0 |  0.36
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.050959   | 0.050959   | 0.050959   |   0.0 | 22.92
-Other   |            | 0.03467    |            |       | 15.60
+Modify  | 0.064431   | 0.064431   | 0.064431   |   0.0 | 32.59
+Other   |            | 0.03854    |            |       | 19.50
 
 Nlocal:           8001 ave        8001 max        8001 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -123,30 +123,30 @@ Neighbor list builds = 0
 Dangerous builds = 0
 Per MPI rank memory allocation (min/avg/max) = 7.397 | 7.397 | 7.397 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-        19   0             -71571.216      0             -71571.216      127.26929    
-        25   2.95302e-09   -71571.216      0             -71571.216      127.26929    
-Loop time of 0.0780177 on 1 procs for 6 steps with 8001 atoms
+        19   0             -71571.216      0             -71571.216      127.26928    
+        25   2.4749889e-09 -71571.216      0             -71571.216      127.26929    
+Loop time of 0.06073 on 1 procs for 6 steps with 8001 atoms
 
-96.2% CPU use with 1 MPI tasks x no OpenMP threads
+99.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-      -71571.216155046  -71571.2161550455  -71571.2161550459
-  Force two-norm initial, final = 7.5673877e-05 7.4355024e-05
-  Force max component initial, final = 6.7794473e-06 6.5488326e-06
+     -71571.2161550471  -71571.2161550472  -71571.2161550463
+  Force two-norm initial, final = 7.7357096e-05 7.6092726e-05
+  Force max component initial, final = 7.0884216e-06 6.8627559e-06
   Final line search alpha, max atom move = 0 0
   Iterations, force evaluations = 6 6
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.04485    | 0.04485    | 0.04485    |   0.0 | 57.49
+Pair    | 0.027651   | 0.027651   | 0.027651   |   0.0 | 45.53
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00036292 | 0.00036292 | 0.00036292 |   0.0 |  0.47
+Comm    | 0.00020471 | 0.00020471 | 0.00020471 |   0.0 |  0.34
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.025198   | 0.025198   | 0.025198   |   0.0 | 32.30
-Other   |            | 0.007607   |            |       |  9.75
+Modify  | 0.018425   | 0.018425   | 0.018425   |   0.0 | 30.34
+Other   |            | 0.01445    |            |       | 23.79
 
 Nlocal:           8001 ave        8001 max        8001 min
 Histogram: 1 0 0 0 0 0 0 0 0 0

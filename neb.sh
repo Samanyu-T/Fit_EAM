@@ -1,5 +1,13 @@
 # Create Test set
-proc=9
+# Check if an argument is provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <number>"
+    exit 1
+fi
+
+# Access the input argument ($1) and store it in a variable
+proc=$1
+
 lmp_exec=lmp
 machine=""
 rm -rf ../Neb_Dump
