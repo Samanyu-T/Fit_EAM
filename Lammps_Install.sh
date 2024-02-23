@@ -28,10 +28,10 @@ export LD_LIBRARY_PATH=~/Lammps/src/liblammps_intel_cpu_intelmpi.so:$LD_LIBRARY_
 module purge; module load rhel8/default-icl; module load intel/mkl; module load fftw
 
 
-make yes-intel; make yes-basic; make yes-extra-fix; make yes-replica;  make yes-python; 
-make -j 8 mode=shared intel_cpu_intelmpi
-
-export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRARY_PATH 
+make yes-basic; make yes-extra-fix; make yes-replica;  make yes-python; 
+make -j 8 mode=shared mpi
+make install-python
+export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRimpor ARY_PATH 
 export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib:$LD_LIBRARY_PATH 
 export PATH=$HOME/lammps/src/:$PATH
 

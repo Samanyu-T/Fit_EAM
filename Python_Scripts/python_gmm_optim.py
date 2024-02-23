@@ -71,7 +71,8 @@ def main(machine, max_time, write_dir, save_dir):
         if not os.path.exists(rsamples_folder):
             os.mkdir(rsamples_folder)
 
-    comm.Barrier()
+    request = comm.Ibarrier()  # Non-blocking barrier
+
     rsamples_folder = comm.bcast(rsamples_folder, root = 0)
 
     t1 = time.perf_counter()
@@ -80,6 +81,9 @@ def main(machine, max_time, write_dir, save_dir):
                              max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
 
     t2 = time.perf_counter()
+
+    # Wait for the barrier to complete
+    request.Wait()
 
     if me == 0:
         print('Random Sampling took %.2f s \n' % (t2 - t1))
@@ -130,7 +134,8 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.makedirs(gsamples_folder, exist_ok=True)
 
-        comm.Barrier()
+        request = comm.Ibarrier()  # Non-blocking barrier
+
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
         t1 = time.perf_counter()
@@ -141,6 +146,9 @@ def main(machine, max_time, write_dir, save_dir):
 
 
         t2 = time.perf_counter()
+
+        # Wait for the barrier to complete
+        request.Wait()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -209,7 +217,8 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
 
-        comm.Barrier()
+        request = comm.Ibarrier()  # Non-blocking barrier
+
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
         t1 = time.perf_counter()
@@ -220,6 +229,8 @@ def main(machine, max_time, write_dir, save_dir):
 
         t2 = time.perf_counter()
 
+        # Wait for the barrier to complete
+        request.Wait()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -235,7 +246,7 @@ def main(machine, max_time, write_dir, save_dir):
             print('\n Clustering took %.2f s ' % (t2 - t1))
             sys.stdout.flush() 
 
-    comm.Barrier()
+        comm.Barrier()
     ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
 
@@ -286,7 +297,8 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
 
-        comm.Barrier()
+        request = comm.Ibarrier()  # Non-blocking barrier
+
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
         t1 = time.perf_counter()
@@ -296,7 +308,8 @@ def main(machine, max_time, write_dir, save_dir):
                                    gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
         t2 = time.perf_counter()
-
+        # Wait for the barrier to complete
+        request.Wait()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -310,11 +323,11 @@ def main(machine, max_time, write_dir, save_dir):
 
             print('\n Clustering took %.2f s ' % (t2 - t1))
             sys.stdout.flush() 
+        comm.Barrier()
 
     ### END GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
             
 
-    comm.Barrier()
 
     if me == 0:
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
