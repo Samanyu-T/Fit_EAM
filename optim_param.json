@@ -1,6 +1,6 @@
 {
     "machine": "",
     "max_time": 6,
-    "write_dir": "../Optim_Local",
+    "write_dir": "/local/",
     "save_dir": "../"
 }

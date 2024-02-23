@@ -204,7 +204,7 @@ def main(machine, max_time, write_dir, save_dir):
 
     ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
-    for i in range(N_gaussian, 2*N_gaussian):
+    for i in range(N_gaussian, N_gaussian + 2):
 
         gsamples_folder = ''
 
@@ -223,7 +223,7 @@ def main(machine, max_time, write_dir, save_dir):
 
         t1 = time.perf_counter()
 
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=max_time,
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.99*max_time,
                                    write_dir=write_dir, sample_folder=gsamples_folder,
                                    gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
 
@@ -249,6 +249,7 @@ def main(machine, max_time, write_dir, save_dir):
         comm.Barrier()
     ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
+    exit()
 
 
     ### OPTIMIZE FOR H-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
