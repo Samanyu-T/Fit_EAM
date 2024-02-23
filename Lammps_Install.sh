@@ -1,6 +1,6 @@
 module purge
 module load rhel8/default-icl
-module load intel/mkl
+module load intel-oneapi-mkl
 module load fftw
 
 git clone -b release https://github.com/lammps/lammps.git lammps
@@ -28,10 +28,14 @@ export LD_LIBRARY_PATH=~/Lammps/src/liblammps_intel_cpu_intelmpi.so:$LD_LIBRARY_
 module purge; module load rhel8/default-icl; module load intel/mkl; module load fftw
 
 
-make yes-basic; make yes-extra-fix; make yes-replica;  make yes-python; 
-make -j 8 mode=shared mpi
+make yes-intel; make yes-basic; make yes-extra-fix; make yes-replica;  make yes-python; 
+make -j 8 mode=shared intel_cpu_intelmpi
 make install-python
-export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRimpor ARY_PATH 
+export LD_LIBRARY_PATH=$HOME/lammps/src:$LD_LIBRARY_PATH 
 export LD_LIBRARY_PATH=$HOME/.conda/envs/pylammps/lib:$LD_LIBRARY_PATH 
 export PATH=$HOME/lammps/src/:$PATH
 
+conda install numpy -c intel -y ; conda install scipy -c intel -y ; conda install scikit-learn -c intel -y ; conda install numba -c intel -y ; conda install cython -c intel -y ; 
+conda install mpi4py -c intel -y ; conda install mkl -c intel -y 
+
+tar -cjvf Test_Data.tar.bz2 Test_Data
