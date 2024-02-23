@@ -8,8 +8,8 @@ fi
 # Access the input argument ($1) and store it in a variable
 proc=$1
 
-lmp_exec=lmp
-machine=""
+lmp_exec=lmp_intel_cpu_intelmpi
+machine="intel_cpu_intelmpi"
 rm -rf ../Neb_Dump
 rm -rf ../Neb_Scripts
 rm -rf ../Test_Data
