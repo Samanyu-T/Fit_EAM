@@ -23,8 +23,9 @@ mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).
 
 module purge
 module load rhel8/default-icl
-module load intel/mkl
+module load intel-oneapi-mkl
 module load fftw
+
 # module load miniconda/3
 
 # conda init
