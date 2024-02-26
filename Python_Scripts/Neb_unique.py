@@ -69,7 +69,7 @@ def find_unique_images(orient, potfile):
 
         for xyz_lst in he_lst:
             if len(he_lst) > 1:
-                if np.linalg.norm(xyz - xyz_lst)<0.5:
+                if np.linalg.norm(xyz - xyz_lst)<1:
                     add = False
                     break
         

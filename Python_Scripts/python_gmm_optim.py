@@ -181,7 +181,7 @@ def main(machine, max_time, write_dir, save_dir):
     
     # Edit a new Covariance Matrix for the He-He potential
     if me == 0:
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, N_gaussian - 1)):
+        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, N_gaussian)):
             cov_0 = np.loadtxt(cov_file)
             cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
@@ -191,9 +191,9 @@ def main(machine, max_time, write_dir, save_dir):
             cov_name = os.path.basename(cov_file) 
             np.savetxt('%s/GMM_%d/%s' % (data_folder, N_gaussian, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, N_gaussian - 1)):
-            mean_0 = np.loadtxt(mean_file)
-            mean_1 = np.zeros((3,1))
+        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, N_gaussian)):
+            mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
+            mean_1 = np.zeros((len(cov_1),1))
 
             mean = np.vstack([mean_0, mean_1])
 
