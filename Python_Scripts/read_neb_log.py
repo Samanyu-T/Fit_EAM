@@ -28,13 +28,13 @@ def main(filepath, n_proc):
     path_split = filepath.split('/')
     filename = path_split[-1].split('.')[0]
     orient = path_split[-2]
-
+    
     nth_neb=''
 
     if filename[0] == 's':
         nth_neb = ''
     else:
-        nth_neb = int(filename.split('.')[0][-1])
+        nth_neb = int(filename[-1])
 
     with open('log.lammps', 'r') as file:
         log = file.readlines()

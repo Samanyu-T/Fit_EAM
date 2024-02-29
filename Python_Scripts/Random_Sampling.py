@@ -56,6 +56,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
 
     # Form a Dictionary containing the formation energies and relaxation volumes for a set of defects
     ref_formations = data_dict(ref_json, my_json, N_Vac, N_H, N_He)
+    ref_formations['V0H0He1']['pos'] = [[], [], [[3.25, 3.5, 3]]]
 
     ref_formations['V0H0He1_oct'] = {}
     ref_formations['V0H0He1_oct']['val'] = 6.38

@@ -5,13 +5,28 @@ import os
 import glob
 import sys
 def main(file_pattern, data_folder, iter):
-    data_lst = []
+    
+    loss_lst = []  
 
-    for file in glob.glob(file_pattern):
+    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Loss.txt')):
         if os.path.getsize(file) > 0:
-            data_lst.append(np.loadtxt(file))
+            loss_lst.append(np.loadtxt(file))
             
-    data = np.vstack([x for x in data_lst])
+    loss = np.vstack([x for x in loss_lst])
+
+    sample_lst = []  
+
+    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Samples.txt')):
+        if os.path.getsize(file) > 0:
+            sample_lst.append(np.loadtxt(file))
+            
+    samples = np.vstack([x for x in sample_lst])
+
+    sort_idx = np.argsort(loss)
+
+    n = np.ceil(0.1*len(loss)).astype(int)
+
+    data = samples[sort_idx[:n]]
 
     # Get the process ID
     process_id = os.getpid()

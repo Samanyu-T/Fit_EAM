@@ -80,7 +80,7 @@ thermo 10
 
 run 0
 
-fix 1 all neb 1e-4
+fix 1 all neb 1
 
 timestep 1e-3
 
@@ -90,7 +90,7 @@ thermo 100
 
 variable i equal part
 
-neb 10e-8 10e-10 5000 5000 100 final %s
+neb 10e-15 10e-18 50000 50000 1000 final %s
 
 write_dump all custom %s/neb.$i.atom id type x y z ''' % (init_path, potfile, final_path, neb_image_folder)
 
@@ -114,7 +114,7 @@ def main(potfile, machine=''):
     # orienty = [-1,2,-1]
     # orientz = [-1,0, 1]
 
-    lmp = Lammps_Point_Defect(size = 10, n_vac = 0, potfile=potfile, surface=False, depth=0,
+    lmp = Lammps_Point_Defect(size = 7, n_vac = 0, potfile=potfile, surface=False, depth=0,
                               orientx=orientx, orienty=orienty, orientz=orientz, conv=10000, machine=machine)
 
     if not os.path.exists('../Neb_Dump/Bulk/Tet_Tet'):
@@ -123,8 +123,8 @@ def main(potfile, machine=''):
     if not os.path.exists('../Neb_Dump/Bulk/Tet_Oct'):
         os.makedirs('../Neb_Dump/Bulk/Tet_Oct', exist_ok=True)
 
-    tet_0 = lmp.alattice*np.array([3,3.5,3.25])
-    tet_1 = lmp.alattice*np.array([3.25,3.5,3])
+    tet_0 = lmp.alattice*np.array([3.25,3.5,3])
+    tet_1 = lmp.alattice*np.array([3.5,3.25,3])
     oct_0 = lmp.alattice*np.array([3,3.5,3.5])
 
     sites = lmp.get_all_sites()

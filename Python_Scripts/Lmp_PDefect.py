@@ -1,4 +1,3 @@
-from re import S
 import numpy as np
 from lammps import lammps
 from mpi4py import MPI
@@ -194,13 +193,15 @@ class Point_Defect():
 
         for element, xyz_element in enumerate(xyz_inter):
             for xyz in xyz_element:
-                lmp.command('create_atoms %d single %f %f %f units lattice' % (element + 1, xyz[0], xyz[1], xyz[2]))
+                xyz = np.array(xyz)
+                xyz *= self.alattice
+                lmp.command('create_atoms %d single %f %f %f units box' % (element + 1, xyz[0], xyz[1], xyz[2]))
 
         # # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        lmp.command('minimize 1e-9 1e-12 10 10')
-        lmp.command('minimize 1e-9 1e-12 100 100')
-        lmp.command('minimize 1e-9 1e-12 1000 1000')
+        lmp.command('minimize 1e-12 1e-15 10 10')
+        lmp.command('minimize 1e-12 1e-15 100 100')
+        lmp.command('minimize 1e-12 1e-15 10000 10000')
 
         
         pe = lmp.get_thermo('pe')
@@ -222,13 +223,29 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
+        xyz_system = np.array(lmp.gather_atoms('x',1,3))
+
         lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
 
+        xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
+
+        xyz_inter_relaxed = [[],[],[]]
+
+        N_atoms = 2*self.size**3 - self.n_vac
+
+        idx = 0
+
+        for element, xyz_element in enumerate(xyz_inter):
+            for i in range(len(xyz_element)):
+                vec = (xyz_system[N_atoms + idx])/self.alattice
+                xyz_inter_relaxed[element].append(vec.tolist())
+                idx += 1
+        
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
         
-        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume
+        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume, xyz_inter_relaxed
     
     def Find_Min_Config(self, init_config, atom_to_add = 3):
 

@@ -1,4 +1,3 @@
-from random import sample
 from mpi4py import MPI
 import Random_Sampling
 import Gaussian_Sampling
@@ -71,7 +70,7 @@ def main(machine, max_time, write_dir, save_dir):
         if not os.path.exists(rsamples_folder):
             os.mkdir(rsamples_folder)
 
-    request = comm.Ibarrier()  # Non-blocking barrier
+    # request = comm.Ibarrier()  # Non-blocking barrier
 
     rsamples_folder = comm.bcast(rsamples_folder, root = 0)
 
@@ -81,10 +80,11 @@ def main(machine, max_time, write_dir, save_dir):
                              max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
 
     t2 = time.perf_counter()
+    comm.Barrier()
 
     # Wait for the barrier to complete
-    request.Wait()
-
+    # request.Wait()
+    
     if me == 0:
         print('Random Sampling took %.2f s \n' % (t2 - t1))
         sys.stdout.flush()  
@@ -103,7 +103,7 @@ def main(machine, max_time, write_dir, save_dir):
 
         t1 = time.perf_counter()
 
-        GMM.main(os.path.join(rsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, 0)
+        GMM.main(os.path.join(rsamples_folder,'Core_*'), data_folder, 0)
 
         t2 = time.perf_counter()
 
@@ -115,13 +115,12 @@ def main(machine, max_time, write_dir, save_dir):
     ## END CLUSTERING ALGORITHM ###
         
 
-
-
     ## START GAUSSIAN SAMPLING LOOP ###
-    
+    g_iteration = 0
+
     N_gaussian = 3
 
-    for i in range(N_gaussian):
+    for i in range(g_iteration, g_iteration + N_gaussian):
 
         gsamples_folder = ''
 
@@ -134,7 +133,7 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.makedirs(gsamples_folder, exist_ok=True)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+        # request = comm.Ibarrier()  # Non-blocking barrier
 
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
@@ -148,7 +147,8 @@ def main(machine, max_time, write_dir, save_dir):
         t2 = time.perf_counter()
 
         # Wait for the barrier to complete
-        request.Wait()
+        # request.Wait()
+        comm.Barrier()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -156,7 +156,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main(os.path.join(gsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, i + 1)
+            GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
 
             t2 = time.perf_counter()
 
@@ -167,11 +167,12 @@ def main(machine, max_time, write_dir, save_dir):
     
     ### END GAUSSIAN SAMPLING LOOP ###
 
-
-
-    ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
+    # ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
-    comm.Barrier()
+    # comm.Barrier()
+    g_iteration += N_gaussian
+
+    N_gaussian = 4
 
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
@@ -181,7 +182,7 @@ def main(machine, max_time, write_dir, save_dir):
     
     # Edit a new Covariance Matrix for the He-He potential
     if me == 0:
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, N_gaussian)):
+        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, g_iteration)):
             cov_0 = np.loadtxt(cov_file)
             cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
@@ -189,22 +190,22 @@ def main(machine, max_time, write_dir, save_dir):
                            [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
 
             cov_name = os.path.basename(cov_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, N_gaussian, cov_name), cov)
+            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, N_gaussian)):
+        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, g_iteration)):
             mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
             mean_1 = np.zeros((len(cov_1),1))
 
             mean = np.vstack([mean_0, mean_1])
 
             mean_name = os.path.basename(mean_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, N_gaussian, mean_name), mean)
+            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
 
     comm.Barrier()
 
     ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
-    for i in range(N_gaussian, N_gaussian + 2):
+    for i in range(g_iteration, g_iteration + N_gaussian):
 
         gsamples_folder = ''
 
@@ -217,7 +218,7 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+        # request = comm.Ibarrier()  # Non-blocking barrier
 
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
@@ -229,8 +230,10 @@ def main(machine, max_time, write_dir, save_dir):
 
         t2 = time.perf_counter()
 
+        comm.Barrier()
+
         # Wait for the barrier to complete
-        request.Wait()
+        # request.Wait()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -239,7 +242,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main(os.path.join(gsamples_folder, 'Core_*/Filtered_Samples.txt'), data_folder,i + 1)
+            GMM.main(os.path.join(gsamples_folder, 'Core_*'), data_folder,i + 1)
 
             t2 = time.perf_counter()
 
@@ -249,8 +252,7 @@ def main(machine, max_time, write_dir, save_dir):
         comm.Barrier()
     ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
 
-    exit()
-
+    g_iteration += N_gaussian
 
     ### OPTIMIZE FOR H-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
@@ -262,7 +264,7 @@ def main(machine, max_time, write_dir, save_dir):
     
     # Edit a new Covariance Matrix for the H-He potential
     if me == 0:
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,2*N_gaussian - 1)):
+        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,g_iteration)):
             cov_0 = np.loadtxt(cov_file)
             cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
@@ -270,22 +272,22 @@ def main(machine, max_time, write_dir, save_dir):
                            [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
 
             cov_name = os.path.basename(cov_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder,2*N_gaussian, cov_name), cov)
+            np.savetxt('%s/GMM_%d/%s' % (data_folder,g_iteration, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,2*N_gaussian - 1)):
-            mean_0 = np.loadtxt(mean_file)
-            mean_1 = np.zeros((3,1))
+        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,g_iteration)):
+            mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
+            mean_1 = np.zeros((len(cov_1),1))
 
             mean = np.vstack([mean_0, mean_1])
 
             mean_name = os.path.basename(mean_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, N_gaussian, mean_name), mean)
+            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
 
     comm.Barrier()
 
     ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
-    for i in range(2*N_gaussian, 3*N_gaussian):
+    for i in range(g_iteration, g_iteration + N_gaussian):
 
         gsamples_folder = ''
 
@@ -298,7 +300,7 @@ def main(machine, max_time, write_dir, save_dir):
             if not os.path.exists(gsamples_folder):
                 os.mkdir(gsamples_folder)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+        # request = comm.Ibarrier()  # Non-blocking barrier
 
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
@@ -309,8 +311,11 @@ def main(machine, max_time, write_dir, save_dir):
                                    gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
         t2 = time.perf_counter()
+
+        comm.Barrier()
+
         # Wait for the barrier to complete
-        request.Wait()
+        # request.Wait()
 
         if me == 0:
             print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
@@ -318,7 +323,7 @@ def main(machine, max_time, write_dir, save_dir):
 
             t1 = time.perf_counter()
 
-            GMM.main( os.path.join(gsamples_folder,'Core_*/Filtered_Samples.txt'), data_folder, i + 1)
+            GMM.main( os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
 
             t2 = time.perf_counter()
 
@@ -327,14 +332,14 @@ def main(machine, max_time, write_dir, save_dir):
         comm.Barrier()
 
     ### END GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
-            
 
+    g_iteration += N_gaussian
 
     if me == 0:
         print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
         sys.stdout.flush()  
 
-        folders = glob.glob(os.path.join(data_folder, 'Gaussian_Samples_%d/Core_*' % 3*N_gaussian - 1))
+        folders = glob.glob(os.path.join(data_folder, 'Gaussian_Samples_%d/Core_*' % (g_iteration - 1)))
 
         lst_samples = []
         lst_loss = []
@@ -349,7 +354,7 @@ def main(machine, max_time, write_dir, save_dir):
 
         for proc in range(nprocs):
             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
-            if os.path.exists(simplex_folder):
+            if not os.path.exists(simplex_folder):
                 os.makedirs(simplex_folder, exist_ok=True)
 
         if nprocs >= len(loss):
@@ -367,7 +372,7 @@ def main(machine, max_time, write_dir, save_dir):
             part = len(loss) // nprocs
             idx = 0
 
-            for i in range(nprocs - 1):
+            for proc in range(nprocs - 1):
                 simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
                 np.savetxt('%s/Simplex_Init.txt' % folders[i], samples[idx: idx + part])
                 idx += part
@@ -382,7 +387,7 @@ def main(machine, max_time, write_dir, save_dir):
             samples = samples[sort_idx]
 
             idx = 0
-            for i in range(nprocs):
+            for proc in range(nprocs):
                 simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
                 np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
                 idx += part
@@ -390,7 +395,7 @@ def main(machine, max_time, write_dir, save_dir):
     comm.Barrier()
 
     simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % me)
-    Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, core_folder = simplex_folder, write_dir=write_dir)
+    Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, simplex_folder=simplex_folder, write_dir=write_dir)
 
 if __name__ == '__main__':
     global comm

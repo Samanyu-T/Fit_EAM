@@ -18,10 +18,11 @@ def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump', proc
             test_dict[key] = {}
 
             lmp_inst.n_vac = int(key[1])
-            ef, rvol = lmp_inst.Build_Defect(ref_dict[key]['pos'])
+            ef, rvol, pos = lmp_inst.Build_Defect(ref_dict[key]['pos'])
 
             test_dict[key]['val'] = ef
             test_dict[key]['rvol'] = rvol
+            test_dict[key]['pos'] = pos
 
         else:
             atom_to_add = 3
@@ -29,7 +30,7 @@ def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump', proc
             if n_h > 0:
                 atom_to_add = 2
 
-            if n_he > 1:
+            if n_h == 0:
                 init_file = 'V%dH%dHe%d' % (n_vac, n_h, n_he-1)
             else:
                 init_file = 'V%dH%dHe%d' % (n_vac, n_h - 1, n_he)

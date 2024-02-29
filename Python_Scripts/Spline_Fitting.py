@@ -293,11 +293,10 @@ class Fitting_Potential():
                 self.pot_lammps[key][1:] = r[1:]*(zbl + poly)
 
 
-def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = False):
-    # t1 = time.perf_counter()
+def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = False, write = False):
 
     potloc = '%s/test.%d.eam.alloy' % (fitting_class.pot_folder, fitting_class.proc_id)
-    
+
     fitting_class.sample_to_file(sample)
      
     write_pot(fitting_class.pot_lammps, fitting_class.potlines, potloc)
@@ -305,21 +304,46 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     test_formations = sim_defect_set(potloc, ref_formations, fitting_class.machine, fitting_class.lammps_folder, fitting_class.proc_id)
     
     ref_binding = binding_fitting(ref_formations)
+
     test_binding = binding_fitting(test_formations)
 
     loss = 0
 
     # Quadratic Loss of Interstitial Formation Energies
-    loss = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])**2
-    loss += (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])**2
+    tet_diff = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])
 
-    # Soft Constraint to ensure correct ordering of formation energies and relaxation volumes
-    loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_oct']['val'])
+    oct_diff = (test_formations['V0H0He1_oct']['val'] - ref_formations['V0H0He1_oct']['val'])
+
+    migration = (test_formations['V0H0He1_inter2']['val'] - test_formations['V0H0He1']['val'])
+
+    loss = tet_diff**2
+
+    loss += (oct_diff - tet_diff)**2
+
+    loss += np.abs(migration - 0.06)
+
+    tet_dist = np.linalg.norm(test_formations['V0H0He1']['pos'][-1][0] - np.array(ref_formations['V0H0He1']['pos'][-1][0])) 
+
+    oct_dist = np.linalg.norm(test_formations['V0H0He1_oct']['pos'][-1][0] - np.array(ref_formations['V0H0He1_oct']['pos'][-1][0]))
+
+    inter_dist = np.abs(test_formations['V0H0He1_inter2']['pos'][-1][0][0] - test_formations['V0H0He1_inter2']['pos'][-1][0][1]) + \
+                 np.abs(test_formations['V0H0He1_inter2']['pos'][-1][0][2] - ref_formations['V0H0He1_inter2']['pos'][-1][0][2])
     
-    loss +=  100*(np.clip(test_formations['V0H0He1']['rvol'] - test_formations['V0H0He1_oct']['rvol'], a_min=0, a_max=0.1))
-    loss +=  100*( not (-0.005 < test_formations['V0H0He1_inter' ]['val'] - test_formations['V0H0He1']['val']  < 0.05 ) )
-    loss +=  100*( not (-0.005 < test_formations['V0H0He1_inter2']['val'] - test_formations['V0H0He1']['val']  < 0.05 ) )
+    # Soft Constraint to ensure correct ordering of formation energies and relaxation volumes
 
+    loss +=  100*(test_formations['V0H0He1']['val'] > test_formations['V0H0He1_inter2']['val']) 
+
+    loss +=  100*(test_formations['V0H0He1_inter2']['val'] > test_formations['V0H0He1_oct']['val']) 
+
+    loss +=  100*(test_formations['V0H0He1']['rvol'] > test_formations['V0H0He1_oct']['rvol'])
+
+    loss +=  100*( not (-0.005 < test_formations['V0H0He1_inter']['val'] - test_formations['V0H0He1']['val']  < 0.05 ) )
+
+    loss += 100*(tet_dist>1e-3)
+
+    loss += 100*(oct_dist>1e-3)
+
+    loss += 100*(inter_dist>1e-3)
 
     # Quadratic Loss of Binding Energies
     for i in range(len(ref_binding)):
@@ -330,47 +354,46 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
 
-    # Write the Loss and the Sample Data to files for archiving
-    # with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
+    if write:
+        # Write the Loss and the Sample Data to files for archiving
+        with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
 
-    #     file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
-    #                                              test_formations['V0H0He1']['val'], 
-    #                                              test_formations['V0H0He1_inter']['val'], 
-    #                                              test_formations['V0H0He1_oct']['val']
-                                            
-    #                                              )
-    #               )
-    #     np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
+            file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
+                                                    test_formations['V0H0He1']['val'], 
+                                                    test_formations['V0H0He1_inter']['val'], 
+                                                    test_formations['V0H0He1_oct']['val']
+                                                
+                                                    )
+                    )
+            np.savetxt(file, test_binding[0] - ref_binding[0], fmt = '%f', newline= ' ')
 
-    #     file.write('Vacancy_Binding: ')
+            file.write('Vacancy_Binding: ')
+            
+            np.savetxt(file, test_binding[1] - ref_binding[1], fmt = '%f', newline= ' ')
+
+            file.write('Di-Vacancy_Binding: ')
+            
+            np.savetxt(file, test_binding[2] - ref_binding[2], fmt = '%f', newline= ' ')
+
+            file.write('Rvol: %f %f %f' % 
+                    (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'],
+                        test_formations['V0H0He1_oct']['rvol'] - ref_formations['V0H0He1_oct']['rvol'],
+                        test_formations['V1H0He1']['rvol'] - ref_formations['V1H0He1']['rvol']
+                        )
+                    )
+
+            # Add a newline character at the end
+            file.write('\n')
         
-    #     np.savetxt(file, test_binding[1] - ref_binding[1], fmt = '%f', newline= ' ')
+        sample_filename = 'samples.txt'
 
-    #     file.write('Di-Vacancy_Binding: ')
-        
-    #     np.savetxt(file, test_binding[2] - ref_binding[2], fmt = '%f', newline= ' ')
+        if genetic:
+            sample_filename = 'population.txt'
 
-    #     file.write('Rvol: %f %f %f' % 
-    #                (test_formations['V0H0He1']['rvol'] - ref_formations['V0H0He1']['rvol'],
-    #                 test_formations['V0H0He1_oct']['rvol'] - ref_formations['V0H0He1_oct']['rvol'],
-    #                 test_formations['V1H0He1']['rvol'] - ref_formations['V1H0He1']['rvol']
-    #                 )
-    #                )
+        with open(os.path.join(output_folder, sample_filename), 'a') as file:
+            np.savetxt(file, sample, fmt = '%f', newline=' ')
+            file.write('\n')
 
-    #     # Add a newline character at the end
-    #     file.write('\n')
-    
-    # sample_filename = 'samples.txt'
-
-    # if genetic:
-    #     sample_filename = 'population.txt'
-
-    # with open(os.path.join(output_folder, sample_filename), 'a') as file:
-    #     np.savetxt(file, sample, fmt = '%f', newline=' ')
-    #     file.write('\n')
-    # t2 = time.perf_counter()
-
-    # print(t2 - t1)
     return loss
 
 def random_sampling(ref_formations, fitting_class, max_time, output_folder):
@@ -405,7 +428,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
     lst_loss = lst_loss[idx]
     lst_samples = lst_samples[idx]
 
-    n = int( len(lst_loss) * 0.0025 )
+    n = int( len(lst_loss) * 0.1 )
 
     np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
     np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
@@ -442,7 +465,7 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
     lst_loss = lst_loss[idx]
     lst_samples = lst_samples[idx]
 
-    n = int( len(lst_loss) * 0.0025 )
+    n = int( len(lst_loss) * 0.1 )
 
     np.savetxt(os.path.join(output_folder, 'Filtered_Samples.txt'), lst_samples[:n])
     np.savetxt(os.path.join(output_folder, 'Filtered_Loss.txt'), lst_loss[:n])
