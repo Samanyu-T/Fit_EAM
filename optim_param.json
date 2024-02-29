@@ -1,6 +1,6 @@
 {
-    "machine": "",
+    "machine": "intel_cpu_intelmpi",
     "max_time": 6,
-    "write_dir": "../Optim_Local",
+    "write_dir": "/local/",
     "save_dir": "../"
 }
