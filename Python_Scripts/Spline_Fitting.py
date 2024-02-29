@@ -405,7 +405,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
 
     while True:
         sample = fitting_class.gen_rand()
-        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, False)
         idx += 1
 
         lst_loss.append(loss)
@@ -442,7 +442,7 @@ def gaussian_sampling(ref_formations, fitting_class, max_time, output_folder, co
     idx = 0
     while True:
         sample = np.random.multivariate_normal(mean=mean, cov=cov)
-        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False)
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, False)
         idx += 1
         
         lst_loss.append(loss)

@@ -117,8 +117,10 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
             with open('%s/loss.txt' % simplex_iteration_folder, 'w') as file:
                 file.write('')
 
-            maxiter = 1000
-            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder), x0=x_init, method = 'COBYLA', options={'maxiter': maxiter, 'tol':1e-6})
+            genetic = False
+            write = True
+            maxiter = 5000
+            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder, genetic, write), x0=x_init, method = 'Nelder-Mead', options={'maxiter': maxiter, 'tol':1e-6})
 
             # Write final optima to the output file
             final_optima['Optima'].append(x_star.x.tolist())
