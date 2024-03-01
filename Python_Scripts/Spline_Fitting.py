@@ -339,7 +339,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
 
     loss +=  100*( not (-0.005 < test_formations['V0H0He1_inter']['val'] - test_formations['V0H0He1']['val']  < 0.05 ) )
 
-    loss += 100*(tet_dist>1e-3)
+    loss += 100*(tet_dist>1e-1)
 
     loss += 100*(oct_dist>1e-3)
 
@@ -353,7 +353,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     for key in ref_formations:
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
-
+    
     if write:
         # Write the Loss and the Sample Data to files for archiving
         with open(os.path.join(output_folder,'loss.txt'), 'a') as file:

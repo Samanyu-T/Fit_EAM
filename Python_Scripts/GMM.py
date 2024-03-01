@@ -5,28 +5,6 @@ import os
 import glob
 import sys
 def main(file_pattern, data_folder, iter):
-    
-    loss_lst = []  
-
-    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Loss.txt')):
-        if os.path.getsize(file) > 0:
-            loss_lst.append(np.loadtxt(file))
-            
-    loss = np.vstack([x for x in loss_lst])
-
-    sample_lst = []  
-
-    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Samples.txt')):
-        if os.path.getsize(file) > 0:
-            sample_lst.append(np.loadtxt(file))
-            
-    samples = np.hstack([x for x in sample_lst])
-
-    sort_idx = np.argsort(loss)
-
-    n = np.ceil(0.1*len(loss)).astype(int)
-
-    data = samples[sort_idx[:n]]
 
     # Get the process ID
     process_id = os.getpid()
@@ -39,6 +17,33 @@ def main(file_pattern, data_folder, iter):
 
     print(f"The process is using {cpu_cores} core(s).")
     sys.stdout.flush()  
+
+
+    loss_lst = []  
+
+    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Loss.txt')):
+        if os.path.getsize(file) > 0:
+            loss_lst.append(np.loadtxt(file))
+            
+    loss = np.hstack([x for x in loss_lst])
+
+    sample_lst = []  
+
+    for file in glob.glob(os.path.join(file_pattern, 'Filtered_Samples.txt')):
+        if os.path.getsize(file) > 0:
+            sample_lst.append(np.loadtxt(file))
+            
+    samples = np.vstack([x for x in sample_lst])
+
+    sort_idx = np.argsort(loss)
+    loss = loss[sort_idx]
+    samples = samples[sort_idx]
+
+    thresh_idx = np.where(loss < 0.25*loss.mean())[0]
+
+    n = np.clip(10000, a_min = 0, a_max=len(thresh_idx)).astype(int)
+
+    data = samples[thresh_idx[:n]]
 
     cmp = 1
     gmm = GaussianMixture(n_components=cmp, covariance_type='full', reg_covar=1e-6)
@@ -68,8 +73,8 @@ def main(file_pattern, data_folder, iter):
     gmm.fit(data)
 
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
-    np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[sort_idx[:n]])
-    
+    np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
+
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
 
@@ -78,4 +83,4 @@ def main(file_pattern, data_folder, iter):
         np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
-    main(sys.argv[1], 0)
+    main('../ddata_102/Random_Samples/Core_*', '../data_102', 0)
