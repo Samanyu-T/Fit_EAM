@@ -172,7 +172,7 @@ def main(machine, max_time, write_dir, save_dir):
     # comm.Barrier()
     g_iteration += N_gaussian
 
-    N_gaussian = 4
+    N_gaussian = 2
 
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
@@ -251,6 +251,7 @@ def main(machine, max_time, write_dir, save_dir):
 
         comm.Barrier()
     ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
+    exit()
 
     g_iteration += N_gaussian
 

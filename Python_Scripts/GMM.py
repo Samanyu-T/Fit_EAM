@@ -20,7 +20,7 @@ def main(file_pattern, data_folder, iter):
         if os.path.getsize(file) > 0:
             sample_lst.append(np.loadtxt(file))
             
-    samples = np.vstack([x for x in sample_lst])
+    samples = np.hstack([x for x in sample_lst])
 
     sort_idx = np.argsort(loss)
 
@@ -68,7 +68,8 @@ def main(file_pattern, data_folder, iter):
     gmm.fit(data)
 
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
-
+    np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[sort_idx[:n]])
+    
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
 
