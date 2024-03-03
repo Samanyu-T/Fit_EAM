@@ -51,124 +51,124 @@ def main(machine, max_time, write_dir, save_dir):
 
     bool_fit = {}
 
-    bool_fit['He_F(rho)'] = bool(n_knots[0])
-    bool_fit['He_rho(r)'] = bool(n_knots[1])
-    bool_fit['W-He'] =   bool(n_knots[2])
-    bool_fit['H-He'] = False
-    bool_fit['He-He'] = False
+    # bool_fit['He_F(rho)'] = bool(n_knots[0])
+    # bool_fit['He_rho(r)'] = bool(n_knots[1])
+    # bool_fit['W-He'] =   bool(n_knots[2])
+    # bool_fit['H-He'] = False
+    # bool_fit['He-He'] = False
 
 
-    ### START RANDOM SAMPLING ###
-    rsamples_folder = ''
+    # ### START RANDOM SAMPLING ###
+    # rsamples_folder = ''
 
-    if me == 0:
-        print('Start Random Sampling \n')
-        sys.stdout.flush()  
+    # if me == 0:
+    #     print('Start Random Sampling \n')
+    #     sys.stdout.flush()  
 
-        rsamples_folder = os.path.join(data_folder, 'Random_Samples') 
+    #     rsamples_folder = os.path.join(data_folder, 'Random_Samples') 
 
-        if not os.path.exists(rsamples_folder):
-            os.mkdir(rsamples_folder)
+    #     if not os.path.exists(rsamples_folder):
+    #         os.mkdir(rsamples_folder)
 
-    request = comm.Ibarrier()  # Non-blocking barrier
+    # request = comm.Ibarrier()  # Non-blocking barrier
 
-    rsamples_folder = comm.bcast(rsamples_folder, root = 0)
+    # rsamples_folder = comm.bcast(rsamples_folder, root = 0)
 
-    t1 = time.perf_counter()
+    # t1 = time.perf_counter()
 
-    Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine,
-                             max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
+    # Random_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine,
+    #                          max_time=0.49*max_time, write_dir=write_dir, sample_folder=rsamples_folder)
 
-    t2 = time.perf_counter()
+    # t2 = time.perf_counter()
 
-    # Wait for the barrier to complete
-    request.Wait()
+    # # Wait for the barrier to complete
+    # request.Wait()
     
-    if me == 0:
-        print('Random Sampling took %.2f s \n' % (t2 - t1))
-        sys.stdout.flush()  
+    # if me == 0:
+    #     print('Random Sampling took %.2f s \n' % (t2 - t1))
+    #     sys.stdout.flush()  
     
-    comm.Barrier()
+    # comm.Barrier()
 
-    ### END RANDOM SAMPLING ###
-
-
+    # ### END RANDOM SAMPLING ###
 
 
-    ### START CLUSTERING ALGORITHM ###
-    if me == 0:
-        print('Start GMM Clustering \n')
-        sys.stdout.flush()  
 
-        t1 = time.perf_counter()
 
-        GMM.main(os.path.join(rsamples_folder,'Core_*'), data_folder, 0)
+    # ### START CLUSTERING ALGORITHM ###
+    # if me == 0:
+    #     print('Start GMM Clustering \n')
+    #     sys.stdout.flush()  
 
-        t2 = time.perf_counter()
+    #     t1 = time.perf_counter()
 
-        print('\n Clustering took %.2f s ' % (t2 - t1))
-        sys.stdout.flush()  
+    #     GMM.main(os.path.join(rsamples_folder,'Core_*'), data_folder, 0)
 
-    comm.Barrier()
+    #     t2 = time.perf_counter()
 
-    ## END CLUSTERING ALGORITHM ###
+    #     print('\n Clustering took %.2f s ' % (t2 - t1))
+    #     sys.stdout.flush()  
+
+    # comm.Barrier()
+
+    # ## END CLUSTERING ALGORITHM ###
         
 
-    ## START GAUSSIAN SAMPLING LOOP ###
-    g_iteration = 0
+    # ## START GAUSSIAN SAMPLING LOOP ###
+    # g_iteration = 0
 
-    N_gaussian = 3
+    # N_gaussian = 3
 
-    for i in range(g_iteration, g_iteration + N_gaussian):
+    # for i in range(g_iteration, g_iteration + N_gaussian):
 
-        gsamples_folder = ''
+    #     gsamples_folder = ''
 
-        if me == 0:
-            print('Start Gaussian Sampling %dth iteration' % i)
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('Start Gaussian Sampling %dth iteration' % i)
+    #         sys.stdout.flush()  
 
-            gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % i)
+    #         gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % i)
 
-            if not os.path.exists(gsamples_folder):
-                os.makedirs(gsamples_folder, exist_ok=True)
+    #         if not os.path.exists(gsamples_folder):
+    #             os.makedirs(gsamples_folder, exist_ok=True)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+    #     request = comm.Ibarrier()  # Non-blocking barrier
 
-        gsamples_folder = comm.bcast(gsamples_folder, root = 0)
+    #     gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
-        t1 = time.perf_counter()
+    #     t1 = time.perf_counter()
 
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.49*max_time,
-                                   write_dir=write_dir, sample_folder=gsamples_folder,
-                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
+    #     Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.49*max_time,
+    #                                write_dir=write_dir, sample_folder=gsamples_folder,
+    #                                gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
 
-        t2 = time.perf_counter()
+    #     t2 = time.perf_counter()
 
-        # Wait for the barrier to complete
-        request.Wait()
+    #     # Wait for the barrier to complete
+    #     request.Wait()
 
-        if me == 0:
-            print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
+    #         sys.stdout.flush()  
 
-            t1 = time.perf_counter()
+    #         t1 = time.perf_counter()
 
-            GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
+    #         GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
 
-            t2 = time.perf_counter()
+    #         t2 = time.perf_counter()
 
-            print('\n Clustering took %.2f s ' % (t2 - t1))
+    #         print('\n Clustering took %.2f s ' % (t2 - t1))
 
-            sys.stdout.flush()  
-        comm.Barrier()
+    #         sys.stdout.flush()  
+    #     comm.Barrier()
     
     ### END GAUSSIAN SAMPLING LOOP ###
 
     # ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     # comm.Barrier()
-    g_iteration += N_gaussian
+    g_iteration = 3
 
     N_gaussian = 4
 
