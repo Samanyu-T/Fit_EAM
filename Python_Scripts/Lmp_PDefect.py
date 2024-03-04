@@ -5,6 +5,7 @@ import itertools
 import copy 
 import time
 import sys
+import os
 # template to replace MPI functionality for single threaded use
 class MPI_to_serial():
 
@@ -263,6 +264,8 @@ class Point_Defect():
         lmp.command('atom_style atomic')
 
         lmp.command('atom_modify map array sort 0 0.0')
+
+        print(os.listdir(self.lammps_folder))
 
         lmp.command('read_data %s/%s.data' % (self.lammps_folder, init_config))
 
