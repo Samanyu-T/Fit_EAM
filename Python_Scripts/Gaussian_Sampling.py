@@ -88,8 +88,6 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine, lammps_folder)
     t2 = time.perf_counter()
-
-    print(proc)
     
     t_iter = (t2 - t1)
 
