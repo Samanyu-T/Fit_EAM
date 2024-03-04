@@ -255,6 +255,8 @@ class Point_Defect():
 
         sites = self.get_all_sites()
 
+        print(init_config ,os.listdir(self.lammps_folder))
+
         lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
         lmp.command('# Lammps input file')
@@ -264,8 +266,6 @@ class Point_Defect():
         lmp.command('atom_style atomic')
 
         lmp.command('atom_modify map array sort 0 0.0')
-
-        print(os.listdir(self.lammps_folder))
 
         lmp.command('read_data %s/%s.data' % (self.lammps_folder, init_config))
 
