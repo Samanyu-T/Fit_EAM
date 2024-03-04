@@ -405,7 +405,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
 
     while True:
         sample = fitting_class.gen_rand()
-        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, True)
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, False)
         idx += 1
 
         lst_loss.append(loss)
