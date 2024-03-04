@@ -221,7 +221,8 @@ def main(machine, max_time, write_dir, save_dir):
         gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
         print(gsamples_folder)
-        
+        sys.stdout.flush()  
+
         t1 = time.perf_counter()
 
         Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.99*max_time,

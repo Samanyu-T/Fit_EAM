@@ -32,7 +32,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
              sample_folder='../W-He_102/Gaussian_Samples', gmm_folder = '../W-He_102/GMM'):
 
     print('in function')
-    
+    sys.stdout.flush()  
+
     # Init a Perfect Tungsten Crystal as a starting point
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile='Potentials/WHHe_test.eam.alloy') 
     t_iter = lmp_inst.Perfect_Crystal()
