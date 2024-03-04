@@ -45,8 +45,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
         my_json = json.load(my_file)
 
     N_Vac = 2
-    N_H = 0
-    N_He = 1
+    N_H = 4
+    N_He = 4
 
     if bool_fit['He-He']:
         N_He = 4
