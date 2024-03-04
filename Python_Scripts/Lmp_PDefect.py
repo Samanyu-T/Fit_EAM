@@ -304,6 +304,9 @@ class Point_Defect():
 
         min_idx = pe_arr.argmin()
 
+        print(pos_lst[min_idx])
+        sys.stdout.flush()    
+
         lmp.command('create_atoms %d single %f %f %f units box' % 
                     (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
 
