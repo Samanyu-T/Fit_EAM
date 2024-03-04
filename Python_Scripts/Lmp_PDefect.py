@@ -256,6 +256,7 @@ class Point_Defect():
         sites = self.get_all_sites()
 
         print(init_config ,os.listdir(self.lammps_folder))
+        sys.stdout.flush()    
 
         lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
