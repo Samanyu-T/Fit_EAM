@@ -168,7 +168,7 @@ def main(machine, max_time, write_dir, save_dir):
     # ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     # comm.Barrier()
-    g_iteration = 3
+    g_iteration += N_gaussian
 
     N_gaussian = 4
 
