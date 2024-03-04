@@ -8,8 +8,8 @@ def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump', proc
     lmp_inst = Point_Defect(size = 7, n_vac=0, potfile=potfile, machine=machine, lammps_folder=lammps_folder, proc_id=proc_id) 
 
     test_dict = {}
-
     for key in ref_dict:
+        print(key)
         n_vac = int(key[1])
         n_h = int(key[3])
         n_he = int(key[6])
