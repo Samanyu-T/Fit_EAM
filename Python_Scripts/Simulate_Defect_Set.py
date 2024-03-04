@@ -9,7 +9,7 @@ def sim_defect_set(potfile, ref_dict, machine, lammps_folder='Lammps_Dump', proc
 
     test_dict = {}
     for key in ref_dict:
-        print(key)
+        print(key, lammps_folder)
         sys.stdout.flush()    
         n_vac = int(key[1])
         n_h = int(key[3])
