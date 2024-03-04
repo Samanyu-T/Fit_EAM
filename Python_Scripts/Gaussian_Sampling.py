@@ -83,14 +83,14 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
     if not os.path.exists(lammps_folder):
         os.makedirs(lammps_folder, exist_ok=True)
 
-    print(N_H)
-    sys.stdout.flush()  
 
     # Init Optimization Parameter
     t1 = time.perf_counter()
     _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, machine, lammps_folder)
     t2 = time.perf_counter()
 
+    print(proc)
+    
     t_iter = (t2 - t1)
 
     n_params = n_knots[0] + n_knots[1] + 3*n_knots[2]
