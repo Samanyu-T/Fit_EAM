@@ -4,7 +4,7 @@ from mpi4py import MPI
 import itertools
 import copy 
 import time
-
+import sys
 # template to replace MPI functionality for single threaded use
 class MPI_to_serial():
 
@@ -127,7 +127,7 @@ class Point_Defect():
         ''' xyz_inter gives a list of the intersitial atoms for each species i,e W H He in that order
             they are in lattice units and are consistent with the Lammps co-ords of the cell'''
 
-        lmp = lammps()#name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
         lmp.command('# Lammps input file')
 
@@ -227,6 +227,9 @@ class Point_Defect():
 
         lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
 
+        print(self.lammps_folder)
+        sys.stdout.flush()
+
         xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
 
         xyz_inter_relaxed = [[],[],[]]
@@ -251,7 +254,7 @@ class Point_Defect():
 
         sites = self.get_all_sites()
 
-        lmp = lammps()#name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
+        lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
         lmp.command('# Lammps input file')
 
