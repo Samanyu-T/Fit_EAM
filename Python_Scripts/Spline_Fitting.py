@@ -353,7 +353,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     for key in ref_formations:
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
-    
+
     if write:
         # Write the Loss and the Sample Data to files for archiving
         with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
@@ -405,7 +405,7 @@ def random_sampling(ref_formations, fitting_class, max_time, output_folder):
 
     while True:
         sample = fitting_class.gen_rand()
-        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, False)
+        loss = loss_func(sample, fitting_class, ref_formations, output_folder, False, True)
         idx += 1
 
         lst_loss.append(loss)

@@ -92,7 +92,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
 
     # Init Optimization Parameter
     t1 = time.perf_counter()
-    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, fitting_class.machine, fitting_class.lammps_folder)
+    _ = sim_defect_set('Potentials/WHHe_test.eam.alloy', ref_formations, fitting_class.machine, fitting_class.lammps_folder, fitting_class.proc_id)
     t2 = time.perf_counter()
 
     if proc == 0:

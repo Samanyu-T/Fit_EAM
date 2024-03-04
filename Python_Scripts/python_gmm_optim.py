@@ -51,14 +51,14 @@ def main(machine, max_time, write_dir, save_dir):
 
     bool_fit = {}
 
-    # bool_fit['He_F(rho)'] = bool(n_knots[0])
-    # bool_fit['He_rho(r)'] = bool(n_knots[1])
-    # bool_fit['W-He'] =   bool(n_knots[2])
-    # bool_fit['H-He'] = False
-    # bool_fit['He-He'] = False
+    bool_fit['He_F(rho)'] = bool(n_knots[0])
+    bool_fit['He_rho(r)'] = bool(n_knots[1])
+    bool_fit['W-He'] =   bool(n_knots[2])
+    bool_fit['H-He'] = False
+    bool_fit['He-He'] = False
 
 
-    # ### START RANDOM SAMPLING ###
+    ### START RANDOM SAMPLING ###
     # rsamples_folder = ''
 
     # if me == 0:

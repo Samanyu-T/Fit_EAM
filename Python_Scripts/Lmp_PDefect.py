@@ -4,8 +4,7 @@ from mpi4py import MPI
 import itertools
 import copy 
 import time
-import sys
-import os
+
 # template to replace MPI functionality for single threaded use
 class MPI_to_serial():
 
@@ -46,6 +45,7 @@ class Point_Defect():
         self.proc_id = int(proc_id)
         self.size  = int(size)
         self.n_vac = int(n_vac)
+        self.N_atoms = int(2*size**3)
         
         if surface:
             self.surface = 10
@@ -194,15 +194,13 @@ class Point_Defect():
 
         for element, xyz_element in enumerate(xyz_inter):
             for xyz in xyz_element:
-                xyz = np.array(xyz)
-                xyz *= self.alattice
-                lmp.command('create_atoms %d single %f %f %f units box' % (element + 1, xyz[0], xyz[1], xyz[2]))
+                lmp.command('create_atoms %d single %f %f %f units lattice' % (element + 1, xyz[0], xyz[1], xyz[2]))
 
         # # lmp.command('fix 3 all box/relax  aniso 0.0')
 
-        lmp.command('minimize 1e-12 1e-15 10 10')
-        lmp.command('minimize 1e-12 1e-15 100 100')
-        lmp.command('minimize 1e-12 1e-15 10000 10000')
+        lmp.command('minimize 1e-9 1e-12 10 10')
+        lmp.command('minimize 1e-9 1e-12 100 100')
+        lmp.command('minimize 1e-9 1e-12 1000 1000')
 
         
         pe = lmp.get_thermo('pe')
@@ -224,18 +222,15 @@ class Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        xyz_system = np.array(lmp.gather_atoms('x',1,3))
-
         lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, len(xyz_inter[1]), len(xyz_inter[2])))
-
-        print(self.lammps_folder)
-        sys.stdout.flush()
-
+        
+        xyz_system = np.array(lmp.gather_atoms('x',1,3))
+        
         xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
 
         xyz_inter_relaxed = [[],[],[]]
 
-        N_atoms = 2*self.size**3 - self.n_vac
+        N_atoms = self.N_atoms - self.n_vac
 
         idx = 0
 
@@ -244,7 +239,8 @@ class Point_Defect():
                 vec = (xyz_system[N_atoms + idx])/self.alattice
                 xyz_inter_relaxed[element].append(vec.tolist())
                 idx += 1
-        
+
+
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
@@ -254,9 +250,6 @@ class Point_Defect():
     def Find_Min_Config(self, init_config, atom_to_add = 3):
 
         sites = self.get_all_sites()
-
-        print(init_config ,os.listdir(self.lammps_folder))
-        sys.stdout.flush()    
 
         lmp = lammps(name = self.machine, cmdargs=['-m', str(self.proc_id),'-screen', 'none', '-echo', 'none', '-log', 'none'])
         
@@ -303,9 +296,6 @@ class Point_Defect():
         pe_arr = np.array(pe_lst)
 
         min_idx = pe_arr.argmin()
-
-        print(pos_lst[min_idx])
-        sys.stdout.flush()    
 
         lmp.command('create_atoms %d single %f %f %f units box' % 
                     (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
