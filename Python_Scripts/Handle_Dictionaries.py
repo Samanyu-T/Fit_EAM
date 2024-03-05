@@ -73,19 +73,20 @@ def binding_fitting(ref_formations):
 
     binding = []
 
+    binding.append(find_binding(ref_formations, [0, 0, 1], [0, 0, 1], [0, 0, 1]))
 
-    for i in range(3):
-        binding.append(find_binding(ref_formations, [i, 0, 1], [0, 0, 1], [0,0,1]))
+    for i in range(1, 3):
+        binding.append(find_binding(ref_formations, [i, 0, 0], [0, 0, 1], [0, 0, 1]))
 
     if 'V0H1He0' in ref_formations:
-        for i in range(1, 4):
-            binding.append(find_binding(ref_formations, [0, 0, 1], [0, i, 0], [0,0,1]))
+        for i in range(4):
+            binding.append(find_binding(ref_formations, [0, i, 1], [0, 1, 0], [0,0,1]))
 
-        for i in range(1, 4):
-            binding.append(find_binding(ref_formations, [1, 0, 0], [0, i, 0], [0,0,1]))
+        for i in range(4):
+            binding.append(find_binding(ref_formations, [1, i, 0], [0, 1, 0], [0,0,1]))
 
-        for i in range(1, 4):
-            binding.append(find_binding(ref_formations, [2, 0, 0], [0, i, 0], [0,0,1]))
+        for i in range(4):
+            binding.append(find_binding(ref_formations, [2, i, 0], [0, 1, 0], [0,0,1]))
 
     # binding.append(find_binding(ref_formations, [0, 0, 1], [0,0,1], [0,0,1]))
     # binding.append(find_binding(ref_formations, [1, 0, 0], [0,0,1], [0,0,1]))
@@ -104,12 +105,12 @@ def binding_testing(ref_formations):
         binding.extend(find_binding(ref_formations, [i, 0, 1], [0, 0, 1], [0,0,1]))
 
     for i in range(1, 6):
-        binding.extend(find_binding(ref_formations, [0, 0, 1], [0, i, 0], [0,0,1]))
+        binding.extend(find_binding(ref_formations, [0, i, 1], [0, 1, 0], [0,0,1]))
 
     for i in range(1, 6):
-        binding.extend(find_binding(ref_formations, [1, 0, 0], [0, i, 0], [0,0,1]))
+        binding.extend(find_binding(ref_formations, [1, i, 0], [0, 1, 0], [0,0,1]))
 
     for i in range(1, 4):
-        binding.extend(find_binding(ref_formations, [2, 0, 0], [0, i, 0], [0,0,1]))
+        binding.extend(find_binding(ref_formations, [2, i, 0], [0, 1, 0], [0,0,1]))
 
     return np.array(binding)

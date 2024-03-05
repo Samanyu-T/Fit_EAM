@@ -283,7 +283,7 @@ class Lammps_Point_Defect():
 
         for element, xyz_element in enumerate(xyz_inter):
             for i in range(len(xyz_element)):
-                vec = (xyz_system[N_atoms + idx])
+                vec = (xyz_system[N_atoms + idx])/self.alattice
                 xyz_inter_relaxed[element].append(vec.tolist())
                 idx += 1
 
@@ -400,7 +400,7 @@ class Lammps_Point_Defect():
 
         for element, xyz_element in enumerate(n_inter):
             for i in range(xyz_element):
-                vec = (xyz_system[N_atoms + idx])
+                vec = (xyz_system[N_atoms + idx])/self.alattice
                 xyz_inter_relaxed[element].append(vec.tolist())
                 idx += 1
 

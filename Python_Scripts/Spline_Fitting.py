@@ -306,7 +306,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     ref_binding = binding_fitting(ref_formations)
 
     test_binding = binding_fitting(test_formations)
-
+        
     loss = 0
 
     # Quadratic Loss of Interstitial Formation Energies
@@ -353,6 +353,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     for key in ref_formations:
         if ref_formations[key]['rvol'] is not None:
             loss += (test_formations[key]['rvol'] - ref_formations[key]['rvol'])**2
+
 
     if write:
         # Write the Loss and the Sample Data to files for archiving

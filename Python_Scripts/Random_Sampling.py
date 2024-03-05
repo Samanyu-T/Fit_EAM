@@ -41,7 +41,7 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '', samp
     with open('refs_formations.json', 'r') as ref_file:
         ref_json = json.load(ref_file)
 
-    with open('my_formations.json', 'r') as my_file:
+    with open('formations.json', 'r') as my_file:
         my_json = json.load(my_file)
 
     N_Vac = 2
