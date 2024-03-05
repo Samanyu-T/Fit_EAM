@@ -82,6 +82,17 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
 
     if not os.path.exists(lammps_folder):
         os.makedirs(lammps_folder, exist_ok=True)
+  
+
+    # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
+    pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
+
+    pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
+    
+    # Call the main fitting class
+    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
+                                      hyperparams=pot_params, potlines=starting_lines,
+                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
 
 
     # Init Optimization Parameter
@@ -99,18 +110,8 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
 
     if proc == 0:
         print('The Approximate number of Samples: %d \n Number of Dimensions: %d' % (N_samples, n_params))
-        sys.stdout.flush()    
-
-    # Read Daniel's potential to initialize the W-H potential and the params for writing a .eam.alloy file
-    pot, starting_lines, pot_params = read_pot('Potentials/WHHe_test.eam.alloy')
-
-    pot_params['rho_c'] = pot_params['Nrho']*pot_params['drho']
-    
-    # Call the main fitting class
-    fitting_class = Fitting_Potential(pot_lammps=pot, bool_fit=bool_fit,
-                                      hyperparams=pot_params, potlines=starting_lines,
-                                      n_knots = n_knots, machine = machine, proc_id=proc, write_dir=write_dir)
-
+        sys.stdout.flush()  
+        
     files = os.listdir(gmm_folder)
 
     N = int(len(files)/2)

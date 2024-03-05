@@ -3,7 +3,7 @@ from lammps import lammps
 from mpi4py import MPI
 import itertools
 import copy 
-
+import os
 def test_config(datafile, potfile,output_folder):
 
     lmp = lammps()
@@ -215,9 +215,9 @@ class Lammps_Point_Defect():
 
         for i in range(self.n_vac):
 
-            vac_pos = self.defect_pos + 0.5*(i+1)*np.ones((3,))
+            vac_pos = (self.defect_pos + 0.5*(i+1)*np.ones((3,))) * self.alattice
 
-            lmp.command('region r_vac_%d sphere %f %f %f 0.2 units lattice' 
+            lmp.command('region r_vac_%d sphere %f %f %f 0.2 units box'     
                         % (i, vac_pos[0], vac_pos[1], vac_pos[2]) )
             
             lmp.command('delete_atoms region r_vac_%d ' % i)
@@ -244,10 +244,10 @@ class Lammps_Point_Defect():
 
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
 
-        # lmp.command('fix 3 all box/relax aniso 0.0')
-
         lmp.command('minimize 1e-9 1e-12 100 1000')
+
         lmp.command('minimize 1e-12 1e-15 100 1000')
+
         lmp.command('minimize 1e-13 1e-16 %d %d' % (self.conv, self.conv))
         
         pe = lmp.get_thermo('pe')
@@ -300,7 +300,7 @@ class Lammps_Point_Defect():
 
         e0 = self.pe0/self.N_atoms
 
-        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, xyz_inter_relaxed
+        return pe - self.pe0 + self.n_vac*e0 + len(xyz_inter[1])*2.121, self.relaxation_volume, xyz_inter_relaxed
     
     def Find_Min_Config(self, init_config, atom_to_add = 3):
 
@@ -316,7 +316,7 @@ class Lammps_Point_Defect():
 
         lmp.command('atom_modify map array sort 0 0.0')
 
-        lmp.command('read_data %s/%s.data' % (self.lammps_folder, init_config))
+        lmp.command('read_data %s.data' % init_config)
 
         lmp.command('pair_style eam/alloy' )
 
@@ -325,7 +325,11 @@ class Lammps_Point_Defect():
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
 
         N = lmp.get_natoms()
-        n_inter = [int(init_config[1]), int(init_config[3]), int(init_config[-1])]
+
+        filename = os.path.basename(init_config)
+
+        n_inter = [0, int(filename[3]), int(filename[-1])]
+
         n_inter[atom_to_add - 1] += 1
 
         pe_lst = []
@@ -368,7 +372,6 @@ class Lammps_Point_Defect():
         pxz = lmp.get_thermo('pxz')
         pyz = lmp.get_thermo('pyz')
 
-
         self.vol = lmp.get_thermo('vol')
 
         self.stress_voigt = np.array([pxx, pyy, pzz, pxy, pxz, pyz]) - self.stress0
@@ -379,13 +382,33 @@ class Lammps_Point_Defect():
 
         pe = lmp.get_thermo('pe')
 
-        lmp.command('write_data %s/V%dH%dHe%d.data' % (self.lammps_folder, self.n_vac, n_inter[1], n_inter[2]))
+        lammps_folder = os.path.dirname(init_config)
+
+        lmp.command('write_data %s/V%dH%dHe%d.data' % (lammps_folder, self.n_vac, n_inter[1], n_inter[2]))
+        
+        lmp.command('write_dump all custom  %s/V%dH%dHe%d.atom id x y z'% (lammps_folder, self.n_vac, n_inter[1], n_inter[2]))
+
+        xyz_system = np.array(lmp.gather_atoms('x',1,3))
+
+        xyz_system = xyz_system.reshape(len(xyz_system)//3,3)
+
+        xyz_inter_relaxed = [[],[],[]]
+
+        N_atoms = self.N_atoms - self.n_vac
+
+        idx = 0
+
+        for element, xyz_element in enumerate(n_inter):
+            for i in range(xyz_element):
+                vec = (xyz_system[N_atoms + idx])
+                xyz_inter_relaxed[element].append(vec.tolist())
+                idx += 1
 
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
         
-        return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume 
+        return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume, xyz_inter_relaxed
     
 
     def get_octahedral_sites(self):
