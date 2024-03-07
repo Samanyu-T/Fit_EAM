@@ -222,10 +222,9 @@ def worker(proc, data_folder):
 
 
     for i in range(N):
-        t1 = time.perf_counter()
+
         binding, conc, n_h = H_surface_energy(size, alattice, orientx, orienty, orientz, init_conc[i], 800, proc, machine)
-        t2 = time.perf_counter()
-        print(t2 -t1)
+
         with open(os.path.join(data_folder, 'data_%d.txt' % proc), 'a') as file:
             file.write('%d %.4f %.6f \n' % (n_h, conc, binding))
 

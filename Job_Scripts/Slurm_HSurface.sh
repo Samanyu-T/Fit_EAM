@@ -1,6 +1,6 @@
 #!/bin/bash
 #! Name of the job:
-#SBATCH -J optim_102
+#SBATCH -J hsurf
 #SBATCH -A UKAEA-AP002-CPU
 #SBATCH -p sapphire
 #SBATCH --nodes=1
