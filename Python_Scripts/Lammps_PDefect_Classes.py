@@ -324,7 +324,11 @@ class Lammps_Point_Defect():
 
         lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
 
-        N = lmp.get_natoms()
+        # lmp.command('thermo 100')
+
+        lmp.command('timestep 1e-3')
+
+        N = lmp.get_natoms()    
 
         filename = os.path.basename(init_config)
 
@@ -334,6 +338,7 @@ class Lammps_Point_Defect():
 
         pe_lst = []
         pos_lst = []
+
 
         for site_type in sites:
             for site in sites[site_type]:
@@ -358,9 +363,27 @@ class Lammps_Point_Defect():
 
         lmp.command('create_atoms %d single %f %f %f units box' % 
                     (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
+        
+        # rng_seed = np.random.randint(1,10000)
+
+        # lmp.command('minimize 1e-9 1e-12 10 10')
+        # lmp.command('minimize 1e-9 1e-12 100 100')
+        # lmp.command('minimize 1e-9 1e-12 10000 10000')
+        
+        # lmp.command('fix 1 all nve')
+
+        # lmp.command('velocity all create 600.0 %d mom yes rot no dist gaussian units box' % rng_seed)
+
+        # lmp.command('run 0')
+
+        # lmp.command('run 1000')
+        
+        # lmp.command('velocity all zero linear')
 
         lmp.command('minimize 1e-9 1e-12 10 10')
+
         lmp.command('minimize 1e-9 1e-12 100 100')
+
         lmp.command('minimize 1e-9 1e-12 10000 10000')
 
         pe = lmp.get_thermo('pe')
@@ -407,7 +430,7 @@ class Lammps_Point_Defect():
         lmp.close()
 
         e0 = self.pe0/(2*self.size**3)
-        
+
         return pe - self.pe0 + self.n_vac*e0 + n_inter[1]*2.121, self.relaxation_volume, xyz_inter_relaxed
     
 

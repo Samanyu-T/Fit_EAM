@@ -1,12 +1,10 @@
 import json
 from Lammps_PDefect_Classes import Lammps_Point_Defect
-from Handle_Dictionaries import find_binding
 import numpy as np
 import os 
 from mpi4py import MPI
 import sys
-import matplotlib.pyplot as plt
-
+import time
 comm = MPI.COMM_WORLD
 
 me = comm.Get_rank()
@@ -18,13 +16,15 @@ if me == 0:
     sys.stdout.flush()  
 comm.Barrier()
 
-lmp = Lammps_Point_Defect(size=7, potfile='Potentials/WHHe_test.eam.alloy', n_vac=0, conv = 10000, depth=3)
+t1 = time.perf_counter()
+
+lmp = Lammps_Point_Defect(size=7, potfile='Potentials/test.0.eam.alloy', n_vac=0, conv = 10000, depth=3)
 
 tet_pos = lmp.alattice*np.array([3.25, 3.5, 3])
 
 data = {}
 
-dump_folder = '../HeH_Trapping_Dump'
+dump_folder = '../HeH_Clusters'
 
 for n_vac in range(3):
 
@@ -131,21 +131,11 @@ for n_vac in range(3):
             
             data[key]['xyz_opt'] = pos
 
+t2 = time.perf_counter()
 
 if me == 0:
 
-    he_vac_binding = []
+    print(t2-t1)
 
-    for i in range(3):
-        he_vac_binding.append(find_binding(data, [i, 0, 1], [0, 0, 1], [0,0,1]))
-
-    with open('formations.json' , 'w') as file:
-        json.dump(data, file, indent=4)
-
-    for i in range(len(he_vac_binding)):
-        plt.plot(he_vac_binding[i], label='n_vac: %d' % i)
-    
-    plt.show()
-    plt.legend()
 comm.Barrier()
 MPI.Finalize()
