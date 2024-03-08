@@ -32,8 +32,8 @@ def main(file_pattern, data_folder, iter):
     for file in glob.glob(os.path.join(file_pattern, 'Filtered_Samples.txt')):
         if os.path.getsize(file) > 0:
             sample_lst.append(np.loadtxt(file))
-            print(sample_lst[-1].shape)
-    print(sample_lst[1].shape)
+            if len(sample_lst) == 2:
+                print(sample_lst[-1])
 
     samples = np.vstack([x for x in sample_lst])
 
