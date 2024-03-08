@@ -33,6 +33,7 @@ def main(file_pattern, data_folder, iter):
         if os.path.getsize(file) > 0:
             sample_lst.append(np.loadtxt(file))
             if len(sample_lst) == 2:
+                print(file)
                 print(sample_lst[-1][0])
 
     samples = np.vstack([x for x in sample_lst])
