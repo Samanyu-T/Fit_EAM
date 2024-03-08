@@ -34,7 +34,7 @@ def main(file_pattern, data_folder, iter):
             
             sample_lst.append(np.loadtxt(file))
     
-    print(sample_lst[-1].shape)
+    print(sample_lst[1].shape)
 
     samples = np.vstack([x for x in sample_lst])
 
