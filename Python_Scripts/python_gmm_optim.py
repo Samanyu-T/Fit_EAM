@@ -168,7 +168,7 @@ def main(machine, max_time, write_dir, save_dir):
     # ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     # comm.Barrier()
-    g_iteration += N_gaussian
+    g_iteration = 3
 
     N_gaussian = 4
 
@@ -180,8 +180,8 @@ def main(machine, max_time, write_dir, save_dir):
     
     # Edit a new Covariance Matrix for the He-He potential
     if me == 0:
-        gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % 2)
-        GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, 3)
+        gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % (g_iteration - 1))
+        GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, g_iteration)
 
         for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, g_iteration)):
             cov_0 = np.loadtxt(cov_file)
