@@ -4,6 +4,8 @@ import numpy as np
 import os 
 import json
 
+dft_binding = {}
+
 with open('formations.json', 'r') as file:
     eam = json.load(file)
 
@@ -27,7 +29,7 @@ for i in range(1, 3):
 for i in range(len(y_data)):
     plt.scatter(x_data[i], y_data[i], color=color[i])
     plt.plot(x_data[i], y_data[i], label='dft V%d' % i, linestyle='-', color=color[i])
-    
+
     
 y_data = []
 x_data = []

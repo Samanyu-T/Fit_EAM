@@ -215,7 +215,7 @@ def worker(proc, data_folder):
 
     N = 500
 
-    init_conc = np.linspace(0.25, 100, N)
+    init_conc = np.linspace(15, 100, N)
 
     with open(os.path.join(data_folder, 'data_%d.txt' % proc), 'w') as file:
         file.write('')
