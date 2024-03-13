@@ -48,8 +48,10 @@ def get_tetrahedral_sites(R):
     return tet_sites
 
     
-def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_conc, temp=800, machine=''):
-    
+def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800, machine='', proc = 0):
+
+    max_h = 10
+
     surface = 100
 
     R_inv = np.vstack([orientx, orienty, orientz]).T
@@ -73,7 +75,7 @@ def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_co
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
-    lmp = lammps(name = machine, comm=comm)
+    lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -139,8 +141,6 @@ def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_co
 
     lmp.command('timestep 1e-3')
 
-    lmp.command('fix 1 all nvt temp %f %f %f' % (temp, temp, temp/3))
-
     for i in range(n_h):
         rng_int = np.random.randint(0, len(tet_sites))
         site = tet_sites[rng_int]
@@ -153,6 +153,7 @@ def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_co
 
     lmp.command('minimize 1e-13 1e-16 %d %d' % (10000, 10000))
 
+    pbc = lmp.get_thermo('lx')
 
     pe_curr = lmp.get_thermo('pe')
 
@@ -166,62 +167,75 @@ def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_co
 
     pe_explored = []
 
-    for mcmc_iter in range(2):
+    type = np.array( lmp.gather_atoms('type', 0 , 1) )
 
-        type = np.array(lmp.gather_atoms("type", 0, 1))
+    all_h_idx = np.where(type == 2)[0]
+
+    N_h = len(all_h_idx)
+    
+    n_accept = 0
+    
+    N_iterations = int(1e5)
+
+    for mcmc_iter in range(N_iterations):
         
-        all_h_idx = np.where(type==2)[0]
+        if mcmc_iter % 1000 == 0:
+            print(proc, mcmc_iter)
+
+        xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+        xyz = xyz.reshape(len(xyz)//3 , 3)
+
+        np.random.shuffle(all_h_idx)
+
+        slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
+
+        h_idx = np.copy(all_h_idx[:slct_h])
         
-        n_displace = np.clip(len(all_h_idx), a_min=0, a_max=5)
+        displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
 
-        rng_int = np.random.randint(0, len(all_h_idx), size=(n_displace,))
+        xyz[h_idx] += displace
 
-        h_idx = all_h_idx[rng_int]
+        xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         
-        xyz_curr = np.array(lmp.gather_atoms("x", 1, 3))
+        lmp.scatter_atoms('x', 1, 3, xyz_c)
 
-        xyz_curr = xyz_curr.reshape(len(xyz_curr)//3, 3)
+        lmp.command('minimize 1e-9 1e-12 10 10')
 
-        xyz_test = np.copy(xyz_curr)
-
-        move = np.random.normal(loc=0, scale=1, size=(len(h_idx), 3))
-
-        xyz_test[h_idx] = xyz_test[h_idx] + move
-
-        xyz_testc = xyz_test.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
-        lmp.scatter_atoms('x', 1, 3, xyz_testc)
-            
         lmp.command('minimize 1e-9 1e-12 100 100')
 
-        lmp.command('minimize 1e-12 1e-15 100 100')
-
-        lmp.command('minimize 1e-13 1e-16 %d %d' % (10000, 10000))
+        lmp.command('minimize 1e-9 1e-12 10000 10000')
 
         pe_test = lmp.get_thermo('pe')
 
-        acceptance = min(1, np.exp(-beta*(pe_test - pe_curr)))
+        acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
 
-        rand = np.random.rand()
+        rng = np.random.rand()
 
-        pe_explored.append((pe_ref -2.121*n_h - pe_test)/n_h)
-        pe_unique.append((pe_ref -2.121*n_h - pe_curr)/n_h)
+        pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
 
-        if rand <= acceptance:
-            print('True')
+        if rng <= acceptance:
+            pe_unique.append((pe_ref -2.121*N_h - pe_curr)/N_h)
+
+            n_accept += 1
 
             pe_curr = pe_test
 
         else:
+            
+            xyz[h_idx] -= displace
 
-            xyz_currc = xyz_curr.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+            xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 
-            lmp.scatter_atoms('x', 1, 3, xyz_currc)
+            lmp.scatter_atoms('x', 1, 3, xyz_c)
 
+    N_final = lmp.get_natoms()
 
     pe_final = lmp.get_thermo('pe')
 
-    N_final = lmp.get_natoms()
+    lmp.close()
+
+    print(n_accept/N_iterations)
 
     N_h = (N_final-N_ref)
 
@@ -232,53 +246,23 @@ def H_surface_energy(comm, rank, size, alattice, orientx, orienty, orientz, h_co
     if N_final-N_ref>0:
 
         binding = (pe_ref -2.121*N_h - pe_final)/N_h
+    
+    pe_explored = np.array(pe_explored)
+    pe_unique = np.array(pe_unique)
 
-    # if rank == 0:
+        
+    plt.plot(pe_explored)
+    plt.plot(pe_unique)
+    plt.show()
 
-    #     plt.plot(pe_unique)
+    if not os.path.exists('../MCMC_Data'):
+        os.mkdir('../MCMC_Data')
 
-    #     plt.plot(pe_explored)
-    #     plt.show()
+    np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
+    np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, pe_unique)
+    
 
     return binding, c_final, N_h
-
-
-def worker(proc, data_folder):
-    machine=''
-
-    size = 10
-
-    # ''' Use for 100 surface '''
-    # orientx = [1, 0, 0]
-    # orienty = [0, 1, 0]
-    # orientz = [0 ,0, 1]
-
-    ''' Use for 110 surface '''
-    orientx = [1, 1, 0]
-    orienty = [0, 0,-1]
-    orientz = [-1,1, 0]
-
-    # ''' Use for 111 surface '''
-    # orientx = [1, 1, 1]
-    # orienty = [-1,2,-1]
-    # orientz = [-1,0, 1]
-
-    alattice = 3.144221
-
-    N = 500
-
-    init_conc = np.linspace(15, 100, N)
-
-    with open(os.path.join(data_folder, 'data_%d.txt' % proc), 'w') as file:
-        file.write('')
-
-
-    for i in range(N):
-
-        binding, conc, n_h = H_surface_energy(size, alattice, orientx, orienty, orientz, init_conc[i], 800, proc, machine)
-
-        with open(os.path.join(data_folder, 'data_%d.txt' % proc), 'a') as file:
-            file.write('%d %.4f %.6f \n' % (n_h, conc, binding))
 
 
 if __name__ == '__main__':
@@ -289,22 +273,6 @@ if __name__ == '__main__':
 
     size = comm.Get_size() 
 
-    # Number of desired processes per group
-    procs_per_group = 2
-
-    # Calculate the number of groups
-    num_groups = size // procs_per_group
-
-    # Split the processes into groups
-    color = rank // procs_per_group
-    group_comm = comm.Split(color, rank)
-
-    # Now, each group should contain the desired number of processes
-    group_rank = group_comm.Get_rank()
-    group_size = group_comm.Get_size()
-
-    print("Group:", color, "Group Rank:", group_rank, "out of", group_size)
-    
     data_folder = '../H_Surface_Data'
 
     if rank == 0:
@@ -322,7 +290,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    H_surface_energy(group_comm, group_rank, size, alattice, orientx, orienty, orientz, 10, 800)
-    # worker(me, data_folder)
-    
-    MPI.Finalize()
+    init_conc = np.linspace(0.25, 100, size)
+
+    H_surface_energy(size, alattice, orientx, orienty, orientz, init_conc[rank], 800, '',rank)
+
