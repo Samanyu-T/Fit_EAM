@@ -1,4 +1,5 @@
 LAMMPS (2 Aug 2023)
+WARNING: Using I/O redirection is unreliable with parallel runs. Better to use the -in switch to read input files. (src/lammps.cpp:537)
 # Lammps input file
 units metal
 atom_style atomic
@@ -10,18 +11,17 @@ region r_simbox block -0.000000 10.000000 -0.000000 10.000000 -50.000000 60.0000
 region r_atombox block -0.000100 10.000100 -0.000100 10.000100 -0.000100 10.000100 units lattice
 create_box 3 r_simbox
 Created orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  1 by 1 by 1 MPI processor grid
+  1 by 1 by 2 MPI processor grid
 create_atoms 1 region r_atombox
 Created 8400 atoms
   using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.001 seconds
+  create_atoms CPU = 0.002 seconds
 mass 1 183.84
 mass 2 1.00784
 mass 3 4.002602
 pair_style eam/alloy
 pair_coeff * * Potentials/WHHe_test.eam.alloy W H He
 thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol
-thermo 100
 minimize 1e-9 1e-12 10 10
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -35,18 +35,18 @@ Neighbor list info ...
       pair build: half/bin/atomonly/newton
       stencil: half/bin/3d
       bin: standard
-Per MPI rank memory allocation (min/avg/max) = 5.674 | 5.674 | 5.674 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 5.246 | 5.248 | 5.25 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         0   0             -73717.039     -2898.7854     -2401.8649     -536.08987      259.22344     -1.3237295e-11  2.1820149e-11  1367703.2    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -9.8884671e-12  7.0127893e-12  1367703.2    
-Loop time of 0.0329821 on 1 procs for 6 steps with 8400 atoms
+         0   0             -73717.039     -2898.7854     -2401.8649     -536.08987      259.22344     -9.8745938e-12  2.7414334e-11  1367703.2    
+         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -3.1962439e-12 -1.8665565e-12  1367703.2    
+Loop time of 0.02361 on 2 procs for 6 steps with 8400 atoms
 
-269.4% CPU use with 1 MPI tasks x no OpenMP threads
+99.0% CPU use with 2 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = max force evaluations
   Energy initial, next-to-last, final = 
-     -73717.0389634067  -73800.9591646821  -73827.5302523061
+     -73717.0389632369  -73800.9591646447  -73827.5302522937
   Force two-norm initial, final = 46.235793 21.90339
   Force max component initial, final = 1.3692713 0.87674368
   Final line search alpha, max atom move = 0.080025505 0.070161856
@@ -55,37 +55,37 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.031567   | 0.031567   | 0.031567   |   0.0 | 95.71
+Pair    | 0.021783   | 0.021902   | 0.022021   |   0.1 | 92.77
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016729 | 0.00016729 | 0.00016729 |   0.0 |  0.51
+Comm    | 0.00058296 | 0.00067637 | 0.00076979 |   0.0 |  2.86
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.001248   |            |       |  3.78
+Other   |            | 0.001032   |            |       |  4.37
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         259480 ave      259480 max      259480 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4200 ave        4400 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           4725 ave        4925 max        4525 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         129740 ave      129800 max      129680 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
 Total # of neighbors = 259480
 Ave neighs/atom = 30.890476
 Neighbor list builds = 0
 Dangerous builds = 0
 minimize 1e-9 1e-12 100 100
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 5.246 | 5.248 | 5.25 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -4.1932718e-12  4.9712837e-12  1367703.2    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404     -3.649707e-12  -1.6510347e-11  1367703.2    
-Loop time of 0.387798 on 1 procs for 46 steps with 8400 atoms
+         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -2.4923836e-12  2.6260806e-12  1367703.2    
+        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404     -6.9501659e-13 -3.9765769e-12  1367703.2    
+Loop time of 0.221705 on 2 procs for 46 steps with 8400 atoms
 
-155.7% CPU use with 1 MPI tasks x no OpenMP threads
+99.6% CPU use with 2 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -73827.5302523061  -73934.8511134559  -73934.8511787951
+     -73827.5302522936  -73934.8511134499  -73934.8511787894
   Force two-norm initial, final = 21.90339 0.035133753
   Force max component initial, final = 0.87674368 0.0007284121
   Final line search alpha, max atom move = 1 0.0007284121
@@ -94,37 +94,37 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.37458    | 0.37458    | 0.37458    |   0.0 | 96.59
+Pair    | 0.20779    | 0.20874    | 0.20969    |   0.2 | 94.15
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.001773   | 0.001773   | 0.001773   |   0.0 |  0.46
+Comm    | 0.0043842  | 0.0051043  | 0.0058244  |   1.0 |  2.30
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01144    |            |       |  2.95
+Other   |            | 0.007861   |            |       |  3.55
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305260 ave      305260 max      305260 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4200 ave        4374 max        4026 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           4725 ave        4899 max        4551 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         152630 ave      154122 max      151138 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
 Total # of neighbors = 305260
 Ave neighs/atom = 36.340476
 Neighbor list builds = 0
 Dangerous builds = 0
 minimize 1e-9 1e-12 10000 10000
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 5.246 | 5.248 | 5.25 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404      1.2843467e-12 -7.5506788e-12  1367703.2    
-        53   0             -73934.851     -1902.5111     -2271.5772     -4.9105604      2168.5409     -5.373088e-12  -6.2936194e-12  1367703.2    
-Loop time of 0.00937846 on 1 procs for 1 steps with 8400 atoms
+        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404      6.9501659e-13 -1.1985915e-12  1367703.2    
+        53   0             -73934.851     -1902.5111     -2271.5772     -4.9105604      2168.5409     -6.6588415e-13 -1.4982393e-12  1367703.2    
+Loop time of 0.00737404 on 2 procs for 1 steps with 8400 atoms
 
-98.4% CPU use with 1 MPI tasks x no OpenMP threads
+98.5% CPU use with 2 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -73934.8511787951  -73934.8511787951  -73934.8512067018
+     -73934.8511787894  -73934.8511787894  -73934.8512067077
   Force two-norm initial, final = 0.035133753 0.022971107
   Force max component initial, final = 0.0007284121 0.00057684295
   Final line search alpha, max atom move = 1 0.00057684295
@@ -133,19 +133,19 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.0090803  | 0.0090803  | 0.0090803  |   0.0 | 96.82
+Pair    | 0.006784   | 0.0069044  | 0.0070247  |   0.1 | 93.63
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 5.0417e-05 | 5.0417e-05 | 5.0417e-05 |   0.0 |  0.54
+Comm    | 0.000117   | 0.00024494 | 0.00037287 |   0.0 |  3.32
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.0002477  |            |       |  2.64
+Other   |            | 0.0002247  |            |       |  3.05
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5017 ave        5017 max        5017 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307200 ave      307200 max      307200 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4200 ave        4227 max        4173 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           4753 ave        4780 max        4726 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         153600 ave      160112 max      147088 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
 Total # of neighbors = 307200
 Ave neighs/atom = 36.571429
@@ -153,1598 +153,515 @@ Neighbor list builds = 0
 Dangerous builds = 0
 timestep 1e-3
 fix 1 all nvt temp 800.000000 800.000000 266.666667
-create_atoms 2 single 6.041667 1.416667 -0.458333 units lattice
+create_atoms 2 single 6.791667 7.166667 -0.458333 units lattice
 Created 1 atoms
   using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
   create_atoms CPU = 0.000 seconds
-velocity all create 1600.000000 8124 mom yes rot no dist gaussian units box
-run 0
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
+create_atoms 2 single 2.541667 9.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 0.791667 8.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 0.541667 2.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.541667 9.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 1.541667 6.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 5.791667 4.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 0.541667 8.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.791667 9.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.041667 6.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 6.791667 4.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 6.541667 5.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 3.791667 5.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.041667 0.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.541667 2.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 3.541667 1.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 0.041667 6.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 8.541667 6.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 5.041667 0.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.791667 9.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.791667 3.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 5.041667 2.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.791667 6.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.791667 4.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.041667 2.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.541667 3.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.041667 0.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 5.041667 9.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 4.791667 4.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 7.041667 0.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 3.791667 0.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 9.541667 7.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 9.541667 8.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 0.791667 9.166667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 6.541667 7.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 8.541667 9.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 2.041667 1.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 5.541667 8.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 8.541667 3.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 single 1.541667 1.416667 -0.458333 units lattice
+Created 1 atoms
+  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+  create_atoms CPU = 0.000 seconds
+minimize 1e-9 1e-12 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.247 | 5.249 | 5.25 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        53   1600          -73936.814     -541.67801     -933.36678      1362.6515      2168.5652      3.9784736     -17.056442      1367703.2    
-Loop time of 6.67e-07 on 1 procs for 0 steps with 8401 atoms
+        53   0             -74006.557     -1937.042      -2290.7123     -101.93506      2166.932       0.19399832    -8.6724677      1367703.2    
+       116   0             -74028.127     -1873.9986     -2187.838      -32.820512      2157.9649     -1.6360685      2.1952477      1367703.2    
+Loop time of 0.278605 on 2 procs for 63 steps with 8440 atoms
 
-0.0% CPU use with 1 MPI tasks x no OpenMP threads
+99.8% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -74006.5571371591   -74028.086379086  -74028.1268731419
+  Force two-norm initial, final = 6.5186407 1.0357514
+  Force max component initial, final = 1.255575 0.31686873
+  Final line search alpha, max atom move = 0.18125942 0.057435441
+  Iterations, force evaluations = 63 100
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0          | 0          | 0          |   0.0 |  0.00
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Pair    | 0.22789    | 0.2414     | 0.25492    |   2.8 | 86.65
+Neigh   | 0.0066685  | 0.0078335  | 0.0089984  |   1.3 |  2.81
+Comm    | 0.0043254  | 0.019185   | 0.034044   |  10.7 |  6.89
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 6.67e-07   |            |       |100.00
+Other   |            | 0.01018    |            |       |  3.66
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5017 ave        5017 max        5017 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307233 ave      307233 max      307233 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           4762 ave        4953 max        4571 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         156701 ave      174028 max      139374 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 307233
-Ave neighs/atom = 36.571003
+Total # of neighbors = 313402
+Ave neighs/atom = 37.132938
+Neighbor list builds = 2
+Dangerous builds = 0
+minimize 1e-12 1e-15 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
+   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
+       116   0             -74028.127     -1873.9986     -2187.838      -32.820512      2157.9649     -1.6360685      2.1952477      1367703.2    
+       168   0             -74028.511     -1859.8573     -2172.9112      0.097860028    2159.0317     -0.81400965    -0.28324741     1367703.2    
+Loop time of 0.264071 on 2 procs for 52 steps with 8440 atoms
+
+99.9% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -74028.1268731419  -74028.5108657129  -74028.5108665043
+  Force two-norm initial, final = 1.0357514 0.0040152366
+  Force max component initial, final = 0.31686873 0.00040557884
+  Final line search alpha, max atom move = 1 0.00040557884
+  Iterations, force evaluations = 52 100
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.22012    | 0.2357     | 0.25129    |   3.2 | 89.26
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0040578  | 0.019811   | 0.035564   |  11.2 |  7.50
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.008555   |            |       |  3.24
+
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           4763 ave        4953 max        4573 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         154875 ave      172150 max      137600 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 309750
+Ave neighs/atom = 36.700237
 Neighbor list builds = 0
 Dangerous builds = 0
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
+mminimize 1e-13 1e-16 10000 10000
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        53   1600          -73936.814     -541.67801     -933.36678      1362.6515      2168.5652      3.9784736     -17.056442      1367703.2    
-        63   1431.8979     -73754.224      29.415707     -599.97219      2131.3408      2100.6782      14.44553      -7.7408265      1367703.2    
-Loop time of 0.0243739 on 1 procs for 10 steps with 8401 atoms
+       171   0             -74028.617     -1851.1715     -2178.2889     -0.19468835     2160.5663      0.95114165     0.38035296     1367703.2    
+       272   0             -74028.622     -1850.5143     -2178.2026      0.00074553389  2160.409      -0.089358851    0.029498808    1367703.2    
+Loop time of 0.533164 on 2 procs for 101 steps with 8440 atoms
 
-Performance: 35.448 ns/day, 0.677 hours/ns, 410.275 timesteps/s, 3.447 Matom-step/s
-99.3% CPU use with 1 MPI tasks x no OpenMP threads
+99.6% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -74028.6174096396  -74028.6224299049  -74028.6224299109
+  Force two-norm initial, final = 0.079944974 0.00037501869
+  Force max component initial, final = 0.015542236 2.8132361e-05
+  Final line search alpha, max atom move = 1 2.8132361e-05
+  Iterations, force evaluations = 101 202
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.023339   | 0.023339   | 0.023339   |   0.0 | 95.76
+Pair    | 0.44352    | 0.47531    | 0.50711    |   4.6 | 89.15
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015533 | 0.00015533 | 0.00015533 |   0.0 |  0.64
-Output  | 3.1625e-05 | 3.1625e-05 | 3.1625e-05 |   0.0 |  0.13
-Modify  | 0.00073738 | 0.00073738 | 0.00073738 |   0.0 |  3.03
-Other   |            | 0.0001101  |            |       |  0.45
+Comm    | 0.0085343  | 0.040657   | 0.07278    |  15.9 |  7.63
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.0172     |            |       |  3.23
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5017 ave        5017 max        5017 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307233 ave      307233 max      307233 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         154832 ave      172049 max      137614 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 307233
-Ave neighs/atom = 36.571003
+Total # of neighbors = 309663
+Ave neighs/atom = 36.689929
 Neighbor list builds = 0
 Dangerous builds = 0
-variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
+minimize 1e-9 1e-12 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        63   1431.8979     -73754.224      29.415707     -599.97219      2131.3408      2100.6782      14.44553      -7.7408265      1367703.2    
-        73   1022.6005     -73309.649      345.34774     -685.96602      2877.3565      1803.1027      29.404281      2.5253269      1367703.2    
-Loop time of 0.0357107 on 1 procs for 10 steps with 8401 atoms
+       272   0             -74023.132     -1854.5871     -2171.2171      3.9843314      2158.4717     -1.5519626      12.604783      1367703.2    
+       328   0             -74028.624     -1844.6769     -2174.4829      3.2466283      2160.0674     -0.86974057    -1.2869151      1367703.2    
+Loop time of 0.276114 on 2 procs for 56 steps with 8440 atoms
 
-Performance: 24.194 ns/day, 0.992 hours/ns, 280.028 timesteps/s, 2.353 Matom-step/s
-98.6% CPU use with 1 MPI tasks x no OpenMP threads
+99.5% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -74023.1324589717  -74028.6238637616  -74028.6239529364
+  Force two-norm initial, final = 31.622184 0.043607103
+  Force max component initial, final = 17.585372 0.0059771932
+  Final line search alpha, max atom move = 1 0.0059771932
+  Iterations, force evaluations = 56 101
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.03439    | 0.03439    | 0.03439    |   0.0 | 96.30
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016608 | 0.00016608 | 0.00016608 |   0.0 |  0.47
-Output  | 3.2541e-05 | 3.2541e-05 | 3.2541e-05 |   0.0 |  0.09
-Modify  | 0.0010122  | 0.0010122  | 0.0010122  |   0.0 |  2.83
-Other   |            | 0.0001097  |            |       |  0.31
+Pair    | 0.22543    | 0.24133    | 0.25724    |   3.2 | 87.40
+Neigh   | 0.0033227  | 0.0038726  | 0.0044225  |   0.9 |  1.40
+Comm    | 0.004579   | 0.021202   | 0.037825   |  11.4 |  7.68
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.009706   |            |       |  3.52
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5001 ave        5001 max        5001 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         303865 ave      303865 max      303865 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         155816 ave      173228 max      138404 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 303865
-Ave neighs/atom = 36.170099
-Neighbor list builds = 0
-Dangerous builds = vavariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        73   1022.6005     -73309.649      345.34774     -685.96602      2877.3565      1803.1027      29.404281      2.5253269      1367703.2    
-        83   594.49784     -72844.684      621.42839     -574.58847      3346.3441      1615.7398      35.93833       17.830016      1367703.2    
-Loop time of 0.0364939 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.675 ns/day, 1.014 hours/ns, 274.019 timesteps/s, 2.302 Matom-step/s
-99.3% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035129   | 0.035129   | 0.035129   |   0.0 | 96.26
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017221 | 0.00017221 | 0.00017221 |   0.0 |  0.47
-Output  | 3.5959e-05 | 3.5959e-05 | 3.5959e-05 |   0.0 |  0.10
-Modify  | 0.0010444  | 0.0010444  | 0.0010444  |   0.0 |  2.86
-Other   |            | 0.0001125  |            |       |  0.31
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5000 ave        5000 max        5000 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         304076 ave      304076 max      304076 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 304076
-Ave neighs/atom = 36.195215
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        83   594.49784     -72844.684      621.42839     -574.58847      3346.3441      1615.7398      35.93833       17.830016      1367703.2    
-        93   344.10889     -72572.767      789.5345      -448.51487      3563.6774      1507.3812      39.166042      35.218748      1367703.2    
-Loop time of 0.037177 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.240 ns/day, 1.033 hours/ns, 268.984 timesteps/s, 2.260 Matom-step/s
-99.3% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035914   | 0.035914   | 0.035914   |   0.0 | 96.60
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015962 | 0.00015962 | 0.00015962 |   0.0 |  0.43
-Output  | 3.2e-05    | 3.2e-05    | 3.2e-05    |   0.0 |  0.09
-Modify  | 0.00096442 | 0.00096442 | 0.00096442 |   0.0 |  2.59
-Other   |            | 0.0001068  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4996 ave        4996 max        4996 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306590 ave      306590 max      306590 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306590
-Ave neighs/atom = 36.494465
-Neighbor list builds = 0
-Dangerous builds =variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.935 | 4.935 | 4.935 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        93   344.56572     -72573.007      848.11228     -522.31374      3498.4151      1450.3678     -32.143056     -41.986262      1367703.2    
-       100   320.55919     -72546.977      753.81211     -621.25817      3382.9137      1388.2593     -37.027908     -36.210216      1367703.2    
-       103   343.64738     -72572.071      658.03512     -714.53358      3272.8407      1370.3195     -40.409585     -32.617595      1367703.2    
-Loop time of 0.0457368 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 18.891 ns/day, 1.270 hours/ns, 218.642 timesteps/s, 1.837 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.037793   | 0.037793   | 0.037793   |   0.0 | 82.63
-Neigh   | 0.0065761  | 0.0065761  | 0.0065761  |   0.0 | 14.38
-Comm    | 0.00024571 | 0.00024571 | 0.00024571 |   0.0 |  0.54
-Output  | 6.8917e-05 | 6.8917e-05 | 6.8917e-05 |   0.0 |  0.15
-Modify  | 0.00092387 | 0.00092387 | 0.00092387 |   0.0 |  2.02
-Other   |            | 0.0001296  |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4995 ave        4995 max        4995 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309725 ave      309725 max      309725 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 309725
-Ave neighs/atom = 36.867635
+Total # of neighbors = 311632
+Ave neighs/atom = 36.923223
 Neighbor list builds = 1
 Dangerous builds = 0
-variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.935 | 4.935 | 4.935 Mbytes
+minimize 1e-12 1e-15 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       103   343.64738     -72572.071      658.03512     -714.53358      3272.8407      1370.3195     -40.409585     -32.617595      1367703.2    
-       113   508.5682      -72751.251      177.06606     -1170.7427      2742.3073      1338.729      -53.632154     -16.800817      1367703.2    
-Loop time of 0.0455385 on 1 procs for 10 steps with 8401 atoms
+       328   0             -74028.624     -1844.6769     -2174.4829      3.2466283      2160.0674     -0.86974057    -1.2869151      1367703.2    
+       367   0             -74028.624     -1845.8436     -2175.7066     -0.06582216     2159.9622     -0.1478397     -0.24688298     1367703.2    
+Loop time of 0.206239 on 2 procs for 39 steps with 8440 atoms
 
-Performance: 18.973 ns/day, 1.265 hours/ns, 219.595 timesteps/s, 1.845 Matom-step/s
-98.5% CPU use with 1 MPI tasks x no OpenMP threads
+99.8% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -74028.6239529364  -74028.6242537418  -74028.6242538109
+  Force two-norm initial, final = 0.043607103 0.0012998928
+  Force max component initial, final = 0.0059771932 0.00012846622
+  Final line search alpha, max atom move = 1 0.00012846622
+  Iterations, force evaluations = 39 78
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.037306   | 0.037306   | 0.037306   |   0.0 | 81.92
-Neigh   | 0.0068772  | 0.0068772  | 0.0068772  |   0.0 | 15.10
-Comm    | 0.00024766 | 0.00024766 | 0.00024766 |   0.0 |  0.54
-Output  | 3.4042e-05 | 3.4042e-05 | 3.4042e-05 |   0.0 |  0.07
-Modify  | 0.00092179 | 0.00092179 | 0.00092179 |   0.0 |  2.02
-Other   |            | 0.0001515  |            |       |  0.33
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5000 ave        5000 max        5000 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309961 ave      309961 max      309961 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 309961
-Ave neighs/atom = 36.895727
-Neighbor list builds = 1
-Dangerous builds = 0
-variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.935 | 4.935 | 4.935 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       113   508.5682      -72751.251      177.06606     -1170.7427      2742.3073      1338.729      -53.632154     -16.800817      1367703.2    
-       123   693.2265      -72951.823     -291.33537     -1608.0773      2230.5455      1342.7515     -66.022237     -1.4361868      1367703.2    
-Loop time of 0.0379597 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.761 ns/day, 1.054 hours/ns, 263.437 timesteps/s, 2.213 Matom-step/s
-99.6% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.03679    | 0.03679    | 0.03679    |   0.0 | 96.92
+Pair    | 0.17223    | 0.18429    | 0.19636    |   2.8 | 89.36
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015533 | 0.00015533 | 0.00015533 |   0.0 |  0.41
-Output  | 3.6375e-05 | 3.6375e-05 | 3.6375e-05 |   0.0 |  0.10
-Modify  | 0.00086563 | 0.00086563 | 0.00086563 |   0.0 |  2.28
-Other   |            | 0.0001124  |            |       |  0.30
+Comm    | 0.0032125  | 0.01541    | 0.027607   |   9.8 |  7.47
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.006537   |            |       |  3.17
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5000 ave        5000 max        5000 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309943 ave      309943 max      309943 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         155015 ave      172430 max      137600 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 309943
-Ave neighs/atom = 36.893584
+Total # of neighbors = 310030
+Ave neighs/atom = 36.733412
 Neighbor list builds = 0
 Dangerous builds = 0
-variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.935 | 4.935 | 4.935 Mbytes
+minimize 1e-13 1e-16 10000 10000
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       123   693.2265      -72951.823     -291.33537     -1608.0773      2230.5455      1342.7515     -66.022237     -1.4361868      1367703.2    
-       133   792.33388     -73059.434     -520.80837     -1818.66        1972.9093      1355.9516     -59.54724      -1.5502336      1367703.2    
-Loop time of 0.0383827 on 1 procs for 10 steps with 8401 atoms
+       367   0             -74028.624     -1845.8436     -2175.7066     -0.06582216     2159.9622     -0.1478397     -0.24688298     1367703.2    
+       387   0             -74028.624     -1845.8115     -2175.6738      0.023546745    2159.9651     -0.046264937   -0.085057422    1367703.2    
+Loop time of 0.111324 on 2 procs for 20 steps with 8440 atoms
 
-Performance: 22.510 ns/day, 1.066 hours/ns, 260.534 timesteps/s, 2.189 Matom-step/s
-97.7% CPU use with 1 MPI tasks x no OpenMP threads
+99.1% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -74028.6242538109  -74028.6242542705  -74028.6242542774
+  Force two-norm initial, final = 0.0012998928 0.00039812492
+  Force max component initial, final = 0.00012846622 6.0203635e-05
+  Final line search alpha, max atom move = 1 6.0203635e-05
+  Iterations, force evaluations = 20 40
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.0373     | 0.0373     | 0.0373     |   0.0 | 97.18
+Pair    | 0.094518   | 0.099276   | 0.10403    |   1.5 | 89.18
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016442 | 0.00016442 | 0.00016442 |   0.0 |  0.43
-Output  | 3.4083e-05 | 3.4083e-05 | 3.4083e-05 |   0.0 |  0.09
-Modify  | 0.000774   | 0.000774   | 0.000774   |   0.0 |  2.02
-Other   |            | 0.0001104  |            |       |  0.29
+Comm    | 0.0035153  | 0.0083607  | 0.013206   |   5.3 |  7.51
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.003688   |            |       |  3.31
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5006 ave        5006 max        5006 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309792 ave      309792 max      309792 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         154885 ave      172170 max      137600 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 309792
-Ave neighs/atom = 36.87561
+Total # of neighbors = 309770
+Ave neighs/atom = 36.702607
 Neighbor list builds = 0
 Dangerous builds = 0
-variable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.935 | 4.935 | 4.935 Mbytes
+minimize 1e-9 1e-12 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       133   792.33388     -73059.434     -520.80837     -1818.66        1972.9093      1355.9516     -59.54724      -1.5502336      1367703.2    
-       143   788.27262     -73054.989     -507.1772      -1814.9144      1965.2855      1376.2159     -55.532843     -10.5993        1367703.2    
-Loop time of 0.0374374 on 1 procs for 10 steps with 8401 atoms
+       387   0             -74025.568     -1852.4123     -2193.3477     -12.274492      2161.1366      1.2731823      0.27040985     1367703.2    
+       450   0             -74028.986     -1830.7822     -2170.3408      25.57651       2161.7162     -1.6182768     -0.084327961    1367703.2    
+Loop time of 0.280612 on 2 procs for 63 steps with 8440 atoms
 
-Performance: 23.079 ns/day, 1.040 hours/ns, 267.112 timesteps/s, 2.244 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
+99.4% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+      -74025.567898524  -74028.9778679302  -74028.9864657504
+  Force two-norm initial, final = 2.6028081 0.41783593
+  Force max component initial, final = 0.73265558 0.11007633
+  Final line search alpha, max atom move = 0.26031586 0.028654613
+  Iterations, force evaluations = 63 101
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.036274   | 0.036274   | 0.036274   |   0.0 | 96.89
+Pair    | 0.22626    | 0.24124    | 0.25623    |   3.1 | 85.97
+Neigh   | 0.00703    | 0.0080429  | 0.0090558  |   1.1 |  2.87
+Comm    | 0.0047805  | 0.020946   | 0.037112   |  11.2 |  7.46
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.01038    |            |       |  3.70
+
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         157064 ave      174301 max      139827 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 314128
+Ave neighs/atom = 37.218957
+Neighbor list builds = 2
+Dangerous builds = 0
+minimize 1e-12 1e-15 100 100
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
+   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
+       450   0             -74028.986     -1830.7822     -2170.3408      25.57651       2161.7162     -1.6182768     -0.084327961    1367703.2    
+       502   0             -74029.189     -1838.9521     -2179.695      -1.1676257      2161.1075      0.34542518     0.52694493     1367703.2    
+Loop time of 0.274314 on 2 procs for 52 steps with 8440 atoms
+
+99.7% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -74028.9864657504  -74029.1893326596  -74029.1893406275
+  Force two-norm initial, final = 0.41783593 0.012277775
+  Force max component initial, final = 0.11007633 0.0014357769
+  Final line search alpha, max atom move = 1 0.0014357769
+  Iterations, force evaluations = 52 101
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.22874    | 0.24505    | 0.26136    |   3.3 | 89.33
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015958 | 0.00015958 | 0.00015958 |   0.0 |  0.43
-Output  | 3.7417e-05 | 3.7417e-05 | 3.7417e-05 |   0.0 |  0.10
-Modify  | 0.00085342 | 0.00085342 | 0.00085342 |   0.0 |  2.28
-Other   |            | 0.0001134  |            |       |  0.30
+Comm    | 0.0040435  | 0.020529   | 0.037014   |  11.5 |  7.48
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.008735   |            |       |  3.18
 
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5004 ave        5004 max        5004 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309361 ave      309361 max      309361 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         157090 ave      174528 max      139653 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
 
-Total # of neighbors = 309361
-Ave neighs/atom = 36.824307
+Total # of neighbors = 314181
+Ave neighs/atom = 37.225237
 Neighbor list builds = 0
 Dangerous builds = 0
-varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
+minimize 1e-13 1e-16 10000 10000
+Per MPI rank memory allocation (min/avg/max) = 5.25 | 5.251 | 5.251 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       143   790.08008     -73057.203     -457.43995     -1763.0957      2264.0488      1420.7113      24.850892      45.183479      1367703.2    
-       153   734.72286     -72997.046     -321.88636     -1620.4947      2391.1497      1456.2712      14.131493      26.243049      1367703.2    
-Loop time of 0.043294 on 1 procs for 10 steps with 8401 atoms
+       502   0             -74029.189     -1838.9521     -2179.695      -1.1676257      2161.1075      0.34542518     0.52694493     1367703.2    
+       547   0             -74029.189     -1838.5238     -2179.2618     -0.0035849255   2161.1419      0.0077769243   0.023336485    1367703.2    
+Loop time of 0.238547 on 2 procs for 45 steps with 8440 atoms
 
-Performance: 19.957 ns/day, 1.203 hours/ns, 230.979 timesteps/s, 1.940 Matom-step/s
-99.9% CPU use with 1 MPI tasks x no OpenMP threads
+99.7% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -74029.1893406275  -74029.1893643187   -74029.189364322
+  Force two-norm initial, final = 0.012277775 0.0003146843
+  Force max component initial, final = 0.0014357769 2.4927206e-05
+  Final line search alpha, max atom move = 1 2.4927206e-05
+  Iterations, force evaluations = 45 90
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.035472   | 0.035472   | 0.035472   |   0.0 | 81.93
-Neigh   | 0.0067011  | 0.0067011  | 0.0067011  |   0.0 | 15.48
-Comm    | 0.00024788 | 0.00024788 | 0.00024788 |   0.0 |  0.57
-Output  | 3.525e-05  | 3.525e-05  | 3.525e-05  |   0.0 |  0.08
-Modify  | 0.00070946 | 0.00070946 | 0.00070946 |   0.0 |  1.64
-Other   |            | 0.0001281  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5000 ave        5000 max        5000 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309542 ave      309542 max      309542 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 309542
-Ave neighs/atom = 36.845852
-Neighbor list builds = 1
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       153   734.72286     -72997.046     -321.88636     -1620.4947      2391.1497      1456.2712      14.131493      26.243049      1367703.2    
-       163   695.55817     -72954.497     -192.03607     -1455.8958      2485.0735      1476.2052     -0.72561532     16.896401      1367703.2    
-Loop time of 0.0447437 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 19.310 ns/day, 1.243 hours/ns, 223.495 timesteps/s, 1.878 Matom-step/s
-98.4% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036533   | 0.036533   | 0.036533   |   0.0 | 81.65
-Neigh   | 0.0069584  | 0.0069584  | 0.0069584  |   0.0 | 15.55
-Comm    | 0.00026408 | 0.00026408 | 0.00026408 |   0.0 |  0.59
-Output  | 3.3166e-05 | 3.3166e-05 | 3.3166e-05 |   0.0 |  0.07
-Modify  | 0.00081221 | 0.00081221 | 0.00081221 |   0.0 |  1.82
-Other   |            | 0.0001427  |            |       |  0.32
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4999 ave        4999 max        4999 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309234 ave      309234 max      309234 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 309234
-Ave neighs/atom = 36.809189
-Neighbor list builds = 1
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       163   695.55817     -72954.497     -192.03607     -1455.8958      2485.0735      1476.2052     -0.72561532     16.896401      1367703.2    
-       173   713.6456      -72974.14      -143.82849     -1363.1473      2479.8803      1486.5352     -15.496427      13.668263      1367703.2    
-Loop time of 0.0375255 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.024 ns/day, 1.042 hours/ns, 266.485 timesteps/s, 2.239 Matom-step/s
-99.2% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.03626    | 0.03626    | 0.03626    |   0.0 | 96.63
+Pair    | 0.19953    | 0.2133     | 0.22707    |   3.0 | 89.42
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017917 | 0.00017917 | 0.00017917 |   0.0 |  0.48
-Output  | 3.4834e-05 | 3.4834e-05 | 3.4834e-05 |   0.0 |  0.09
-Modify  | 0.00093842 | 0.00093842 | 0.00093842 |   0.0 |  2.50
-Other   |            | 0.0001135  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4999 ave        4999 max        4999 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         309205 ave      309205 max      309205 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 309205
-Ave neighs/atom = 36.805737
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       173   713.6456      -72974.14      -143.82849     -1363.1473      2479.8803      1486.5352     -15.496427      13.668263      1367703.2    
-       183   780.09234     -73046.321     -176.41336     -1363.8824      2386.6464      1498.1764     -21.751083      8.1093821      1367703.2    
-Loop time of 0.0470781 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 18.352 ns/day, 1.308 hours/ns, 212.413 timesteps/s, 1.784 Matom-step/s
-95.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.038554   | 0.038554   | 0.038554   |   0.0 | 81.89
-Neigh   | 0.0069335  | 0.0069335  | 0.0069335  |   0.0 | 14.73
-Comm    | 0.00026046 | 0.00026046 | 0.00026046 |   0.0 |  0.55
-Output  | 3.3042e-05 | 3.3042e-05 | 3.3042e-05 |   0.0 |  0.07
-Modify  | 0.0011517  | 0.0011517  | 0.0011517  |   0.0 |  2.45
-Other   |            | 0.0001452  |            |       |  0.31
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4997 ave        4997 max        4997 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         308179 ave      308179 max      308179 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 308179
-Ave neighs/atom = 36.683609
-Neighbor list builds = 1
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       183   780.09234     -73046.321     -176.41336     -1363.8824      2386.6464      1498.1764     -21.751083      8.1093821      1367703.2    
-       193   848.74054     -73120.89      -197.95683     -1369.9831      2304.5972      1526.5636     -10.607327     -3.9203582      1367703.2    
-Loop time of 0.044282 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 19.511 ns/day, 1.230 hours/ns, 225.825 timesteps/s, 1.897 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036182   | 0.036182   | 0.036182   |   0.0 | 81.71
-Neigh   | 0.00657    | 0.00657    | 0.00657    |   0.0 | 14.84
-Comm    | 0.00027096 | 0.00027096 | 0.00027096 |   0.0 |  0.61
-Output  | 3.3208e-05 | 3.3208e-05 | 3.3208e-05 |   0.0 |  0.07
-Modify  | 0.0010825  | 0.0010825  | 0.0010825  |   0.0 |  2.44
-Other   |            | 0.0001429  |            |       |  0.32
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4993 ave        4993 max        4993 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307869 ave      307869 max      307869 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 307869
-Ave neighs/atom = 36.646709
-Neighbor list builds = 1
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       193   848.74054     -73120.89      -197.95683     -1369.9831      2304.5972      1526.5636     -10.607327     -3.9203582      1367703.2    
-       200   873.93295     -73148.252     -168.07081     -1344.5552      2295.6678      1543.3466      0.034702801   -15.527563      1367703.2    
-       203   876.555       -73151.099     -145.44127     -1324.6438      2301.7067      1548.4494      3.1576834     -20.870366      1367703.2    
-Loop time of 0.0381085 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.672 ns/day, 1.059 hours/ns, 262.408 timesteps/s, 2.204 Matom-step/s
-99.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036842   | 0.036842   | 0.036842   |   0.0 | 96.68
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015804 | 0.00015804 | 0.00015804 |   0.0 |  0.41
-Output  | 6.5582e-05 | 6.5582e-05 | 6.5582e-05 |   0.0 |  0.17
-Modify  | 0.0009305  | 0.0009305  | 0.0009305  |   0.0 |  2.44
-Other   |            | 0.0001125  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4995 ave        4995 max        4995 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307836 ave      307836 max      307836 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 307836
-Ave neighs/atom = 36.642781
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       203   876.555       -73151.099     -145.44127     -1324.6438      2301.7067      1548.4494      3.1576834     -20.870366      1367703.2    
-       213   849.92525     -73122.167     -48.345429     -1259.6134      2347.5198      1551.3374      1.9685411     -29.641635      1367703.2    
-Loop time of 0.0366596 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.568 ns/day, 1.018 hours/ns, 272.780 timesteps/s, 2.292 Matom-step/s
-99.7% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035496   | 0.035496   | 0.035496   |   0.0 | 96.83
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015558 | 0.00015558 | 0.00015558 |   0.0 |  0.42
-Output  | 3.1541e-05 | 3.1541e-05 | 3.1541e-05 |   0.0 |  0.09
-Modify  | 0.00086379 | 0.00086379 | 0.00086379 |   0.0 |  2.36
-Other   |            | 0.0001124  |            |       |  0.31
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5003 ave        5003 max        5003 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307411 ave      307411 max      307411 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 307411
-Ave neighs/atom = 36.592191
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       213   849.92525     -73122.167     -48.345429     -1259.6134      2347.5198      1551.3374      1.9685411     -29.641635      1367703.2    
-       223   792.06211     -73059.31       44.160453     -1245.1411      2398.7228      1513.7783     -8.5358386     -29.960675      1367703.2    
-Loop time of 0.0389006 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.210 ns/day, 1.081 hours/ns, 257.065 timesteps/s, 2.160 Matom-step/s
-96.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.037594   | 0.037594   | 0.037594   |   0.0 | 96.64
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016592 | 0.00016592 | 0.00016592 |   0.0 |  0.43
-Output  | 4.0958e-05 | 4.0958e-05 | 4.0958e-05 |   0.0 |  0.11
-Modify  | 0.00099046 | 0.00099046 | 0.00099046 |   0.0 |  2.55
-Other   |            | 0.0001098  |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5001 ave        5001 max        5001 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307111 ave      307111 max      307111 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 307111
-Ave neighs/atom = 36.556481
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       223   792.06211     -73059.31       44.160453     -1245.1411      2398.7228      1513.7783     -8.5358386     -29.960675      1367703.2    
-       233   745.18218     -73008.389      58.902786     -1283.1127      2383.461       1459.3362     -10.25332      -44.440644      1367703.2    
-Loop time of 0.0443363 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 19.487 ns/day, 1.232 hours/ns, 225.549 timesteps/s, 1.895 Matom-step/s
-94.7% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.042657   | 0.042657   | 0.042657   |   0.0 | 96.21
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00023113 | 0.00023113 | 0.00023113 |   0.0 |  0.52
-Output  | 3.7959e-05 | 3.7959e-05 | 3.7959e-05 |   0.0 |  0.09
-Modify  | 0.0012853  | 0.0012853  | 0.0012853  |   0.0 |  2.90
-Other   |            | 0.0001251  |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5004 ave        5004 max        5004 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306937 ave      306937 max      306937 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306937
-Ave neighs/atom = 36.53577
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       233   745.18218     -73008.389      58.902786     -1283.1127      2383.461       1459.3362     -10.25332      -44.440644      1367703.2    
-       243   738.15669     -73000.761     -3.1508882     -1366.0359      2263.1149      1414.3447     -8.1036008     -52.595717      1367703.2    
-Loop time of 0.0379153 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.788 ns/day, 1.053 hours/ns, 263.746 timesteps/s, 2.216 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036596   | 0.036596   | 0.036596   |   0.0 | 96.52
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00018375 | 0.00018375 | 0.00018375 |   0.0 |  0.48
-Output  | 3.3709e-05 | 3.3709e-05 | 3.3709e-05 |   0.0 |  0.09
-Modify  | 0.00098963 | 0.00098963 | 0.00098963 |   0.0 |  2.61
-Other   |            | 0.000112   |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4999 ave        4999 max        4999 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306755 ave      306755 max      306755 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306755
-Ave neighs/atom = 36.514105
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       243   738.15669     -73000.761     -3.1508882     -1366.0359      2263.1149      1414.3447     -8.1036008     -52.595717      1367703.2    
-       253   771.22873     -73036.692     -135.38264     -1480.3423      2041.144       1402.7925     -7.7308335     -50.952471      1367703.2    
-Loop time of 0.0383686 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.518 ns/day, 1.066 hours/ns, 260.630 timesteps/s, 2.190 Matom-step/s
-98.2% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036984   | 0.036984   | 0.036984   |   0.0 | 96.39
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017317 | 0.00017317 | 0.00017317 |   0.0 |  0.45
-Output  | 3.5583e-05 | 3.5583e-05 | 3.5583e-05 |   0.0 |  0.09
-Modify  | 0.0010621  | 0.0010621  | 0.0010621  |   0.0 |  2.77
-Other   |            | 0.0001138  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4994 ave        4994 max        4994 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306486 ave      306486 max      306486 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306486
-Ave neighs/atom = 36.482085
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       253   771.22873     -73036.692     -135.38264     -1480.3423      2041.144       1402.7925     -7.7308335     -50.952471      1367703.2    
-       263   814.19951     -73083.376     -262.87271     -1584.4407      1810.1859      1421.5511     -4.1451855     -44.209723      1367703.2    
-Loop time of 0.0472473 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 18.287 ns/day, 1.312 hours/ns, 211.652 timesteps/s, 1.778 Matom-step/s
-95.1% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.038915   | 0.038915   | 0.038915   |   0.0 | 82.37
-Neigh   | 0.0067205  | 0.0067205  | 0.0067205  |   0.0 | 14.22
-Comm    | 0.00027808 | 0.00027808 | 0.00027808 |   0.0 |  0.59
-Output  | 3.9709e-05 | 3.9709e-05 | 3.9709e-05 |   0.0 |  0.08
-Modify  | 0.0011517  | 0.0011517  | 0.0011517  |   0.0 |  2.44
-Other   |            | 0.000142   |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4993 ave        4993 max        4993 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305931 ave      305931 max      305931 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305931
-Ave neighs/atom = 36.416022
-Neighbor list builds = 1
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       263   814.19951     -73083.376     -262.87271     -1584.4407      1810.1859      1421.5511     -4.1451855     -44.209723      1367703.2    
-       273   831.89974     -73102.6       -359.45584     -1661.8656      1658.988       1440.5563      5.8116063     -24.035296      1367703.2    
-Loop time of 0.0384046 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.497 ns/day, 1.067 hours/ns, 260.386 timesteps/s, 2.187 Matom-step/s
-98.2% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.037125   | 0.037125   | 0.037125   |   0.0 | 96.67
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017612 | 0.00017612 | 0.00017612 |   0.0 |  0.46
-Output  | 3.925e-05  | 3.925e-05  | 3.925e-05  |   0.0 |  0.10
-Modify  | 0.00094612 | 0.00094612 | 0.00094612 |   0.0 |  2.46
-Other   |            | 0.000118   |            |       |  0.31
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4996 ave        4996 max        4996 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305935 ave      305935 max      305935 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305935
-Ave neighs/atom = 36.416498
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       273   831.89974     -73102.6       -359.45584     -1661.8656      1658.988       1440.5563      5.8116063     -24.035296      1367703.2    
-       283   809.61445     -73078.395     -381.36017     -1706.0908      1616.5256      1432.9961      17.91078       4.5756784      1367703.2    
-Loop time of 0.0370252 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.335 ns/day, 1.028 hours/ns, 270.086 timesteps/s, 2.269 Matom-step/s
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.03596    | 0.03596    | 0.03596    |   0.0 | 97.12
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016613 | 0.00016613 | 0.00016613 |   0.0 |  0.45
-Output  | 3.9083e-05 | 3.9083e-05 | 3.9083e-05 |   0.0 |  0.11
-Modify  | 0.00074454 | 0.00074454 | 0.00074454 |   0.0 |  2.01
-Other   |            | 0.0001155  |            |       |  0.31
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5001 ave        5001 max        5001 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305950 ave      305950 max      305950 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305950
-Ave neighs/atom = 36.418284
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       283   809.61445     -73078.395     -381.36017     -1706.0908      1616.5256      1432.9961      17.91078       4.5756784      1367703.2    
-       293   759.05        -73023.472     -365.46693     -1721.1376      1632.2398      1416.3524      38.966756      30.093681      1367703.2    
-Loop time of 0.0374318 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.082 ns/day, 1.040 hours/ns, 267.153 timesteps/s, 2.244 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036112   | 0.036112   | 0.036112   |   0.0 | 96.47
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016662 | 0.00016662 | 0.00016662 |   0.0 |  0.45
-Output  | 3.5334e-05 | 3.5334e-05 | 3.5334e-05 |   0.0 |  0.09
-Modify  | 0.0010041  | 0.0010041  | 0.0010041  |   0.0 |  2.68
-Other   |            | 0.0001139  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5001 ave        5001 max        5001 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306150 ave      306150 max      306150 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306150
-Ave neighs/atom = 36.44209
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       293   759.05        -73023.472     -365.46693     -1721.1376      1632.2398      1416.3524      38.966756      30.093681      1367703.2    
-       300   723.74493     -72985.122     -329.07566     -1700.9468      1660.4596      1407.2114      55.587537      39.254177      1367703.2    
-       303   712.4454      -72972.847     -316.42057     -1689.6783      1668.2583      1405.5099      60.667733      41.653377      1367703.2    
-Loop time of 0.0392329 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.022 ns/day, 1.090 hours/ns, 254.888 timesteps/s, 2.141 Matom-step/s
-98.0% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.038021   | 0.038021   | 0.038021   |   0.0 | 96.91
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017954 | 0.00017954 | 0.00017954 |   0.0 |  0.46
-Output  | 7.3917e-05 | 7.3917e-05 | 7.3917e-05 |   0.0 |  0.19
-Modify  | 0.00084333 | 0.00084333 | 0.00084333 |   0.0 |  2.15
-Other   |            | 0.0001146  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4997 ave        4997 max        4997 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306487 ave      306487 max      306487 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306487
-Ave neighs/atom = 36.482204
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       303   712.4454      -72972.847     -316.42057     -1689.6783      1668.2583      1405.5099      60.667733      41.653377      1367703.2    
-       313   700.64744     -72960.033     -294.60821     -1660.3102      1659.3573      1401.8193      64.292185      47.973323      1367703.2    
-Loop time of 0.0374483 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.072 ns/day, 1.040 hours/ns, 267.035 timesteps/s, 2.243 Matom-step/s
-99.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036237   | 0.036237   | 0.036237   |   0.0 | 96.77
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015371 | 0.00015371 | 0.00015371 |   0.0 |  0.41
-Output  | 3.3166e-05 | 3.3166e-05 | 3.3166e-05 |   0.0 |  0.09
-Modify  | 0.00091925 | 0.00091925 | 0.00091925 |   0.0 |  2.45
-Other   |            | 0.000105   |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4998 ave        4998 max        4998 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306634 ave      306634 max      306634 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306634
-Ave neighs/atom = 36.499702
-Neighbor list builds = 0
-Dangerous buildsvariavariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       313   700.64744     -72960.033     -294.60821     -1660.3102      1659.3573      1401.8193      64.292185      47.973323      1367703.2    
-       323   729.96485     -72991.881     -337.25556     -1685.8109      1569.0009      1393.233       68.376779      48.855021      1367703.2    
-Loop time of 0.038627 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.368 ns/day, 1.073 hours/ns, 258.886 timesteps/s, 2.175 Matom-step/s
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.037292   | 0.037292   | 0.037292   |   0.0 | 96.54
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.000179   | 0.000179   | 0.000179   |   0.0 |  0.46
-Output  | 4.2917e-05 | 4.2917e-05 | 4.2917e-05 |   0.0 |  0.11
-Modify  | 0.00099783 | 0.00099783 | 0.00099783 |   0.0 |  2.58
-Other   |            | 0.0001152  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4997 ave        4997 max        4997 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306654 ave      306654 max      306654 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306654
-Ave neighs/atom = 36.502083
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       323   729.96485     -72991.881     -337.25556     -1685.8109      1569.0009      1393.233       68.376779      48.855021      1367703.2    
-       333   779.72621     -73045.931     -415.8136      -1732.8581      1447.5959      1385.0389      79.162866      41.47177       1367703.2    
-Loop time of 0.0369724 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.369 ns/day, 1.027 hours/ns, 270.472 timesteps/s, 2.272 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035823   | 0.035823   | 0.035823   |   0.0 | 96.89
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015887 | 0.00015887 | 0.00015887 |   0.0 |  0.43
-Output  | 3.3042e-05 | 3.3042e-05 | 3.3042e-05 |   0.0 |  0.09
-Modify  | 0.00084004 | 0.00084004 | 0.00084004 |   0.0 |  2.27
-Other   |            | 0.0001172  |            |       |  0.32
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4996 ave        4996 max        4996 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306433 ave      306433 max      306433 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306433
-Ave neighs/atom = 36.475777
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       333   779.72621     -73045.931     -415.8136      -1732.8581      1447.5959      1385.0389      79.162866      41.47177       1367703.2    
-       343   819.82984     -73089.491     -486.3539      -1785.0323      1344.0306      1377.3337      86.174745      52.075707      1367703.2    
-Loop time of 0.0373178 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.152 ns/day, 1.037 hours/ns, 267.969 timesteps/s, 2.251 Matom-step/s
-98.8% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036067   | 0.036067   | 0.036067   |   0.0 | 96.65
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015734 | 0.00015734 | 0.00015734 |   0.0 |  0.42
-Output  | 3.6833e-05 | 3.6833e-05 | 3.6833e-05 |   0.0 |  0.10
-Modify  | 0.00094787 | 0.00094787 | 0.00094787 |   0.0 |  2.54
-Other   |            | 0.0001091  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4990 ave        4990 max        4990 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         306320 ave      306320 max      306320 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 306320
-Ave neighs/atom = 36.462326
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       343   819.82984     -73089.491     -486.3539      -1785.0323      1344.0306      1377.3337      86.174745      52.075707      1367703.2    
-       353   827.54606     -73097.872     -508.09256     -1810.1521      1292.0792      1372.8931      84.893016      67.571743      1367703.2    
-Loop time of 0.0380344 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.716 ns/day, 1.057 hours/ns, 262.920 timesteps/s, 2.209 Matom-step/s
-99.7% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036818   | 0.036818   | 0.036818   |   0.0 | 96.80
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016888 | 0.00016888 | 0.00016888 |   0.0 |  0.44
-Output  | 3.6041e-05 | 3.6041e-05 | 3.6041e-05 |   0.0 |  0.09
-Modify  | 0.00089912 | 0.00089912 | 0.00089912 |   0.0 |  2.36
-Other   |            | 0.0001123  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4994 ave        4994 max        4994 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305966 ave      305966 max      305966 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305966
-Ave neighs/atom = 36.420188
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       353   827.54606     -73097.872     -508.09256     -1810.1521      1292.0792      1372.8931      84.893016      67.571743      1367703.2    
-       363   802.53307     -73070.698     -482.53178     -1817.0922      1283.5055      1374.2486      85.346204      92.25574       1367703.2    
-Loop time of 0.0367728 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.496 ns/day, 1.021 hours/ns, 271.940 timesteps/s, 2.285 Matom-step/s
-99.0% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035697   | 0.035697   | 0.035697   |   0.0 | 97.07
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015371 | 0.00015371 | 0.00015371 |   0.0 |  0.42
-Output  | 3.2958e-05 | 3.2958e-05 | 3.2958e-05 |   0.0 |  0.09
-Modify  | 0.00078108 | 0.00078108 | 0.00078108 |   0.0 |  2.12
-Other   |            | 0.0001083  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4991 ave        4991 max        4991 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305762 ave      305762 max      305762 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305762
-Ave neighs/atom = 36.395905
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       363   802.53307     -73070.698     -482.53178     -1817.0922      1283.5055      1374.2486      85.346204      92.25574       1367703.2    
-       373   765.22904     -73030.175     -434.37824     -1813.2471      1283.7655      1376.0225      90.874798      110.50942      1367703.2    
-Loop time of 0.0376608 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.942 ns/day, 1.046 hours/ns, 265.528 timesteps/s, 2.231 Matom-step/s
-98.3% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036364   | 0.036364   | 0.036364   |   0.0 | 96.56
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017013 | 0.00017013 | 0.00017013 |   0.0 |  0.45
-Output  | 4.1833e-05 | 4.1833e-05 | 4.1833e-05 |   0.0 |  0.11
-Modify  | 0.00097108 | 0.00097108 | 0.00097108 |   0.0 |  2.58
-Other   |            | 0.000114   |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4997 ave        4997 max        4997 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305542 ave      305542 max      305542 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305542
-Ave neighs/atom = 36.369718
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       373   765.22904     -73030.175     -434.37824     -1813.2471      1283.7655      1376.0225      90.874798      110.50942      1367703.2    
-       383   740.62412     -73003.45      -399.9211      -1807.555       1268.1339      1383.7877      95.583811      118.79958      1367703.2    
-Loop time of 0.0374741 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.056 ns/day, 1.041 hours/ns, 266.851 timesteps/s, 2.242 Matom-step/s
-99.2% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036163   | 0.036163   | 0.036163   |   0.0 | 96.50
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016291 | 0.00016291 | 0.00016291 |   0.0 |  0.43
-Output  | 5.15e-05   | 5.15e-05   | 5.15e-05   |   0.0 |  0.14
-Modify  | 0.00097613 | 0.00097613 | 0.00097613 |   0.0 |  2.60
-Other   |            | 0.0001203  |            |       |  0.32
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4997 ave        4997 max        4997 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305506 ave      305506 max      305506 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305506
-Ave neighs/atom = 36.365433
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       383   740.62412     -73003.45      -399.9211      -1807.555       1268.1339      1383.7877      95.583811      118.79958      1367703.2    
-       393   742.3121      -73005.289     -424.81297     -1828.8786      1210.3963      1377.9422      111.73229      107.73875      1367703.2    
-Loop time of 0.0377713 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.875 ns/day, 1.049 hours/ns, 264.751 timesteps/s, 2.224 Matom-step/s
-98.2% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036436   | 0.036436   | 0.036436   |   0.0 | 96.47
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016196 | 0.00016196 | 0.00016196 |   0.0 |  0.43
-Output  | 3.2292e-05 | 3.2292e-05 | 3.2292e-05 |   0.0 |  0.09
-Modify  | 0.0010361  | 0.0010361  | 0.0010361  |   0.0 |  2.74
-Other   |            | 0.0001047  |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4993 ave        4993 max        4993 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305345 ave      305345 max      305345 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305345
-Ave neighs/atom = 36.346268
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       393   742.3121      -73005.289     -424.81297     -1828.8786      1210.3963      1377.9422      111.73229      107.73875      1367703.2    
-       400   756.62124     -73020.83      -463.15797     -1857.2893      1153.6619      1371.8929      126.81253      95.583816      1367703.2    
-       403   764.95272     -73029.883     -481.98948     -1872.4577      1124.3648      1370.9651      131.15249      89.495567      1367703.2    
-Loop time of 0.0377232 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.904 ns/day, 1.048 hours/ns, 265.089 timesteps/s, 2.227 Matom-step/s
-99.1% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.036534   | 0.036534   | 0.036534   |   0.0 | 96.85
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015912 | 0.00015912 | 0.00015912 |   0.0 |  0.42
-Output  | 7.0917e-05 | 7.0917e-05 | 7.0917e-05 |   0.0 |  0.19
-Modify  | 0.00084713 | 0.00084713 | 0.00084713 |   0.0 |  2.25
-Other   |            | 0.0001122  |            |       |  0.30
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4994 ave        4994 max        4994 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305254 ave      305254 max      305254 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 305254
-Ave neighs/atom = 36.335436
-Neighbor list builds = 0
-Dangerous builds varivariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       403   764.95272     -73029.883     -481.98948     -1872.4577      1124.3648      1370.9651      131.15249      89.495567      1367703.2    
-       413   790.85666     -73058.02      -542.33531     -1925.5302      1026.6339      1366.1088      137.62812      61.083997      1367703.2    
-Loop time of 0.0371521 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.256 ns/day, 1.032 hours/ns, 269.164 timesteps/s, 2.261 Matom-step/s
-98.9% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035917   | 0.035917   | 0.035917   |   0.0 | 96.68
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00015834 | 0.00015834 | 0.00015834 |   0.0 |  0.43
-Output  | 3.0625e-05 | 3.0625e-05 | 3.0625e-05 |   0.0 |  0.08
-Modify  | 0.00093975 | 0.00093975 | 0.00093975 |   0.0 |  2.53
-Other   |            | 0.0001059  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4991 ave        4991 max        4991 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         304960 ave      304960 max      304960 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 304960
-Ave neighs/atom = 36.30044
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       413   790.85666     -73058.02      -542.33531     -1925.5302      1026.6339      1366.1088      137.62812      61.083997      1367703.2    
-       423   803.31438     -73071.552     -589.65391     -1972.644       944.20462      1351.7365      129.20561      43.10353       1367703.2    
-Loop time of 0.0382421 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 22.593 ns/day, 1.062 hours/ns, 261.492 timesteps/s, 2.197 Matom-step/s
-96.9% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.037008   | 0.037008   | 0.037008   |   0.0 | 96.77
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00017162 | 0.00017162 | 0.00017162 |   0.0 |  0.45
-Output  | 3.1084e-05 | 3.1084e-05 | 3.1084e-05 |   0.0 |  0.08
-Modify  | 0.00092533 | 0.00092533 | 0.00092533 |   0.0 |  2.42
-Other   |            | 0.0001065  |            |       |  0.28
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4989 ave        4989 max        4989 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         304685 ave      304685 max      304685 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 304685
-Ave neighs/atom = 36.267706
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       423   803.31438     -73071.552     -589.65391     -1972.644       944.20462      1351.7365      129.20561      43.10353       1367703.2    
-       433   795.95035     -73063.551     -614.88466     -1989.7706      896.07866      1329.1241      107.44612      34.189797      1367703.2    
-Loop time of 0.036599 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 23.607 ns/day, 1.017 hours/ns, 273.232 timesteps/s, 2.295 Matom-step/s
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.035362   | 0.035362   | 0.035362   |   0.0 | 96.62
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00016888 | 0.00016888 | 0.00016888 |   0.0 |  0.46
-Output  | 3.8e-05    | 3.8e-05    | 3.8e-05    |   0.0 |  0.10
-Modify  | 0.00092183 | 0.00092183 | 0.00092183 |   0.0 |  2.52
-Other   |            | 0.0001079  |            |       |  0.29
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4994 ave        4994 max        4994 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         304591 ave      304591 max      304591 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 304591
-Ave neighs/atom = 36.256517
-Neighbor list builds = 0
-Dangerous builds =varvariable v_low atom "z < -13.339800"
-group g_low variable v_low
-0 atoms in group g_low
-delete_atoms group g_low
-Deleted 0 atoms, new total = 8401
-variable v_high atom "z > 57.805800"
-group g_high variable v_high
-0 atoms in group g_high
-delete_atoms group g_high
-Deleted 0 atoms, new total = 8401
-run 10
-Per MPI rank memory allocation (min/avg/max) = 4.932 | 4.932 | 4.932 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       433   795.95035     -73063.551     -614.88466     -1989.7706      896.07866      1329.1241      107.44612      34.189797      1367703.2    
-       443   777.50374     -73043.511     -612.185       -1983.5838      855.53773      1318.8593      87.382687      24.993851      1367703.2    
-Loop time of 0.08059 on 1 procs for 10 steps with 8401 atoms
-
-Performance: 10.721 ns/day, 2.239 hours/ns, 124.085 timesteps/s, 1.042 Matom-step/s
-67.3% CPU use with 1 MPI tasks x no OpenMP threads
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.075932   | 0.075932   | 0.075932   |   0.0 | 94.22
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0019406  | 0.0019406  | 0.0019406  |   0.0 |  2.41
-Output  | 4.0666e-05 | 4.0666e-05 | 4.0666e-05 |   0.0 |  0.05
-Modify  | 0.002356   | 0.002356   | 0.002356   |   0.0 |  2.92
-Other   |            | 0.0003211  |            |       |  0.40
-
-Nlocal:           8401 ave        8401 max        8401 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5000 ave        5000 max        5000 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         304518 ave      304518 max      304518 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 304518
-Ave neighs/atom = 36.247828
+Comm    | 0.0036915  | 0.017619   | 0.031547   |  10.5 |  7.39
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.007626   |            |       |  3.20
+
+Nlocal:           4220 ave        4440 max        4000 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         4764.5 ave        4953 max        4576 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         154860 ave      172120 max      137600 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 309720
+Ave neighs/atom = 36.696682
 Neighbor list builds = 0
 Dangerous builds = 0
+Total wall time: 0:00:03

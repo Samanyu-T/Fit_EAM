@@ -423,4 +423,3 @@ if __name__ == '__main__':
 
     main(param_dict['machine'], float(param_dict['max_time']), param_dict['write_dir'],param_dict['save_dir'])
 
-
