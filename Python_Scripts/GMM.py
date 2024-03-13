@@ -72,6 +72,9 @@ def main(file_pattern, data_folder, iter):
     gmm = GaussianMixture(n_components=cmp - 1 , covariance_type='full')
     gmm.fit(data)
 
+    print(data.shape)
+    print(gmm.means_)
+    
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
     np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
 
