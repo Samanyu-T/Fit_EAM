@@ -10,6 +10,7 @@ from Lmp_PDefect import Point_Defect
 import time
 import numpy as np
 from Simulate_Defect_Set import sim_defect_set
+import glob 
 
 # Main Function, which takes in each core separetly
 def worker_function(proc, machine, max_time):
@@ -112,9 +113,9 @@ def optimize(n_knots, bool_fit, proc, machine, max_time=11, write_dir = '',
         print('The Approximate number of Samples: %d \n Number of Dimensions: %d' % (N_samples, n_params))
         sys.stdout.flush()  
 
-    files = os.listdir(gmm_folder)
+    files = glob.glob(os.path.join(gmm_folder, 'Mean_*'))
 
-    N = int(len(files)/2)
+    N = len(files)
 
     select = proc % N
     
