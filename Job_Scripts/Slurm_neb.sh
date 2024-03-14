@@ -7,7 +7,7 @@
 #SBATCH --ntasks=112
 
 
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 ##SBATCH --mail-type=NONE
 ##SBATCH --no-requeue
  
