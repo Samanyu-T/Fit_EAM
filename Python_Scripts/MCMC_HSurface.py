@@ -1,4 +1,3 @@
-from re import T
 from lammps import lammps
 import numpy as np
 import itertools
@@ -8,6 +7,8 @@ from mpi4py import MPI
 import ctypes
 import time
 import matplotlib.pyplot as plt
+from scipy import stats
+from sympy import N
 
 def get_tetrahedral_sites(R):
 
@@ -64,7 +65,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     tet_sites = np.array([[0.25, 0.5 ,0]])
 
-    k = -1
+    k = -0.5
 
     for i in range(size):
         for j in range(size):
@@ -146,12 +147,14 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
         site = tet_sites[rng_int]
         lmp.command('create_atoms %d single %f %f %f units lattice' % (2, site[0], site[1], site[2]))
         tet_sites = np.delete(tet_sites, rng_int, axis=0)
-
+        
     lmp.command('minimize 1e-9 1e-12 100 100')
 
     lmp.command('minimize 1e-12 1e-15 100 100')
 
     lmp.command('minimize 1e-13 1e-16 %d %d' % (10000, 10000))
+
+    lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
     pbc = lmp.get_thermo('lx')
 
@@ -163,8 +166,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     beta = 1/(kb*temp)
 
-    pe_unique = []
-
     pe_explored = []
 
     type = np.array( lmp.gather_atoms('type', 0 , 1) )
@@ -172,97 +173,165 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     all_h_idx = np.where(type == 2)[0]
 
     N_h = len(all_h_idx)
+        
+    n_ensemple = int(100)
+
+    n_samples = int(50)
+
+    converged = False
     
-    n_accept = 0
-    
-    N_iterations = int(1e5)
+    converge_thresh = 0.95
 
-    for mcmc_iter in range(N_iterations):
+    canonical = np.zeros((n_ensemple, ))
+
+    samples = np.zeros((n_samples,))
+
+    surface_retention = np.zeros((n_ensemple,))
+
+    counter = 0
+
+    while not converged: 
         
-        if mcmc_iter % 1000 == 0:
-            print(proc, mcmc_iter)
+        n_accept = 0
 
-        xyz = np.array(lmp.gather_atoms('x', 1, 3))
+        while n_accept < n_ensemple:
 
-        xyz = xyz.reshape(len(xyz)//3 , 3)
+            xyz = np.array(lmp.gather_atoms('x', 1, 3))
 
-        np.random.shuffle(all_h_idx)
+            xyz = xyz.reshape(len(xyz)//3 , 3)
 
-        slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
+            np.random.shuffle(all_h_idx)
 
-        h_idx = np.copy(all_h_idx[:slct_h])
-        
-        displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+            slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
 
-        xyz[h_idx] += displace
-
-        xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        
-        lmp.scatter_atoms('x', 1, 3, xyz_c)
-
-        lmp.command('minimize 1e-9 1e-12 10 10')
-
-        lmp.command('minimize 1e-9 1e-12 100 100')
-
-        lmp.command('minimize 1e-9 1e-12 10000 10000')
-
-        pe_test = lmp.get_thermo('pe')
-
-        acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
-
-        rng = np.random.rand()
-
-        pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
-
-        if rng <= acceptance:
-            pe_unique.append((pe_ref -2.121*N_h - pe_curr)/N_h)
-
-            n_accept += 1
-
-            pe_curr = pe_test
-
-        else:
+            h_idx = np.copy(all_h_idx[:slct_h])
             
-            xyz[h_idx] -= displace
+            displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+
+            xyz[h_idx] += displace
+
+            # xyz = xyz - np.floor(xyz/pbc)*pbc
 
             xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
+            
             lmp.scatter_atoms('x', 1, 3, xyz_c)
 
-    N_final = lmp.get_natoms()
+            lmp.command('minimize 1e-9 1e-12 10 10')
 
-    pe_final = lmp.get_thermo('pe')
+            lmp.command('minimize 1e-9 1e-12 100 100')
 
-    lmp.close()
+            lmp.command('minimize 1e-9 1e-12 10000 10000')
 
-    print(n_accept/N_iterations)
+            pe_test = lmp.get_thermo('pe')
 
-    N_h = (N_final-N_ref)
+            acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
 
-    c_final = 100*N_h/len(surface)
-    
-    binding = 0
+            rng = np.random.rand()
 
-    if N_final-N_ref>0:
+            # print(pe_test - pe_curr)
 
-        binding = (pe_ref -2.121*N_h - pe_final)/N_h
-    
-    pe_explored = np.array(pe_explored)
-    pe_unique = np.array(pe_unique)
+            n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
 
-        
-    plt.plot(pe_explored)
-    plt.plot(pe_unique)
-    plt.show()
+            pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
+
+            if rng <= acceptance:
+                
+                pe_curr = pe_test
+
+                # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
+
+                canonical[n_accept] = (pe_ref -2.121*N_h - pe_curr)/N_h
+
+                surface_retention[n_accept] = n_h_surface
+
+                n_accept += 1
+
+                counter += 1
+                
+            else:
+                
+                xyz[h_idx] -= displace
+
+                xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+                lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+        n_accept = 0
+
+        while n_accept < n_samples:
+
+            xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+            xyz = xyz.reshape(len(xyz)//3 , 3)
+
+            np.random.shuffle(all_h_idx)
+
+            slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
+
+            h_idx = np.copy(all_h_idx[:slct_h])
+            
+            displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+
+            xyz[h_idx] += displace
+
+            # xyz = xyz - np.floor(xyz/pbc)*pbc
+
+            xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+            
+            lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+            lmp.command('minimize 1e-9 1e-12 10 10')
+
+            lmp.command('minimize 1e-9 1e-12 100 100')
+
+            lmp.command('minimize 1e-9 1e-12 10000 10000')
+
+            pe_test = lmp.get_thermo('pe')
+
+            acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
+
+            rng = np.random.rand()
+
+            n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
+
+            pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
+
+            if rng <= acceptance:
+
+                pe_curr = pe_test
+                
+                # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
+
+                samples[n_accept] = (pe_ref -2.121*N_h - pe_curr)/N_h
+                
+                surface_retention[n_accept] = n_h_surface
+
+                counter += 1
+                
+                n_accept += 1
+
+            else:
+                
+                xyz[h_idx] -= displace
+
+                xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+                lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+        res = stats.ks_2samp(canonical, samples)
+
+        print(res)
+
+        if res.pvalue > 0.05:
+            converged = True
 
     if not os.path.exists('../MCMC_Data'):
         os.mkdir('../MCMC_Data')
 
     np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
-    np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, pe_unique)
-    
 
-    return binding, c_final, N_h
+    np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
+    
 
 
 if __name__ == '__main__':
