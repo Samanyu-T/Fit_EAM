@@ -76,11 +76,11 @@ def main(file_pattern, data_folder, iter):
     print(gmm.means_)
 
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
-    np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
-    np.savetxt(os.path.join(gmm_folder, 'Filtered_Samples.txt'),loss[thresh_idx])
-
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
+
+    np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
+    np.savetxt(os.path.join(gmm_folder, 'Filtered_Samples.txt'),loss[thresh_idx])
 
     for i in range(gmm.covariances_.shape[0]):
         np.savetxt(os.path.join(gmm_folder, 'Cov_%d.txt' % i ),gmm.covariances_[i])

@@ -168,7 +168,7 @@ def main(machine, max_time, write_dir, save_dir):
     # ### OPTIMIZE FOR HE-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
     # comm.Barrier()
-    g_iteration = 3
+    # g_iteration = 3
 
     N_gaussian = 4
 
@@ -179,34 +179,38 @@ def main(machine, max_time, write_dir, save_dir):
     bool_fit['He-He'] = True
     
     # Edit a new Covariance Matrix for the He-He potential
-    if me == 0:
-        gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % (g_iteration - 1))
-        GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, g_iteration)
+    # if me == 0:
+    #     gsamples_folder = os.path.join(data_folder,'Gaussian_Samples_%d' % (g_iteration - 1))
+    #     GMM.main(os.path.join(gsamples_folder,'Core_*'), data_folder, g_iteration)
 
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, g_iteration)):
-            cov_0 = np.loadtxt(cov_file)
-            cov_1 = np.diag([4, 8, 32, 4, 8, 32])
+    #     for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder, g_iteration)):
+    #         cov_0 = np.loadtxt(cov_file)
+    #         cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
-            cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
-                           [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
+    #         cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
+    #                        [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
 
-            cov_name = os.path.basename(cov_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, cov_name), cov)
+    #         cov_name = os.path.basename(cov_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, g_iteration)):
-            mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
-            mean_1 = np.zeros((len(cov_1),1))
+    #     for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder, g_iteration)):
+    #         mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
+    #         mean_1 = np.zeros((len(cov_1),1))
 
-            mean = np.vstack([mean_0, mean_1])
+    #         mean = np.vstack([mean_0, mean_1])
 
-            mean_name = os.path.basename(mean_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
+    #         mean_name = os.path.basename(mean_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
 
-    comm.Barrier()
+    # comm.Barrier()
 
     ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
+    if me == 0:
+        GMM.main(os.path.join(data_folder,'Gaussian_Samples_3', 'Core_*'), data_folder, 4)
+    
+    comm.Barrier()
 
-    for i in range(g_iteration, g_iteration + N_gaussian):
+    for i in range(4, 7):
 
         gsamples_folder = ''
 
