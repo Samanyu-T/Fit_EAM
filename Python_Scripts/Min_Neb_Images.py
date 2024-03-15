@@ -67,6 +67,7 @@ def min_image(init_file, read_file, potfile, machine = ''):
 
     if me == 0:
         print(xyz[type == 3])
+        sys.stdout.flush()
     comm.Barrier()
     
     lmp.close()
