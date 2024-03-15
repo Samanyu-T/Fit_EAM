@@ -35,7 +35,7 @@ def main(file_pattern, data_folder, iter):
 
     samples = np.vstack([x for x in sample_lst])
 
-    print(samples.shape)
+    print(loss.mean())
 
     sort_idx = np.argsort(loss)
     loss = loss[sort_idx]
