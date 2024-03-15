@@ -43,7 +43,7 @@ write_dump all custom %s/neb.$i.atom id type x y z ''' % (init, potfile, final, 
 
     with open('%s/fine_%d.neb' % (neb_script_folder, idx), 'w') as file:
         file.write(txt)
-
+    print('%s/fine_%d.neb' % (neb_script_folder, idx), init, final)
 
 def find_unique_images(orient, potfile):
     
@@ -65,7 +65,7 @@ def find_unique_images(orient, potfile):
         # print(he_idx)x
         xyz = data[he_idx, -3:].flatten()
 
-        print(filename,xyz)
+        # print(filename,xyz)
 
         add = True
 
@@ -113,6 +113,7 @@ def find_unique_images(orient, potfile):
                               save_folder=save_folder,
                               neb_script_folder='../Neb_Scripts/Surface/%s' % orient,
                               idx=len(he_lst) - 1)
+            
     print(he_lst)
     
 if __name__ == '__main__':
