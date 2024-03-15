@@ -24,7 +24,7 @@ for potfile in Potentials/Selected_Potentials/Potential_3/*.eam.alloy; do
     # done
 
     # mpiexec -n $proc python Python_Scripts/Min_Neb_Images.py $potfile $machine
-    # python Python_Scripts/Neb_unique.py $potfile
+    python Python_Scripts/Neb_unique.py $potfile
 
     for fine_neb_script in ../Neb_Scripts/Surface/*/fine*.neb; do
         mpiexec -n $proc $lmp_exec -p "$proc"x1 -in $fine_neb_script
