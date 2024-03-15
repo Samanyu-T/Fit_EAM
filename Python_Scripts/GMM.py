@@ -35,6 +35,8 @@ def main(file_pattern, data_folder, iter):
 
     samples = np.vstack([x for x in sample_lst])
 
+    print(samples.shape)
+
     sort_idx = np.argsort(loss)
     loss = loss[sort_idx]
     samples = samples[sort_idx]
@@ -43,6 +45,7 @@ def main(file_pattern, data_folder, iter):
 
     n = np.clip(10000, a_min = 0, a_max=len(thresh_idx)).astype(int)
 
+    print(thresh_idx , n)
     data = samples[thresh_idx[:n]]
 
     cmp = 1
