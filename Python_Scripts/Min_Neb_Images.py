@@ -45,7 +45,7 @@ def min_image(init_file, read_file, potfile, machine = ''):
 
     lmp.command('minimize 1e-15 1e-18 10 100')
 
-    lmp.command('minimize 1e-15 1e-18 1000 10000')
+    lmp.command('minimize 1e-15 1e-18 10000 10000')
 
     folder = os.path.join(os.path.dirname(init_file), 'Min_Neb_Images')
 
