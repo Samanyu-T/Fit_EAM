@@ -100,8 +100,8 @@ if __name__ == '__main__':
 
     for orient_folder in ['100', '110', '111']:
         init_file = '../Neb_Dump/Surface/%s/init_simple.data' % orient_folder
-        folder_path = '../Neb_Dump/Surface/%s/Neb_Images'
-        n_files = len(glob.glob('../Neb_Dump/Surface/%s/Neb_Images/neb.*.atom' % orient_folder))
+        folder_path = '../Neb_Dump/Surface/%s/Neb_Images' % orient_folder
+        n_files = len(glob.glob(os.path.join(folder_path,'neb.*.atom' )))
 
         for i in range(n_files):
             read_file = os.path.join(folder_path, 'neb.%d.atom' % i)
