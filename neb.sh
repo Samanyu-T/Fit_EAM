@@ -8,11 +8,11 @@ fi
 # Access the input argument ($1) and store it in a variable
 proc=$1
 
-lmp_exec=lmp_intel_cpu_intelmpi
-machine="intel_cpu_intelmpi"
-rm -rf ../Neb_Dump
-rm -rf ../Neb_Scripts
-rm -rf ../Test_Data
+lmp_exec=lmp
+machine=""
+# rm -rf ../Neb_Dump
+# rm -rf ../Neb_Scripts
+# rm -rf ../Test_Data
 
 for potfile in Potentials/Selected_Potentials/Potential_3/*.eam.alloy; do
 

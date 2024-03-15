@@ -15,7 +15,7 @@ Reading data file ...
   687 atoms
   reading velocities ...
   687 velocities
-  read_data CPU = 0.008 seconds
+  read_data CPU = 0.009 seconds
 
 mass 1 183.84
 
@@ -25,7 +25,7 @@ mass 3 4.002602
 
 pair_style eam/alloy
 
-pair_coeff * * Potentials/WHHe_test.eam.alloy W H He
+pair_coeff * * Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy W H He
 
 thermo 10
 
@@ -45,8 +45,8 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -6132.7652      0             -6132.7652      2539.8515    
-Loop time of 3.75e-07 on 1 procs for 0 steps with 687 atoms
+         0   0             -6133.3592      0             -6133.3592      1569.8768    
+Loop time of 5e-07 on 1 procs for 0 steps with 687 atoms
 
 0.0% CPU use with 1 MPI tasks x no OpenMP threads
 
@@ -58,17 +58,17 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 3.75e-07   |            |       |100.00
+Other   |            | 5e-07      |            |       |100.00
 
 Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          24700 ave       24700 max       24700 min
+Neighs:          23552 ave       23552 max       23552 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 24700
-Ave neighs/atom = 35.953421
+Total # of neighbors = 23552
+Ave neighs/atom = 34.282387
 Neighbor list builds = 0
 Dangerous builds = 0
 
@@ -85,126 +85,86 @@ variable i equal part
 neb 10e-15 10e-18 50000 50000 1000 final ../Neb_Dump/Bulk/Tet_Tet/tet_1.atom
 Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-         0   0             -6132.7652      0             -6132.7652      2539.8515    
-       100   3.1678474e-08 -6132.7652      0             -6132.7652      2539.86      
-       200   5.8516608e-09 -6132.7652      0             -6132.7652      2539.8642    
-       300   6.2315708e-09 -6132.7652      0             -6132.7652      2539.8667    
-       400   5.6929153e-10 -6132.7652      0             -6132.7652      2539.868     
-       500   5.2126619e-10 -6132.7652      0             -6132.7652      2539.8688    
-       600   6.5001507e-10 -6132.7652      0             -6132.7652      2539.8693    
-       700   8.0036257e-11 -6132.7652      0             -6132.7652      2539.8697    
-       800   1.3696506e-11 -6132.7652      0             -6132.7652      2539.8699    
-       900   4.2608562e-11 -6132.7652      0             -6132.7652      2539.8701    
-      1000   1.4991494e-12 -6132.7652      0             -6132.7652      2539.8703    
-      1100   3.4519415e-11 -6132.7652      0             -6132.7652      2539.8704    
-      1200   1.2531846e-12 -6132.7652      0             -6132.7652      2539.8704    
-      1300   6.4943727e-14 -6132.7652      0             -6132.7652      2539.8705    
-      1400   4.7397609e-12 -6132.7652      0             -6132.7652      2539.8705    
-      1500   1.7172994e-12 -6132.7652      0             -6132.7652      2539.8706    
-      1600   1.2177069e-12 -6132.7652      0             -6132.7652      2539.8706    
-      1700   1.2421283e-13 -6132.7652      0             -6132.7652      2539.8706    
-      1800   1.153241e-13  -6132.7652      0             -6132.7652      2539.8706    
-      1900   1.1785756e-13 -6132.7652      0             -6132.7652      2539.8706    
-      2000   7.049077e-14  -6132.7652      0             -6132.7652      2539.8706    
-      2100   5.5922241e-14 -6132.7652      0             -6132.7652      2539.8706    
-      2200   3.769429e-14  -6132.7652      0             -6132.7652      2539.8706    
-      2300   9.4463365e-15 -6132.7652      0             -6132.7652      2539.8706    
-      2400   1.910474e-14  -6132.7652      0             -6132.7652      2539.8706    
-      2500   4.6324014e-15 -6132.7652      0             -6132.7652      2539.8706    
-      2600   5.1866073e-15 -6132.7652      0             -6132.7652      2539.8706    
-      2700   1.5585377e-15 -6132.7652      0             -6132.7652      2539.8706    
-      2800   6.6761182e-16 -6132.7652      0             -6132.7652      2539.8706    
-      2900   1.7137989e-16 -6132.7652      0             -6132.7652      2539.8706    
-      3000   2.6707628e-16 -6132.7652      0             -6132.7652      2539.8706    
-      3100   5.4596417e-17 -6132.7652      0             -6132.7652      2539.8706    
-      3200   2.2779113e-17 -6132.7652      0             -6132.7652      2539.8706    
-      3300   6.814251e-17  -6132.7652      0             -6132.7652      2539.8706    
-      3400   1.4762215e-17 -6132.7652      0             -6132.7652      2539.8706    
-      3500   1.0006505e-17 -6132.7652      0             -6132.7652      2539.8706    
-      3600   1.0980105e-17 -6132.7652      0             -6132.7652      2539.8706    
-      3700   6.7060164e-18 -6132.7652      0             -6132.7652      2539.8706    
-      3800   9.3659002e-19 -6132.7652      0             -6132.7652      2539.8706    
-      3900   3.5518968e-19 -6132.7652      0             -6132.7652      2539.8706    
-      4000   3.5930996e-19 -6132.7652      0             -6132.7652      2539.8706    
-      4100   5.6009185e-20 -6132.7652      0             -6132.7652      2539.8706    
-      4127   3.7287472e-22 -6132.7652      0             -6132.7652      2539.8706    
-Loop time of 3.80818 on 1 procs for 4127 steps with 687 atoms
+         0   0             -6133.3592      0             -6133.3592      1569.8768    
+       100   2.9406224e-12 -6133.3592      0             -6133.3592      1569.8794    
+       200   2.7758795e-16 -6133.3592      0             -6133.3592      1569.8794    
+       300   5.7306573e-17 -6133.3592      0             -6133.3592      1569.8794    
+       392   8.0810341e-20 -6133.3592      0             -6133.3592      1569.8794    
+Loop time of 0.365398 on 1 procs for 392 steps with 687 atoms
 
-98.7% CPU use with 1 MPI tasks x no OpenMP threads
+99.2% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-     -6132.76524037033   -6132.7652404045   -6132.7652404045
-  Force two-norm initial, final = 0.0022889983 4.5422913e-10
-  Force max component initial, final = 0.0015508761 3.4776854e-11
+     -6133.35915130274  -6133.35915130304  -6133.35915130304
+  Force two-norm initial, final = 7.5227097e-05 1.2392788e-09
+  Force max component initial, final = 8.7960724e-06 1.2009079e-10
   Final line search alpha, max atom move = 0 0
-  Iterations, force evaluations = 4127 4127
+  Iterations, force evaluations = 392 392
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 1.6532     | 1.6532     | 1.6532     |   0.0 | 43.41
+Pair    | 0.18151    | 0.18151    | 0.18151    |   0.0 | 49.67
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.029623   | 0.029623   | 0.029623   |   0.0 |  0.78
-Output  | 0.00032175 | 0.00032175 | 0.00032175 |   0.0 |  0.01
-Modify  | 1.2843     | 1.2843     | 1.2843     |   0.0 | 33.72
-Other   |            | 0.8407     |            |       | 22.08
+Comm    | 0.0032655  | 0.0032655  | 0.0032655  |   0.0 |  0.89
+Output  | 1.4917e-05 | 1.4917e-05 | 1.4917e-05 |   0.0 |  0.00
+Modify  | 0.10795    | 0.10795    | 0.10795    |   0.0 | 29.54
+Other   |            | 0.07266    |            |       | 19.88
 
 Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          24700 ave       24700 max       24700 min
+Neighs:          23552 ave       23552 max       23552 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 24700
-Ave neighs/atom = 35.953421
+Total # of neighbors = 23552
+Ave neighs/atom = 34.282387
 Neighbor list builds = 0
 Dangerous builds = 0
 Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          E_pair         E_mol          TotEng         Press     
-      4127   0             -6132.7652      0             -6132.7652      2539.8706    
-      4200   1.1054212e-19 -6132.7652      0             -6132.7652      2539.8706    
-      4300   1.0694861e-19 -6132.7652      0             -6132.7652      2539.8706    
-      4400   7.316865e-20  -6132.7652      0             -6132.7652      2539.8706    
-      4500   2.3609407e-20 -6132.7652      0             -6132.7652      2539.8706    
-      4561   5.4173519e-24 -6132.7652      0             -6132.7652      2539.8706    
-Loop time of 0.404745 on 1 procs for 434 steps with 687 atoms
+       392   0             -6133.3592      0             -6133.3592      1569.8794    
+       400   1.0475449e-19 -6133.3592      0             -6133.3592      1569.8794    
+       500   8.3709802e-19 -6133.3592      0             -6133.3592      1569.8794    
+       502   1.1090373e-18 -6133.3592      0             -6133.3592      1569.8794    
+Loop time of 0.10284 on 1 procs for 110 steps with 687 atoms
 
-98.3% CPU use with 1 MPI tasks x no OpenMP threads
+98.0% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
   Energy initial, next-to-last, final = 
-      -6132.7652404045  -6132.76524040442  -6132.76524040442
-  Force two-norm initial, final = 4.5422919e-10 1.1849395e-10
-  Force max component initial, final = 3.4776612e-11 9.1014812e-12
+     -6133.35915130304  -6133.35915130304  -6133.35915130307
+  Force two-norm initial, final = 1.2392788e-09 1.4453869e-10
+  Force max component initial, final = 1.2009079e-10 1.2595289e-11
   Final line search alpha, max atom move = 0 0
-  Iterations, force evaluations = 434 434
+  Iterations, force evaluations = 110 110
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.19498    | 0.19498    | 0.19498    |   0.0 | 48.17
+Pair    | 0.05741    | 0.05741    | 0.05741    |   0.0 | 55.82
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0034604  | 0.0034604  | 0.0034604  |   0.0 |  0.85
-Output  | 0.00013242 | 0.00013242 | 0.00013242 |   0.0 |  0.03
-Modify  | 0.12809    | 0.12809    | 0.12809    |   0.0 | 31.65
-Other   |            | 0.07808    |            |       | 19.29
+Comm    | 0.001039   | 0.001039   | 0.001039   |   0.0 |  1.01
+Output  | 1.4542e-05 | 1.4542e-05 | 1.4542e-05 |   0.0 |  0.01
+Modify  | 0.025413   | 0.025413   | 0.025413   |   0.0 | 24.71
+Other   |            | 0.01896    |            |       | 18.44
 
 Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:          24700 ave       24700 max       24700 min
+Neighs:          23552 ave       23552 max       23552 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 24700
-Ave neighs/atom = 35.953421
+Total # of neighbors = 23552
+Ave neighs/atom = 34.282387
 Neighbor list builds = 0
 Dangerous builds = 0
 
 write_dump all custom ../Neb_Dump/Bulk/Tet_Tet/Neb_Images/neb.$i.atom id type x y z 
 write_dump all custom ../Neb_Dump/Bulk/Tet_Tet/Neb_Images/neb.0.atom id type x y z 
-Total wall time: 0:00:04
+Total wall time: 0:00:00
