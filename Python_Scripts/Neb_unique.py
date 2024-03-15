@@ -65,6 +65,8 @@ def find_unique_images(orient, potfile):
         # print(he_idx)x
         xyz = data[he_idx, -3:].flatten()
 
+        print(xyz)
+
         add = True
 
         for xyz_lst in he_lst:
