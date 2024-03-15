@@ -143,6 +143,61 @@ def init_screw(alattice, size):
 
     return pe_screw
 
+def test(potfile, alattice):
+    d_pos = np.array([0, 0, 0])
+
+    lmp = lammps()
+    
+    lmp.command('# Lammps input file')
+
+    lmp.command('units metal')
+
+    lmp.command('atom_style atomic')
+
+    lmp.command('atom_modify map array sort 0 0.0')
+
+    lmp.command('read_data Lammps_Dump/Dislocations/Screw/Cylinder_Relaxed.data')
+
+    lmp.command('mass 1 183.84')
+
+    lmp.command('mass 2 1.00784')
+
+    lmp.command('mass 3 4.002602')
+
+    lmp.command('pair_style eam/alloy' )
+
+    lmp.command('pair_coeff * * %s W H He' % potfile)
+
+    lmp.command('variable radius atom sqrt(x^2+y^2)')
+
+    lmp.command('variable select atom "v_radius  > %f" ' % (0.5*size*alattice))
+
+    lmp.command('group fixpos variable select')
+
+    lmp.command('fix freeze fixpos setforce 0.0 0.0 0.0')
+
+    lmp.command('thermo 50')
+
+    lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
+
+    lmp.command('run 0')
+
+    pe0 = lmp.get_thermo('pe')
+        
+    lmp.command('create_atoms 3 single %f %f %f units box' % (d_pos[0] , d_pos[1], d_pos[2])) 
+
+    lmp.command('minimize 1e-15 1e-18 10 10')
+
+    lmp.command('minimize 1e-15 1e-18 10 100')
+
+    lmp.command('minimize 1e-15 1e-18 10000 10000')
+
+    pe1 = lmp.get_thermo('pe')
+
+    lmp.command('write_dump all custom Lammps_Dump/Dislocations/Screw/test.atom id type x y z')
+
+    print(pe1 - pe0, pe0 + 6.16 - pe1)
+
 def binding(potfile, alattice, size):
 
 
@@ -246,8 +301,8 @@ if __name__ == '__main__':
     alattice = 3.144221296574379
     size = 21
     # init_screw(alattice, size) 
-
-    binding(sys.argv[1], alattice, size)
+    test('Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy', alattice)
+    # binding(sys.argv[1], alattice, size)
 
 
     if mode =='MPI':

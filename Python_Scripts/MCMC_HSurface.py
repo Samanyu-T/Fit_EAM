@@ -6,9 +6,7 @@ import os
 from mpi4py import MPI
 import ctypes
 import time
-import matplotlib.pyplot as plt
 from scipy import stats
-from sympy import N
 
 def get_tetrahedral_sites(R):
 
@@ -190,7 +188,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     counter = 0
 
-    while not converged: 
+    while True: 
         
         n_accept = 0
 
@@ -258,6 +256,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
         n_accept = 0
 
+        if converged:
+            break
+        
         while n_accept < n_samples:
 
             xyz = np.array(lmp.gather_atoms('x', 1, 3))
@@ -322,7 +323,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
         print(res)
 
-        if res.pvalue > 0.05:
+        if res.pvalue > (1-converge_thresh):
             converged = True
 
     if not os.path.exists('../MCMC_Data'):

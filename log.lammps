@@ -1,431 +1,194 @@
 LAMMPS (2 Aug 2023)
+WARNING: Using I/O redirection is unreliable with parallel runs. Better to use the -in switch to read input files. (src/lammps.cpp:537)
 # Lammps input file
 units metal
 atom_style atomic
 atom_modify map array sort 0 0.0
-boundary p p p
-lattice bcc 3.144221 orient x 1 1 1 orient y -1 2 -1 orient z -1 0 1
-Lattice spacing in x,y,z = 5.4459505 5.1344914 4.4466
-region r_simbox block -0.000000 10.000000 -0.000000 10.000000 -50.000000 60.000000 units lattice
-region r_atombox block -0.000100 10.000100 -0.000100 10.000100 -0.000100 10.000100 units lattice
-create_box 3 r_simbox
-Created orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  1 by 1 by 1 MPI processor grid
-create_atoms 1 region r_atombox
-Created 8400 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.002 seconds
+read_data Lammps_Dump/Dislocations/Edge/Box_Relaxed.data
+Reading data file ...
+  orthogonal box = (-111.64199 -105.25707 -0) to (111.64199 105.25707 93.3786)
+  3 by 2 by 1 MPI processor grid
+  reading atoms ...
+  75579 atoms
+  reading velocities ...
+  75579 velocities
+  read_data CPU = 0.217 seconds
 mass 1 183.84
 mass 2 1.00784
 mass 3 4.002602
 pair_style eam/alloy
-pair_coeff * * Potentials/WHHe_test.eam.alloy W H He
+pair_coeff * * Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy W H He
+variable radius atom (x^20+y^20)^(1/20)
+variable select atom "v_radius  > 50.307541" 
+group fixpos variable select
+15246 atoms in group fixpos
+fix freeze fixpos setforce 0.0 0.0 0.0
+thermo 50
 thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol
-minimize 1e-9 1e-12 10 10
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
   max neighbors/atom: 2000, page size: 100000
   master list distance cutoff = 6.8513889
   ghost atom cutoff = 6.8513889
-  binsize = 3.4256945, bins = 16 15 143
+  binsize = 3.4256945, bins = 66 62 28
   1 neighbor lists, perpetual/occasional/extra = 1 0 0
   (1) pair eam/alloy, perpetual
       attributes: half, newton on
       pair build: half/bin/atomonly/newton
       stencil: half/bin/3d
       bin: standard
-Per MPI rank memory allocation (min/avg/max) = 5.674 | 5.674 | 5.674 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 4.793 | 7.536 | 13.16 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         0   0             -73717.039     -2898.7854     -2401.8649     -536.08987      259.22344     -1.3237295e-11  2.1820149e-11  1367703.2    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -9.8884671e-12  7.0127893e-12  1367703.2    
-Loop time of 0.0665345 on 1 procs for 6 steps with 8400 atoms
+         0   0             -664970.62     -3413.4515     -3628.0235     -4749.8671      165.39136     -0.25075641    -1.5857075      4389208.3    
+Loop time of 2.22217e-06 on 6 procs for 0 steps with 75579 atoms
 
-877.7% CPU use with 1 MPI tasks x no OpenMP threads
+97.5% CPU use with 6 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 2.222e-06  |            |       |100.00
+
+Nlocal:        12596.5 ave       24402 max        6174 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Nghost:        7771.33 ave       13573 max        4851 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Neighs:         450242 ave      941158 max      213884 min
+Histogram: 4 0 0 0 0 0 0 0 1 1
+
+Total # of neighbors = 2701454
+Ave neighs/atom = 35.743447
+Neighbor list builds = 0
+Dangerous builds = 0
+create_atoms 3 single 5.000000 -1.000000 0.000000 units box
+Created 1 atoms
+  using box units in orthogonal box = (-111.64199 -105.25707 -0) to (111.64199 105.25707 93.3786)
+  create_atoms CPU = 0.000 seconds
+minimize 1e-15 1e-18 10 10
+Per MPI rank memory allocation (min/avg/max) = 5.918 | 9.411 | 16.53 Mbytes
+   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
+         0   0             -664950.09     -3391.5147     -3615.7718     -4747.7424      177.71411     -0.24529314    -1.5805253      4389208.3    
+         7   0             -664967.56     -3409.4339     -3631.4397     -4745.1373      159.79091     -0.27995958    -1.5164797      4389208.3    
+Loop time of 0.213379 on 6 procs for 7 steps with 75580 atoms
+
+99.3% CPU use with 6 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = max force evaluations
   Energy initial, next-to-last, final = 
-     -73717.0389634067  -73800.9591646821  -73827.5302523061
-  Force two-norm initial, final = 46.235793 21.90339
-  Force max component initial, final = 1.3692713 0.87674368
-  Final line search alpha, max atom move = 0.080025505 0.070161856
-  Iterations, force evaluations = 6 10
+     -664950.090883064  -664967.447187203  -664967.564439959
+  Force two-norm initial, final = 92.919351 1.8107981
+  Force max component initial, final = 53.863531 0.702461
+  Final line search alpha, max atom move = 0.11414074 0.080179417
+  Iterations, force evaluations = 7 10
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.063985   | 0.063985   | 0.063985   |   0.0 | 96.17
+Pair    | 0.11173    | 0.14426    | 0.20418    |  11.1 | 67.61
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.00044863 | 0.00044863 | 0.00044863 |   0.0 |  0.67
+Comm    | 0.0027497  | 0.062592   | 0.095174   |  16.9 | 29.33
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.002101   |            |       |  3.16
+Modify  | 0.00020696 | 0.00027943 | 0.00038283 |   0.0 |  0.13
+Other   |            | 0.006246   |            |       |  2.93
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         259480 ave      259480 max      259480 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:        12596.7 ave       24403 max        6174 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Nghost:        7771.83 ave       13574 max        4851 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Neighs:         450257 ave      941179 max      213884 min
+Histogram: 4 0 0 0 0 0 0 0 1 1
 
-Total # of neighbors = 259480
-Ave neighs/atom = 30.890476
+Total # of neighbors = 2701541
+Ave neighs/atom = 35.744125
 Neighbor list builds = 0
 Dangerous builds = 0
-minimize 1e-9 1e-12 100 100
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+minimize 1e-15 1e-18 10 100
+Per MPI rank memory allocation (min/avg/max) = 5.918 | 9.411 | 16.53 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -4.1932718e-12  4.9712837e-12  1367703.2    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404     -3.649707e-12  -1.6510347e-11  1367703.2    
-Loop time of 0.465773 on 1 procs for 46 steps with 8400 atoms
+         7   0             -664967.56     -3409.4339     -3631.4397     -4745.1373      159.79091     -0.27995958    -1.5164797      4389208.3    
+        17   0             -664967.9      -3409.2827     -3633.8503     -4745.6079      155.05933     -0.17324131    -1.2863643      4389208.3    
+Loop time of 0.383417 on 6 procs for 10 steps with 75580 atoms
 
-153.5% CPU use with 1 MPI tasks x no OpenMP threads
+99.6% CPU use with 6 MPI tasks x no OpenMP threads
 
 Minimization stats:
-  Stopping criterion = energy tolerance
+  Stopping criterion = max iterations
   Energy initial, next-to-last, final = 
-     -73827.5302523061  -73934.8511134559  -73934.8511787951
-  Force two-norm initial, final = 21.90339 0.035133753
-  Force max component initial, final = 0.87674368 0.0007284121
-  Final line search alpha, max atom move = 1 0.0007284121
-  Iterations, force evaluations = 46 91
+     -664967.564439958  -664967.881561821  -664967.898106468
+  Force two-norm initial, final = 1.8107981 0.61389116
+  Force max component initial, final = 0.702461 0.154905
+  Final line search alpha, max atom move = 0.22817959 0.035346159
+  Iterations, force evaluations = 10 20
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.44972    | 0.44972    | 0.44972    |   0.0 | 96.55
+Pair    | 0.20264    | 0.26109    | 0.36957    |  15.0 | 68.09
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0020666  | 0.0020666  | 0.0020666  |   0.0 |  0.44
-Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01399    |            |       |  3.00
+Comm    | 0.0037903  | 0.11238    | 0.1709     |  22.8 | 29.31
+Output  | 0.00011729 | 0.00011986 | 0.00013    |   0.0 |  0.03
+Modify  | 0.00038225 | 0.00049378 | 0.00069366 |   0.0 |  0.13
+Other   |            | 0.00934    |            |       |  2.44
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305260 ave      305260 max      305260 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:        12596.7 ave       24403 max        6174 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Nghost:        7771.83 ave       13574 max        4851 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Neighs:         450240 ave      941130 max      213785 min
+Histogram: 4 0 0 0 0 0 0 0 1 1
 
-Total # of neighbors = 305260
-Ave neighs/atom = 36.340476
+Total # of neighbors = 2701438
+Ave neighs/atom = 35.742763
 Neighbor list builds = 0
 Dangerous builds = 0
-minimize 1e-9 1e-12 10000 10000
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+minimize 1e-15 1e-18 1000 1000
+Per MPI rank memory allocation (min/avg/max) = 5.918 | 9.411 | 16.53 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404      1.2843467e-12 -7.5506788e-12  1367703.2    
-        53   0             -73934.851     -1902.5111     -2271.5772     -4.9105604      2168.5409     -5.373088e-12  -6.2936194e-12  1367703.2    
-Loop time of 0.0135222 on 1 procs for 1 steps with 8400 atoms
+        17   0             -664967.9      -3409.2827     -3633.8503     -4745.6079      155.05933     -0.17324131    -1.2863643      4389208.3    
+        50   0             -664968.07     -3410.8773     -3634.9675     -4744.3316      154.01931      0.03054273    -2.4215814      4389208.3    
+       100   0             -664968.07     -3410.3586     -3634.9264     -4744.2176      153.82802     -0.084999121   -2.0364862      4389208.3    
+       150   0             -664968.07     -3410.3131     -3634.8993     -4744.2074      153.98981     -0.098098893   -2.0335821      4389208.3    
+Loop time of 5.4054 on 6 procs for 133 steps with 75580 atoms
 
-97.6% CPU use with 1 MPI tasks x no OpenMP threads
+98.6% CPU use with 6 MPI tasks x no OpenMP threads
 
 Minimization stats:
-  Stopping criterion = energy tolerance
+  Stopping criterion = linesearch alpha is zero
   Energy initial, next-to-last, final = 
-     -73934.8511787951  -73934.8511787951  -73934.8512067018
-  Force two-norm initial, final = 0.035133753 0.022971107
-  Force max component initial, final = 0.0007284121 0.00057684295
-  Final line search alpha, max atom move = 1 0.00057684295
-  Iterations, force evaluations = 1 2
+     -664967.898106468  -664968.070899289  -664968.070899289
+  Force two-norm initial, final = 0.61389116 0.00023813191
+  Force max component initial, final = 0.154905 2.0255701e-05
+  Final line search alpha, max atom move = 0.125 2.5319627e-06
+  Iterations, force evaluations = 133 271
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.013121   | 0.013121   | 0.013121   |   0.0 | 97.03
+Pair    | 2.8276     | 3.6542     | 5.1774     |  56.4 | 67.60
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 6.6251e-05 | 6.6251e-05 | 6.6251e-05 |   0.0 |  0.49
-Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.0003354  |            |       |  2.48
+Comm    | 0.093485   | 1.6164     | 2.4435     |  84.7 | 29.90
+Output  | 0.00023433 | 0.00023839 | 0.00025721 |   0.0 |  0.00
+Modify  | 0.0050928  | 0.0069774  | 0.0096952  |   1.8 |  0.13
+Other   |            | 0.1276     |            |       |  2.36
 
-Nlocal:           8400 ave        8400 max        8400 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5017 ave        5017 max        5017 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307200 ave      307200 max      307200 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
+Nlocal:        12596.7 ave       24403 max        6174 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Nghost:        7771.17 ave       13574 max        4851 min
+Histogram: 4 0 0 0 0 0 0 0 0 2
+Neighs:         450228 ave      940831 max      213616 min
+Histogram: 4 0 0 0 0 0 0 0 1 1
 
-Total # of neighbors = 307200
-Ave neighs/atom = 36.571429
+Total # of neighbors = 2701369
+Ave neighs/atom = 35.74185
 Neighbor list builds = 0
 Dangerous builds = 0
-timestep 1e-3
-create_atoms 2 single 9.791667 0.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.541667 7.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 8.541667 1.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 6.041667 5.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 1.041667 6.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 5.791667 4.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 4.541667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.791667 3.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 3.541667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.041667 2.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.541667 9.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.541667 0.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.041667 8.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.541667 9.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.541667 3.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 5.041667 0.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.791667 0.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.791667 8.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.041667 8.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 7.541667 1.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 6.791667 2.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 7.791667 2.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.541667 6.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.541667 0.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.041667 2.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 8.041667 9.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 6.541667 2.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.041667 9.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 0.041667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 1.041667 3.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.791667 1.166667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 7.041667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 1.041667 2.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 9.041667 6.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.041667 1.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 8.541667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 8.541667 6.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 7.541667 3.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 5.041667 4.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-create_atoms 2 single 2.541667 1.416667 -0.458333 units lattice
-Created 1 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-minimize 1e-9 1e-12 100 100
-Per MPI rank memory allocation (min/avg/max) = 6.061 | 6.061 | 6.061 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        53   0             -74007.621     -1942.518      -2289.8496     -111.9825       2165.9977      2.9817769     -12.010675      1367703.2    
-       113   0             -74026.578     -1862.0837     -2181.5724     -5.2879154      2159.615       0.51907344    -4.3233815      1367703.2    
-Loop time of 0.462286 on 1 procs for 60 steps with 8440 atoms
-
-99.6% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = max force evaluations
-  Energy initial, next-to-last, final = 
-     -74007.6212626693   -74026.572240765  -74026.5775123724
-  Force two-norm initial, final = 6.7794471 0.44916622
-  Force max component initial, final = 1.1833915 0.089762759
-  Final line search alpha, max atom move = 0.16643515 0.014939679
-  Iterations, force evaluations = 60 100
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.4347     | 0.4347     | 0.4347     |   0.0 | 94.03
-Neigh   | 0.0080576  | 0.0080576  | 0.0080576  |   0.0 |  1.74
-Comm    | 0.002285   | 0.002285   | 0.002285   |   0.0 |  0.49
-Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01724    |            |       |  3.73
-
-Nlocal:           8440 ave        8440 max        8440 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5049 ave        5049 max        5049 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         308374 ave      308374 max      308374 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 308374
-Ave neighs/atom = 36.537204
-Neighbor list builds = 1
-Dangerous builds = 0
-minimize 1e-12 1e-15 100 100
-Per MPI rank memory allocation (min/avg/max) = 6.061 | 6.061 | 6.061 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       113   0             -74026.578     -1862.0837     -2181.5724     -5.2879154      2159.615       0.51907344    -4.3233815      1367703.2    
-       169   0             -74027.357     -1857.2902     -2177.447       1.6193394      2160.0711      0.82657494     2.8424374      1367703.2    
-Loop time of 0.460244 on 1 procs for 56 steps with 8440 atoms
-
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = max force evaluations
-  Energy initial, next-to-last, final = 
-     -74026.5775123724  -74027.3561754731  -74027.3566512085
-  Force two-norm initial, final = 0.44916622 0.094417823
-  Force max component initial, final = 0.089762759 0.015585547
-  Final line search alpha, max atom move = 0.6613748 0.010307888
-  Iterations, force evaluations = 56 100
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.43375    | 0.43375    | 0.43375    |   0.0 | 94.24
-Neigh   | 0.0080744  | 0.0080744  | 0.0080744  |   0.0 |  1.75
-Comm    | 0.0023084  | 0.0023084  | 0.0023084  |   0.0 |  0.50
-Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01612    |            |       |  3.50
-
-Nlocal:           8440 ave        8440 max        8440 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5049 ave        5049 max        5049 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         310568 ave      310568 max      310568 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 310568
-Ave neighs/atom = 36.797156
-Neighbor list builds = 1
-Dangerous builds = 0
-minimize 1e-13 1e-16 10000 10000
-Per MPI rank memory allocation (min/avg/max) = 6.061 | 6.061 | 6.061 Mbytes
-   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-       169   0             -74027.357     -1857.2902     -2177.447       1.6193394      2160.0711      0.82657494     2.8424374      1367703.2    
-       248   0             -74027.361     -1857.5385     -2177.9017     -0.0019279076   2159.7715     -0.022385621    0.003031229    1367703.2    
-Loop time of 0.716837 on 1 procs for 79 steps with 8440 atoms
-
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = energy tolerance
-  Energy initial, next-to-last, final = 
-     -74027.3566512085  -74027.3607125704  -74027.3607125776
-  Force two-norm initial, final = 0.094417823 0.00039065066
-  Force max component initial, final = 0.015585547 6.3437903e-05
-  Final line search alpha, max atom move = 1 6.3437903e-05
-  Iterations, force evaluations = 79 158
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 0.69009    | 0.69009    | 0.69009    |   0.0 | 96.27
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0034397  | 0.0034397  | 0.0034397  |   0.0 |  0.48
-Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.0233     |            |       |  3.25
-
-Nlocal:           8440 ave        8440 max        8440 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5049 ave        5049 max        5049 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         310377 ave      310377 max      310377 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 310377
-Ave neighs/atom = 36.774526
-Neighbor list builds = 0
-Dangerous builds = 0
-Total wall time: 0:00:02
+write_dump all custom Lammps_Dump/Dislocations/Edge/test.atom id type x y z
+Total wall time: 0:00:06

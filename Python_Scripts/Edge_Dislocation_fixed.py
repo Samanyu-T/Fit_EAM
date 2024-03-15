@@ -172,6 +172,61 @@ def init_screw(alattice, size):
 
     lmp.close()
 
+
+def test(potfile, alattice):
+    d_pos = np.array([5, -1, 0])
+
+    lmp = lammps()
+    lmp.command('# Lammps input file')
+
+    lmp.command('units metal')
+
+    lmp.command('atom_style atomic')
+
+    lmp.command('atom_modify map array sort 0 0.0')
+
+    lmp.command('read_data Lammps_Dump/Dislocations/Edge/Box_Relaxed.data')
+
+    lmp.command('mass 1 183.84')
+
+    lmp.command('mass 2 1.00784')
+
+    lmp.command('mass 3 4.002602')
+
+    lmp.command('pair_style eam/alloy' )
+
+    lmp.command('pair_coeff * * %s W H He' % potfile)
+
+    lmp.command('variable radius atom (x^%d+y^%d)^(1/%d)' % (norm, norm, norm))
+
+    lmp.command('variable select atom "v_radius  > %f" ' % (alattice*(size - k)))
+
+    lmp.command('group fixpos variable select')
+
+    lmp.command('fix freeze fixpos setforce 0.0 0.0 0.0')
+    
+    lmp.command('thermo 50')
+
+    lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
+
+    lmp.command('run 0')
+
+    pe0 = lmp.get_thermo('pe')
+        
+    lmp.command('create_atoms 3 single %f %f %f units box' % (d_pos[0], d_pos[1], d_pos[2])) 
+
+    lmp.command('minimize 1e-15 1e-18 10 10')
+
+    lmp.command('minimize 1e-15 1e-18 10 100')
+
+    lmp.command('minimize 1e-15 1e-18 1000 1000')
+
+    pe1 = lmp.get_thermo('pe')
+
+    lmp.command('write_dump all custom Lammps_Dump/Dislocations/Edge/test.atom id type x y z')
+
+    print(pe1 - pe0, pe0 + 6.16 - pe1)
+
 def binding(potfile, alattice, size):
 
     tet = np.array([0.25, 0.5, 0])
@@ -202,6 +257,7 @@ def binding(potfile, alattice, size):
     for i, _z in enumerate(z):
         # lmp = lammps(cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
         lmp = lammps()
+
         lmp.command('# Lammps input file')
 
         lmp.command('units metal')
@@ -244,7 +300,7 @@ def binding(potfile, alattice, size):
 
         lmp.command('minimize 1e-15 1e-18 10 100')
 
-        lmp.command('minimize 1e-15 1e-18 1000 1000')
+        lmp.command('minimize 1e-15 1e-18 10000 10000')
 
         lmp.command('write_dump all custom Lammps_Dump/Dislocations/Edge/Edge_He%d.atom id type x y z' % i)
 
@@ -301,7 +357,10 @@ if __name__ == '__main__':
     # init_screw(alattice, size)
 
         # e.append(binding(sys.argv[1], alattice, size))
-    binding(sys.argv[1], alattice, size)
+    
+    test('Potentials/Selected_Potentials/Potential_3/optim102.eam.alloy', alattice)
+
+    # binding(sys.argv[1], alattice, size)
     # if me == 0:
     #     plt.plot(freeze, np.array(e))
     #     plt.show()

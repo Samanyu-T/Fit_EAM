@@ -299,7 +299,7 @@ class Point_Defect():
 
         lmp.command('create_atoms %d single %f %f %f units box' % 
                     (atom_to_add, pos_lst[min_idx][0], pos_lst[min_idx][1], pos_lst[min_idx][2]))
-
+    
         lmp.command('minimize 1e-9 1e-12 10 10')
         lmp.command('minimize 1e-9 1e-12 100 100')
         lmp.command('minimize 1e-9 1e-12 1000 1000')
