@@ -66,7 +66,7 @@ def min_image(init_file, read_file, potfile, machine = ''):
     type = np.array(lmp.gather_atoms('type', 0, 1))
 
     if me == 0:
-        print(xyz[type == 3])
+        print(filepath, xyz[type == 3])
         sys.stdout.flush()
     comm.Barrier()
     
