@@ -64,8 +64,9 @@ def min_image(init_file, read_file, potfile, machine = ''):
     xyz = np.array(lmp.gather_atoms('x', 1, 3))    
     
     type = np.array(lmp.gather_atoms('type', 0, 1))
-    
+
     if me == 0:
+        print(sum(type == 3))
         print(xyz[type == 3])
     comm.Barrier()
     
