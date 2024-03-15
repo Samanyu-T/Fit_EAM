@@ -352,8 +352,7 @@ if __name__ == '__main__':
         print('Start on %d Procs' % size)
 
     comm.Barrier()
-    size = 10
-
+    
     orientx = [1, 1, 1]
     orienty = [-1,2,-1]
     orientz = [-1,0, 1]
