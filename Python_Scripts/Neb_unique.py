@@ -43,7 +43,7 @@ write_dump all custom %s/neb.$i.atom id type x y z ''' % (init, potfile, final, 
 
     with open('%s/fine_%d.neb' % (neb_script_folder, idx), 'w') as file:
         file.write(txt)
-    print('%s/fine_%d.neb' % (neb_script_folder, idx), init, final)
+    # print('%s/fine_%d.neb' % (neb_script_folder, idx), init, final)
 
 def find_unique_images(orient, potfile):
     
@@ -101,19 +101,19 @@ def find_unique_images(orient, potfile):
 
             he_lst.append(xyz)
 
-        if len(he_lst) > 1:
+            if len(he_lst) > 1:
 
-            save_folder = '../Neb_Dump/Surface/%s/Neb_Images_%d' % (orient, len(he_lst) - 1)
-            if not os.path.exists(save_folder):
-                os.makedirs(save_folder, exist_ok=True)
+                save_folder = '../Neb_Dump/Surface/%s/Neb_Images_%d' % (orient, len(he_lst) - 1)
+                if not os.path.exists(save_folder):
+                    os.makedirs(save_folder, exist_ok=True)
 
-            create_neb_script(init=os.path.join(folder, 'init.%d.data' % (len(he_lst) - 2)),
-                              final=os.path.join(folder, 'init.%d.atom' % (len(he_lst) - 1)),
-                              potfile=potfile,
-                              save_folder=save_folder,
-                              neb_script_folder='../Neb_Scripts/Surface/%s' % orient,
-                              idx=len(he_lst) - 1)
-            
+                create_neb_script(init=os.path.join(folder, 'init.%d.data' % (len(he_lst) - 2)),
+                                final=os.path.join(folder, 'init.%d.atom' % (len(he_lst) - 1)),
+                                potfile=potfile,
+                                save_folder=save_folder,
+                                neb_script_folder='../Neb_Scripts/Surface/%s' % orient,
+                                idx=len(he_lst) - 1)
+                
     print(he_lst)
     
 if __name__ == '__main__':
