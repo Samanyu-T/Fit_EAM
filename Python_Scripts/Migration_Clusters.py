@@ -78,6 +78,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
+    filename = 'V0H4He4'
+
     lmp.command('# Lammps input file')
 
     lmp.command('units metal')
@@ -86,7 +88,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('atom_modify map array sort 0 0.0')
 
-    lmp.command('read_data ../HeH_Clusters/V0H4He4.data')
+    lmp.command('read_data ../HeH_Clusters/%s.data' % filename)
 
     lmp.command('pair_style eam/alloy' )
 
@@ -104,8 +106,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     kb = 8.6173303e-5
 
-    beta = 1/(kb*temp)
-
     pe_explored = []
 
     type = np.array( lmp.gather_atoms('type', 0 , 1) )
@@ -114,24 +114,23 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     
     N_h = len(all_h_idx)
     
-    n_ensemple = int(1000)
-
-    n_samples = int(50)
-
-    converged = False
-    
-    converge_thresh = 0.95
+    n_ensemple = int(100)
 
     canonical = np.zeros((n_ensemple, ))
 
     pos_h = np.zeros((n_ensemple,N_h,3))
 
-
     n_accept = 0
 
     counter = 0
 
-    while n_accept < n_ensemple:
+    xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+    xyz = xyz.reshape(len(xyz)//3 , 3)
+    
+    beta = 1/(kb*temp)
+
+    while n_accept < n_ensemple and counter < 5*n_ensemple:
 
         xyz = np.array(lmp.gather_atoms('x', 1, 3))
 
@@ -165,14 +164,14 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
         rng = np.random.rand()
 
-        # print(pe_test - pe_curr)
-
-        n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
-
         pe_explored.append((pe_test - pe_ref))
 
         if rng <= acceptance:
-            
+                
+            temp = temp*np.exp(-n_accept/50)
+
+            beta = 1/(kb*temp)
+
             pe_curr = pe_test
 
             lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
@@ -196,17 +195,26 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
             lmp.scatter_atoms('x', 1, 3, xyz_c)
 
 
+    min_energy = canonical.argmin()
+
+    xyz[all_h_idx] = pos_h[min_energy]
+
+    xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+    
+    lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+    lmp.command('write_data ../HeH_Clusters/%s_new.data' % filename)
+
+    print(canonical[min_energy])
+
     plt.plot(canonical)
     plt.show()
 
-    if not os.path.exists('../MCMC_Data'):
-        os.mkdir('../MCMC_Data')
+    T_max = 10000
 
-    np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
-
-    np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
     
-
+    lmp.command('timestep 1e-3')
+    
 
 if __name__ == '__main__':
 

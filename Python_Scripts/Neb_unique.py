@@ -112,6 +112,8 @@ def find_unique_images(orient, potfile):
                               save_folder=save_folder,
                               neb_script_folder='../Neb_Scripts/Surface/%s' % orient,
                               idx=len(he_lst) - 1)
+    print(he_lst)
+    
 if __name__ == '__main__':
 
     potfile='Potentials/WHHe_test.eam.alloy'
