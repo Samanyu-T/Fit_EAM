@@ -60,6 +60,15 @@ def min_image(init_file, read_file, potfile, machine = ''):
 
     lmp.command('write_dump all custom %s.atom id x y z' % filepath)
 
+
+    xyz = np.array(lmp.gather_atoms('x', 1, 3))    
+    
+    type = np.array(lmp.gather_atoms('type', 0, 1))
+    
+    if me == 0:
+        print(xyz[type == 3])
+    comm.Barrier()
+    
     lmp.close()
 
 if __name__ == '__main__':
