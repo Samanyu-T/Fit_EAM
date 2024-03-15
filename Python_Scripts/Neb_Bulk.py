@@ -138,13 +138,13 @@ def main(potfile, machine=''):
         print(climb)
     comm.Barrier()
 
-    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
+    lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_0' )
 
-    _, _ = lmp.Build_Defect([[], [], [tet_1]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
+    lmp.Build_Defect([[], [], [tet_1]], dump_name='../Neb_Dump/Bulk/Tet_Tet/tet_1' )
 
-    _, _ = lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
+    lmp.Build_Defect([[], [], [tet_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/tet' )
 
-    _, _ = lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
+    lmp.Build_Defect([[], [], [oct_0]], dump_name='../Neb_Dump/Bulk/Tet_Oct/oct' )
 
     if me == 0:
         edit_dump('../Neb_Dump/Bulk/Tet_Tet/tet_0.data', '../Neb_Dump/Bulk/Tet_Tet/tet_1.atom')

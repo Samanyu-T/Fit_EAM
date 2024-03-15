@@ -133,8 +133,8 @@ def surface_profile(size, potfile, orientx, orienty, orientz, N = 5, alattice = 
     if not os.path.exists('../Neb_Dump/Surface/%s' % orient_str):
         os.makedirs('../Neb_Dump/Surface/%s' % orient_str, exist_ok=True)
 
-    pe_init, pos_init = lmp.Build_Defect([[],[],[test_sites[0]]], dump_name='../Neb_Dump/Surface/%s/init_simple' % (orient_str))
-    pe_final, pos_final = lmp.Build_Defect([[],[],[test_sites[0] + np.array([0, 0, 3*alattice*np.linalg.norm(orientz)])]],
+    lmp.Build_Defect([[],[],[test_sites[0]]], dump_name='../Neb_Dump/Surface/%s/init_simple' % (orient_str))
+    lmp.Build_Defect([[],[],[test_sites[0] + np.array([0, 0, 3*alattice*np.linalg.norm(orientz)])]],
                                             dump_name='../Neb_Dump/Surface/%s/final_simple' % (orient_str))
 
     if me == 0:
