@@ -170,7 +170,7 @@ def main(machine, max_time, write_dir, save_dir):
     # comm.Barrier()
     # g_iteration = 3
 
-    N_gaussian = 5
+    N_gaussian = 4
 
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
@@ -206,11 +206,11 @@ def main(machine, max_time, write_dir, save_dir):
 
     ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
     if me == 0:
-        GMM.main(os.path.join(data_folder,'Gaussian_Samples_4', 'Core_*'), data_folder, 5)
+        GMM.main(os.path.join(data_folder,'Gaussian_Samples_3', 'Core_*'), data_folder, 4)
     
     comm.Barrier()
 
-    for i in range(5, 7):
+    for i in range(4, 7):
 
         gsamples_folder = ''
 

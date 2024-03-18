@@ -35,13 +35,13 @@ def main(file_pattern, data_folder, iter):
 
     samples = np.vstack([x for x in sample_lst])
 
-    print(loss.mean())
+    print(loss.mean(), loss.min())
 
     sort_idx = np.argsort(loss)
     loss = loss[sort_idx]
     samples = samples[sort_idx]
 
-    thresh_idx = np.where(loss < 0.5*loss.mean())[0]
+    thresh_idx = np.where(loss < 2*loss.min())[0]
 
     n = np.clip(10000, a_min = 0, a_max=len(thresh_idx)).astype(int)
 
