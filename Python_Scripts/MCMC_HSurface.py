@@ -128,7 +128,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     pe_ref = lmp.get_thermo('pe')
 
-    lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
+    # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
     ref = np.array(lmp.gather_atoms('x', 1, 3))
 
@@ -154,7 +154,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('minimize 1e-13 1e-16 %d %d' % (10000, 10000))
 
-    lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
+    # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
     pbc = lmp.get_thermo('lx')
 
