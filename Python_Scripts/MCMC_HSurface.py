@@ -114,16 +114,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('mass 3 4.002602')
 
-    ref = np.array(lmp.gather_atoms('x', 1, 3))
-
-    ref = ref.reshape(len(ref)//3, 3)
-
-    surface = ref[(-1 < ref[:, 2]) & (ref[:, 2] < 1)]
-
-    N_ref = len(ref)
-
-    n_h = int(h_conc*len(surface)*1e-2)
-
     lmp.command('pair_style eam/alloy' )
 
     lmp.command('pair_coeff * * %s W H He' % potfile)
@@ -138,8 +128,20 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     pe_ref = lmp.get_thermo('pe')
 
-    lmp.command('timestep 1e-3')
+    lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
+    ref = np.array(lmp.gather_atoms('x', 1, 3))
+
+    ref = ref.reshape(len(ref)//3, 3)
+
+    surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
+
+    N_ref = len(ref)
+
+    n_h = int(h_conc*len(surface)*1e-2)
+
+    lmp.command('timestep 1e-3')
+    
     for i in range(n_h):
         rng_int = np.random.randint(0, len(tet_sites))
         site = tet_sites[rng_int]
@@ -171,10 +173,10 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     all_h_idx = np.where(type == 2)[0]
 
     N_h = len(all_h_idx)
-        
+    
     n_ensemple = int(100)
 
-    n_samples = int(50)
+    n_samples = int(100)
 
     converged = False
     
@@ -361,5 +363,5 @@ if __name__ == '__main__':
 
     init_conc = np.linspace(0.25, 100, size)
 
-    H_surface_energy(size, alattice, orientx, orienty, orientz, init_conc[rank], 800, '',rank)
+    H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '',rank)
 
