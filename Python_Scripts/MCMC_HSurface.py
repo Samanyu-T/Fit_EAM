@@ -79,7 +79,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     # Define the ranges for x and y
     x = np.linspace(xlo, xhi, 100)  # Start, End, Number of points
-    y = np.linspace(xlo, xhi, 100)   # Start, End, Number of points
+    y = np.linspace(ylo, yhi, 100)   # Start, End, Number of points
 
     # Create the meshgrid
     X, Y = np.meshgrid(x, y)
@@ -297,7 +297,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
         print(res)
         sys.stdout.flush()
-        
+
         if res.pvalue > (1-converge_thresh):
             converged = True
 
