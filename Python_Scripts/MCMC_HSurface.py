@@ -100,7 +100,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
         if add: 
             sites.append(_p)
 
-    N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
+    N_h = np.clip(h_conc*len(surface)*1e-2, a_min=1).astype(int)
 
     lmp.command('minimize 1e-9 1e-12 10 10')
 
