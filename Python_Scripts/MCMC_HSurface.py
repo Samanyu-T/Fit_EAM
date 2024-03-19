@@ -142,8 +142,11 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     type = np.array( lmp.gather_atoms('type', 0 , 1) )
 
-    all_h_idx = np.where(type == 2)[0]
+    all_h_idx = np.where(type != 1)[0]
 
+    print(N_h, len(all_h_idx))
+    sys.stdout.flush()
+    
     N_h = len(all_h_idx)
     
     n_ensemple = int(100)
