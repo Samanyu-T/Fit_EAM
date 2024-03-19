@@ -17,7 +17,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
-    lmp = lammps(name = machine, cmdargs=['-m', str(proc)]) #,'-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -296,7 +296,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
         res = stats.ks_2samp(canonical, samples)
 
         print(res)
-
+        sys.stdout.flush()
+        
         if res.pvalue > (1-converge_thresh):
             converged = True
 
