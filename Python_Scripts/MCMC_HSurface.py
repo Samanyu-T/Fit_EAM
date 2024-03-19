@@ -144,9 +144,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     all_h_idx = np.where(type != 1)[0]
 
-    print(N_h, len(all_h_idx))
+    print(N_h, len(ref), len(type))
     sys.stdout.flush()
-    
+
     N_h = len(all_h_idx)
     
     n_ensemple = int(100)
