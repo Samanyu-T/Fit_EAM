@@ -127,12 +127,12 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
 
-    print(surface.shape)
-    sys.stdout.flush()
-
     N_ref = len(ref)
 
     N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
+
+    print(N_h)
+    sys.stdout.flush()
 
     lmp.command('minimize 1e-9 1e-12 10 10')
 
