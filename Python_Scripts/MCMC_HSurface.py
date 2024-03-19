@@ -7,6 +7,7 @@ from mpi4py import MPI
 import ctypes
 import time
 from scipy import stats
+import sys
 
 def get_tetrahedral_sites(R):
 
@@ -125,6 +126,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     ref = ref.reshape(len(ref)//3, 3)
 
     surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
+
+    print(surface)
+    sys.stdout.flush()
 
     N_ref = len(ref)
 
