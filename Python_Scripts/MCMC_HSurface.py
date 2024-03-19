@@ -78,8 +78,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     yhi = lmp.get_thermo('yhi')
 
     # Define the ranges for x and y
-    x = np.linspace(xlo, xhi, 100)  # Start, End, Number of points
-    y = np.linspace(ylo, yhi, 100)   # Start, End, Number of points
+    x = np.linspace(xlo + 0.1, xhi - 0.1, 100)  # Start, End, Number of points
+    y = np.linspace(ylo + 0.1, yhi - 0.1, 100)   # Start, End, Number of points
 
     # Create the meshgrid
     X, Y = np.meshgrid(x, y)
