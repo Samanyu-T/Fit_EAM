@@ -9,43 +9,6 @@ import time
 from scipy import stats
 import sys
 
-def get_tetrahedral_sites(R):
-
-    tet_sites_0 = np.zeros((12,3))
-    k = 0
-
-    for [i,j] in itertools.combinations([0, 1, 2],2):
-        tet_sites_0[4*k:4*k+4,[i,j]] = np.array( [[0.5 , 0.25],
-                                            [0.25, 0.5],
-                                            [0.5 , 0.75],
-                                            [0.75, 0.5] ])
-
-        k += 1
-
-    tet_sites_1 = np.ones((12,3))
-    k = 0
-
-    for [i,j] in itertools.combinations([0, 1, 2],2):
-        tet_sites_1[4*k:4*k+4,[i,j]] = np.array( [[0.5 , 0.25],
-                                            [0.25, 0.5],
-                                            [0.5 , 0.75],
-                                            [0.75, 0.5] ])
-
-        k += 1
-
-    tet_sites_unit = np.vstack([tet_sites_0, tet_sites_1])
-
-    tet_sites = tet_sites_unit @ R
-
-    tet_sites = (tet_sites + 2) % 1
-
-    tet_sites = np.unique(tet_sites % 1, axis = 0)
-    
-    mode = statistics.mode(tet_sites[:,2])
-
-    tet_sites = tet_sites[tet_sites[:,2] == mode]
-
-    return tet_sites
 
     
 def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800, machine='', proc = 0):
@@ -54,28 +17,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     surface = 100
 
-    R_inv = np.vstack([orientx, orienty, orientz]).T
-
-    R = np.linalg.inv(R_inv)
-
-    dump_folder = '../H_Surface_Dump'
-
-    unique_tet_sites = get_tetrahedral_sites(R)
-
-    tet_sites = np.array([[0.25, 0.5 ,0]])
-
-    k = -0.5
-
-    for i in range(size):
-        for j in range(size):
-                tet_sites = np.vstack([tet_sites, unique_tet_sites + np.array([i, j, k])])
-
-
     tet_sites = tet_sites[1:]
 
-    print(len(tet_sites))
-    sys.stdout.flush()
-    
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
     lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
@@ -130,10 +73,36 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
 
-    N_ref = len(ref)
+    xlo = lmp.get_thermo('xlo')
+    
+    xhi = lmp.get_thermo('xhi')
+
+    ylo = lmp.get_thermo('ylo')
+    
+    yhi = lmp.get_thermo('yhi')
+
+    # Define the ranges for x and y
+    x = np.linspace(xlo, xhi, 100)  # Start, End, Number of points
+    y = np.linspace(xlo, xhi, 100)   # Start, End, Number of points
+
+    # Create the meshgrid
+    X, Y = np.meshgrid(x, y)
+
+    # Flatten the meshgrid arrays
+    points = np.column_stack((X.ravel(), Y.ravel()))
+
+    sites = []
+
+    for _p in points:
+        add = True
+        for _r in ref:
+            if np.linalg.norm(_p - _r) < 1:
+                add = False
+                break
+        if add: 
+            sites.append(_p)
 
     N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
-
 
     lmp.command('minimize 1e-9 1e-12 10 10')
 
@@ -148,10 +117,10 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     # lmp.command('timestep 1e-3')
     
     for i in range(N_h):
-        rng_int = np.random.randint(0, len(tet_sites))
-        site = tet_sites[rng_int]
+        rng_int = np.random.randint(0, len(sites))
+        site = sites[rng_int]
         lmp.command('create_atoms %d single %f %f %f units lattice' % (2, site[0], site[1], site[2]))
-        tet_sites = np.delete(tet_sites, rng_int, axis=0)
+        sites = np.delete(sites, rng_int, axis=0)
         
     lmp.command('minimize 1e-9 1e-12 100 100')
 
