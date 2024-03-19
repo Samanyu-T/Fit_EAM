@@ -41,9 +41,9 @@ def temp_md(filepath, temp=800, machine=''):
 
     type = np.array( lmp.gather_atoms('type', 0 , 1) )  
     
-    N = 1000
+    N = 10000
 
-    tstep = 100
+    tstep = 10
 
     light_idx = np.where(type != 1)[0]
 
@@ -75,6 +75,8 @@ def temp_md(filepath, temp=800, machine=''):
 
         data_pe[i] = pe
 
+        lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % i)
+
     filename = os.path.basename(filepath).split('.')[0].split('_')[0]
 
     if not os.path.exists('../Migration_Data'):
@@ -103,7 +105,7 @@ if __name__ == '__main__':
 
     comm.Barrier()
 
-    for filename in glob.glob('../HeH_Clusters_New/V0H0He4_new.data'):
+    for filename in glob.glob('../HeH_Clusters_New/V0H0He2_new.data'):
         print(filename)
         temp_md(filename, 1000, '')
 

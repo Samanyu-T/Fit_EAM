@@ -120,16 +120,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
     
-    lmp.command('minimize 1e-9 1e-12 10 10')
-
-    lmp.command('minimize 1e-9 1e-12 100 100')
-
-    lmp.command('minimize 1e-9 1e-12 10000 10000')
-
-    pe_ref = lmp.get_thermo('pe')
-
-    # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
-
     ref = np.array(lmp.gather_atoms('x', 1, 3))
 
     ref = ref.reshape(len(ref)//3, 3)
@@ -139,6 +129,16 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     N_ref = len(ref)
 
     N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
+
+    lmp.command('minimize 1e-9 1e-12 10 10')
+
+    lmp.command('minimize 1e-9 1e-12 100 100')
+
+    lmp.command('minimize 1e-9 1e-12 10000 10000')
+
+    pe_ref = lmp.get_thermo('pe')
+
+    # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
     # lmp.command('timestep 1e-3')
     
