@@ -138,11 +138,11 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_ref = len(ref)
 
-    n_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
+    N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
 
     # lmp.command('timestep 1e-3')
     
-    for i in range(n_h):
+    for i in range(N_h):
         rng_int = np.random.randint(0, len(tet_sites))
         site = tet_sites[rng_int]
         lmp.command('create_atoms %d single %f %f %f units lattice' % (2, site[0], site[1], site[2]))

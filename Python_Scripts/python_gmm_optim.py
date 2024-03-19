@@ -210,7 +210,7 @@ def main(machine, max_time, write_dir, save_dir):
     
     comm.Barrier()
 
-    for i in range(4, 7):
+    for i in range(6, 7):
 
         gsamples_folder = ''
 
@@ -351,7 +351,7 @@ def main(machine, max_time, write_dir, save_dir):
         loss = np.hstack(lst_loss).reshape(-1, 1)
         samples = np.vstack(lst_samples)
 
-        N_simplex = 5 
+        N_simplex = 10
 
         for proc in range(nprocs):
             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
