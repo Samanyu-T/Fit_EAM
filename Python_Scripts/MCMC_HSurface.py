@@ -73,6 +73,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     tet_sites = tet_sites[1:]
 
+    print(len(tet_sites))
+    sys.stdout.flush()
+    
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
     lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
@@ -131,8 +134,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
 
-    print(N_h)
-    sys.stdout.flush()
 
     lmp.command('minimize 1e-9 1e-12 10 10')
 
