@@ -84,7 +84,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     # Create the meshgrid
     X, Y = np.meshgrid(x, y)
 
-    implantation_depth = -0.5
+    implantation_depth = 0
 
     # Flatten the meshgrid arrays
     points = np.column_stack(( X.ravel(), Y.ravel(), implantation_depth*np.ones( ( len(X.ravel()) , ) )   ))
