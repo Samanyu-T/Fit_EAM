@@ -17,7 +17,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
-    lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine, cmdargs=['-m', str(proc)]) #,'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -117,9 +117,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     for i in range(N_h):
         rng_int = np.random.randint(0, len(sites))
         site = sites[rng_int]
-        lmp.command('create_atoms %d single %f %f %f units lattice' % (2, site[0], site[1], site[2]))
+        lmp.command('create_atoms %d single %f %f %f units box' % (2, site[0], site[1], site[2]))
         sites = np.delete(sites, rng_int, axis=0)
-        
+    
     lmp.command('minimize 1e-9 1e-12 100 100')
 
     lmp.command('minimize 1e-12 1e-15 100 100')
@@ -143,9 +143,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     type = np.array( lmp.gather_atoms('type', 0 , 1) )
 
     all_h_idx = np.where(type != 1)[0]
-
-    print(N_h, len(ref) - len(type), len(all_h_idx))
-    sys.stdout.flush()
 
     N_h = len(all_h_idx)
     
