@@ -1,7 +1,5 @@
 from lammps import lammps
 import numpy as np
-import itertools
-import statistics
 import os
 from mpi4py import MPI
 import ctypes
@@ -16,8 +14,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     max_h = 10
 
     surface = 100
-
-    tet_sites = tet_sites[1:]
 
     potfile = 'Potentials/WHHe_test.eam.alloy'
 
