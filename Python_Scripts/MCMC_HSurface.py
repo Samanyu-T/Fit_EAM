@@ -146,9 +146,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_h = len(all_h_idx)
     
-    n_ensemple = int(100)
+    n_ensemple = int(500)
 
-    n_samples = int(100)
+    n_samples = int(500)
 
     converged = False
     
@@ -231,8 +231,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
         n_accept = 0
 
         if converged:
+            print('Converged %d' % N_h)
             break
-        
+            
         while n_accept < n_samples:
 
             xyz = np.array(lmp.gather_atoms('x', 1, 3))
