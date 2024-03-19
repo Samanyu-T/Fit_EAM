@@ -127,7 +127,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
 
-    print(surface)
+    print(surface.shape)
     sys.stdout.flush()
 
     N_ref = len(ref)
