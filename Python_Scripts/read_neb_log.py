@@ -34,7 +34,7 @@ def main(filepath, n_proc):
     if filename[0] == 's':
         nth_neb = ''
     else:
-        nth_neb = int(filename[-1])
+        nth_neb = int(filename.split('_')[-1])
 
     with open('log.lammps', 'r') as file:
         log = file.readlines()

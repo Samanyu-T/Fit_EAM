@@ -138,9 +138,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_ref = len(ref)
 
-    n_h = int(h_conc*len(surface)*1e-2)
+    n_h = np.ceil(h_conc*len(surface)*1e-2).astype(int)
 
-    lmp.command('timestep 1e-3')
+    # lmp.command('timestep 1e-3')
     
     for i in range(n_h):
         rng_int = np.random.randint(0, len(tet_sites))
@@ -363,5 +363,5 @@ if __name__ == '__main__':
 
     init_conc = np.linspace(0.25, 100, size)
 
-    H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '',rank)
+    H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 

@@ -6,9 +6,8 @@ import os
 from mpi4py import MPI
 import ctypes
 import time
-import matplotlib.pyplot as plt
 from scipy import stats
-from sympy import N
+import glob
 
 def get_tetrahedral_sites(R):
 
@@ -49,36 +48,13 @@ def get_tetrahedral_sites(R):
     return tet_sites
 
     
-def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800, machine='', proc = 0):
+def mcmc_optim_cluster(filepath, temp=800, machine=''):
 
     max_h = 2
 
-    surface = 100
-
-    R_inv = np.vstack([orientx, orienty, orientz]).T
-
-    R = np.linalg.inv(R_inv)
-
-    dump_folder = '../H_Surface_Dump'
-
-    unique_tet_sites = get_tetrahedral_sites(R)
-
-    tet_sites = np.array([[0.25, 0.5 ,0]])
-
-    k = -0.5
-
-    for i in range(size):
-        for j in range(size):
-                tet_sites = np.vstack([tet_sites, unique_tet_sites + np.array([i, j, k])])
-
-
-    tet_sites = tet_sites[1:]
-
     potfile = 'Potentials/test.0.eam.alloy'
 
-    lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
-
-    filename = 'V0H4He4'
+    lmp = lammps(name = machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -88,7 +64,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('atom_modify map array sort 0 0.0')
 
-    lmp.command('read_data ../HeH_Clusters/%s.data' % filename)
+    lmp.command('read_data %s' % filepath)
 
     lmp.command('pair_style eam/alloy' )
 
@@ -114,7 +90,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     
     N_h = len(all_h_idx)
     
-    n_ensemple = int(100)
+    n_ensemple = int(50)
 
     canonical = np.zeros((n_ensemple, ))
 
@@ -131,6 +107,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     beta = 1/(kb*temp)
 
     while n_accept < n_ensemple and counter < 5*n_ensemple:
+        
+        counter += 1
 
         xyz = np.array(lmp.gather_atoms('x', 1, 3))
 
@@ -168,13 +146,13 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
         if rng <= acceptance:
                 
-            temp = temp*np.exp(-n_accept/50)
+            temp = temp*np.exp(-n_accept/n_ensemple)
 
             beta = 1/(kb*temp)
 
             pe_curr = pe_test
 
-            lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
+            # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % n_accept)
 
             print(pe_curr - pe_ref)
 
@@ -184,7 +162,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
             n_accept += 1
 
-            counter += 1
             
         else:
             
@@ -203,17 +180,27 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     
     lmp.scatter_atoms('x', 1, 3, xyz_c)
 
-    lmp.command('write_data ../HeH_Clusters/%s_new.data' % filename)
+    lmp.command('minimize 1e-9 1e-12 10 10')
 
-    print(canonical[min_energy])
+    lmp.command('minimize 1e-9 1e-12 100 100')
 
-    plt.plot(canonical)
-    plt.show()
+    lmp.command('minimize 1e-9 1e-12 10000 10000')
 
-    T_max = 10000
+    pe_final = lmp.get_thermo('pe')
+
+    print('final energy: %f' % pe_final)
+
+    filename = os.path.basename(filepath).split('.')[0]
+
+    lmp.command('write_data ../HeH_Clusters_New/%s_new.data' % filename)
+
+    lmp.close()
+
+    # plt.plot(canonical)
+    # plt.show()
 
     
-    lmp.command('timestep 1e-3')
+    # lmp.command('timestep 1e-3')
     
 
 if __name__ == '__main__':
@@ -235,13 +222,9 @@ if __name__ == '__main__':
     comm.Barrier()
     size = 10
 
-    orientx = [1, 1, 1]
-    orienty = [-1,2,-1]
-    orientz = [-1,0, 1]
-
     alattice = 3.144221
 
-    init_conc = np.linspace(0.25, 100, size)
-
-    H_surface_energy(size, alattice, orientx, orienty, orientz, init_conc[rank], 1000, '',rank)
+    for filename in glob.glob('../HeH_Clusters/*.data'):
+        print(filename)
+        mcmc_optim_cluster(filename, 1000, '')
 
