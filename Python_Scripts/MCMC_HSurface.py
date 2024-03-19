@@ -84,14 +84,16 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     # Create the meshgrid
     X, Y = np.meshgrid(x, y)
 
+    implantation_depth = -0.5
+
     # Flatten the meshgrid arrays
-    points = np.column_stack((X.ravel(), Y.ravel()))
+    points = np.column_stack(( X.ravel(), Y.ravel(), implantation_depth*np.ones( ( len(X.ravel()) , ) )   ))
 
     sites = []
 
     for _p in points:
         add = True
-        for _r in ref:
+        for _r in surface:
             if np.linalg.norm(_p - _r) < 1:
                 add = False
                 break
