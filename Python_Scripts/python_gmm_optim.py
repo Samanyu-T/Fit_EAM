@@ -205,57 +205,57 @@ def main(machine, max_time, write_dir, save_dir):
     # comm.Barrier()
 
     ### BEGIN GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
-    if me == 0:
-        GMM.main(os.path.join(data_folder,'Gaussian_Samples_3', 'Core_*'), data_folder, 4)
+    # if me == 0:
+    #     GMM.main(os.path.join(data_folder,'Gaussian_Samples_3', 'Core_*'), data_folder, 4)
     
-    comm.Barrier()
+    # comm.Barrier()
 
-    for i in range(6, 7):
+    # for i in range(6, 7):
 
-        gsamples_folder = ''
+    #     gsamples_folder = ''
 
-        if me == 0:
-            print('Start Gaussian Sampling %dth iteration' % i)
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('Start Gaussian Sampling %dth iteration' % i)
+    #         sys.stdout.flush()  
 
-            gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
+    #         gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
 
-            if not os.path.exists(gsamples_folder):
-                os.mkdir(gsamples_folder)
+    #         if not os.path.exists(gsamples_folder):
+    #             os.mkdir(gsamples_folder)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+    #     request = comm.Ibarrier()  # Non-blocking barrier
 
-        gsamples_folder = comm.bcast(gsamples_folder, root = 0)
+    #     gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
-        t1 = time.perf_counter()
+    #     t1 = time.perf_counter()
 
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.99*max_time,
-                                   write_dir=write_dir, sample_folder=gsamples_folder,
-                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
+    #     Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=0.99*max_time,
+    #                                write_dir=write_dir, sample_folder=gsamples_folder,
+    #                                gmm_folder=os.path.join(data_folder,'GMM_%d' % i))        
 
-        t2 = time.perf_counter()
+    #     t2 = time.perf_counter()
 
-        # Wait for the barrier to complete
-        request.Wait()
+    #     # Wait for the barrier to complete
+    #     request.Wait()
 
-        if me == 0:
-            print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
+    #         sys.stdout.flush()  
 
 
-            t1 = time.perf_counter()
+    #         t1 = time.perf_counter()
 
-            GMM.main(os.path.join(gsamples_folder, 'Core_*'), data_folder,i + 1)
+    #         GMM.main(os.path.join(gsamples_folder, 'Core_*'), data_folder,i + 1)
 
-            t2 = time.perf_counter()
+    #         t2 = time.perf_counter()
 
-            print('\n Clustering took %.2f s ' % (t2 - t1))
-            sys.stdout.flush() 
+    #         print('\n Clustering took %.2f s ' % (t2 - t1))
+    #         sys.stdout.flush() 
 
-        comm.Barrier()
-    ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
+    #     comm.Barrier()
+    # ### END GAUSSIAN SAMPLING FOR HE-HE POTENTIAL ###
     
-    g_iteration += N_gaussian
+    g_iteration = 7
 
     ### OPTIMIZE FOR H-HE POTENTIAL BY USING THE FINAL CLUSTER OF THE W-HE GMM AS A STARTING POINT ###
             
