@@ -83,7 +83,7 @@ def main(file_pattern, data_folder, iter):
         os.mkdir(gmm_folder)
 
     np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
-    np.savetxt(os.path.join(gmm_folder, 'Filtered_Samples.txt'),loss[thresh_idx])
+    np.savetxt(os.path.join(gmm_folder, 'Filtered_Samples.txt'),samples[thresh_idx])
 
     for i in range(gmm.covariances_.shape[0]):
         np.savetxt(os.path.join(gmm_folder, 'Cov_%d.txt' % i ),gmm.covariances_[i])
