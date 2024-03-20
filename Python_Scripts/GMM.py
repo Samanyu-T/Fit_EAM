@@ -90,4 +90,4 @@ def main(file_pattern, data_folder, iter):
         np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
-    main('../data_102/Gaussian_Samples_4/Core_*', '../data_102', 5)
+    main('../data_102/Gaussian_Samples_6/Core_*', '../data_102', 7)
