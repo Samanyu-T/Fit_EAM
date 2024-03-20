@@ -105,6 +105,7 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
 
         for simplex_iteration, x_init in enumerate(x_init_arr):
             
+            print(x_init)
             simplex_iteration_folder = os.path.join(simplex_folder, 'x_init_%d' % simplex_iteration)
 
             if not os.path.exists(simplex_iteration_folder):
@@ -120,7 +121,7 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
             genetic = False
             write = True
             maxiter = 5000
-            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder, genetic, write), x0=x_init, method = 'Nelder-Mead', options={'maxiter': maxiter, 'tol':1e-6})
+            x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder, genetic, write), x0=x_init, method = 'Nelder-Mead', options={'maxiter': maxiter})
 
             # Write final optima to the output file
             final_optima['Optima'].append(x_star.x.tolist())
@@ -135,8 +136,14 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) > 1:
-        worker_function(int(sys.argv[1]), sys.argv[2])
-        
-    else:
-        worker_function(-1, '')
+    n_knots = [1,0,2]
+
+    bool_fit = {}
+
+    bool_fit['He_F(rho)'] = bool(n_knots[0])
+    bool_fit['He_rho(r)'] = bool(n_knots[1])
+    bool_fit['W-He'] =   bool(n_knots[2])
+    bool_fit['H-He'] = True
+    bool_fit['He-He'] = False
+
+    optimize(n_knots, bool_fit, 0, '', '../Simplex', write_dir = '')

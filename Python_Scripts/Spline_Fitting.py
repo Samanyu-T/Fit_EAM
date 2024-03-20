@@ -395,6 +395,7 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
             np.savetxt(file, sample, fmt = '%f', newline=' ')
             file.write('\n')
 
+    print(loss)
     return loss
 
 def random_sampling(ref_formations, fitting_class, max_time, output_folder):

@@ -51,11 +51,19 @@ def temp_md(filepath, temp=800, machine=''):
 
     data_pe = np.zeros( (N + 1,) )
 
+    data_v = np.zeros( (N + 1, len(light_idx), 3) ) 
+
     xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+    v = np.array(lmp.gather_atoms('v', 1, 3))
 
     xyz = xyz.reshape(len(xyz)//3, 3)
 
+    v = v.reshape(len(v)//3, 3)
+
     data_xyz[0] = xyz[light_idx]
+
+    data_v[0] = v[light_idx]
 
     pe = lmp.get_thermo('pe')
 
@@ -67,9 +75,15 @@ def temp_md(filepath, temp=800, machine=''):
 
         xyz = np.array(lmp.gather_atoms('x', 1, 3))
 
+        v = np.array(lmp.gather_atoms('v', 1, 3))
+
         xyz = xyz.reshape(len(xyz)//3, 3)
 
+        v = v.reshape(len(v)//3, 3)
+
         data_xyz[i] = xyz[light_idx]
+
+        data_v[i] = v[light_idx]
 
         pe = lmp.get_thermo('pe')
 
@@ -84,6 +98,7 @@ def temp_md(filepath, temp=800, machine=''):
 
     np.save('../Migration_Data/%s_xyz.npy' % filename, data_xyz)
     np.save('../Migration_Data/%s_pe.npy' % filename, data_pe)
+    np.save('../Migration_Data/%s_v.npy' % filename, data_v)
 
 
 
