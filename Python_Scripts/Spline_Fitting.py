@@ -1,3 +1,4 @@
+from cgi import test
 import numpy as np
 import os 
 import sys 
@@ -306,8 +307,8 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
     ref_binding = binding_fitting(ref_formations)
 
     test_binding = binding_fitting(test_formations)
-        
-    loss = 0
+    
+    loss = 0    
 
     # Quadratic Loss of Interstitial Formation Energies
     tet_diff = (test_formations['V0H0He1']['val'] - ref_formations['V0H0He1']['val'])

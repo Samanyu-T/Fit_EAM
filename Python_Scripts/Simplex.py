@@ -143,7 +143,7 @@ if __name__ == '__main__':
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
     bool_fit['W-He'] =   bool(n_knots[2])
-    bool_fit['H-He'] = True
-    bool_fit['He-He'] = False
+    bool_fit['H-He'] = False
+    bool_fit['He-He'] = True
 
     optimize(n_knots, bool_fit, 0, '', '../Simplex', write_dir = '')
