@@ -224,7 +224,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    for filename in glob.glob('../HeH_Clusters/*.data'):
+    for filename in glob.glob('../HeH_Clusters/V0H0He2.data'):
         print(filename)
         mcmc_optim_cluster(filename, 1000, '')
 
