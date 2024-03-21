@@ -79,15 +79,16 @@ def main(file_pattern, data_folder, iter):
     print(gmm.means_)
 
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
+    
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
 
     np.savetxt(os.path.join(gmm_folder, 'Filtered_Loss.txt'),loss[thresh_idx])
     np.savetxt(os.path.join(gmm_folder, 'Filtered_Samples.txt'),samples[thresh_idx])
 
-    # for i in range(gmm.covariances_.shape[0]):
-    #     np.savetxt(os.path.join(gmm_folder, 'Cov_%d.txt' % i ),gmm.covariances_[i])
-    #     np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
+    for i in range(gmm.covariances_.shape[0]):
+        np.savetxt(os.path.join(gmm_folder, 'Cov_%d.txt' % i ),gmm.covariances_[i])
+        np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
     main('../data_102/Gaussian_Samples_2/Core_*', '../data_102', 3)
