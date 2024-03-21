@@ -107,7 +107,7 @@ def mcmc_optim_cluster(filepath, temp=800, machine=''):
     beta = 1/(kb*temp)
 
     while n_accept < n_ensemple and counter < 5*n_ensemple:
-        
+
         counter += 1
 
         xyz = np.array(lmp.gather_atoms('x', 1, 3))
@@ -224,7 +224,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    for filename in glob.glob('../HeH_Clusters/V0H0He*.data'):
+    for filename in glob.glob('../HeH_Clusters/*.data'):
         print(filename)
         mcmc_optim_cluster(filename, 1000, '')
 

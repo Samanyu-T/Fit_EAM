@@ -64,7 +64,7 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
     ref_formations['V0H0He1_inter'] = {}
     ref_formations['V0H0He1_inter']['val'] = None
     ref_formations['V0H0He1_inter']['rvol'] = None
-    ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.375, 3.5, 3]]]
+    ref_formations['V0H0He1_inter']['pos'] = [[], [], [[3.15, 3.5, 3]]]
 
 
     ref_formations['V0H0He1_inter2'] = {}
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     bool_fit['He_F(rho)'] = bool(n_knots[0])
     bool_fit['He_rho(r)'] = bool(n_knots[1])
     bool_fit['W-He'] =   bool(n_knots[2])
-    bool_fit['H-He'] = False
+    bool_fit['H-He'] = True
     bool_fit['He-He'] = True
 
-    optimize(n_knots, bool_fit, 0, '', '../Simplex_HeHe', write_dir = '')
+    optimize(n_knots, bool_fit, 0, '', '../Simplex', write_dir = '')

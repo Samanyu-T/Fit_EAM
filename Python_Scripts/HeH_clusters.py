@@ -137,5 +137,9 @@ if me == 0:
 
     print(t2-t1)
 
+    with open('formations.json', 'w') as file:
+        json.dump(data, file)
+
+
 comm.Barrier()
 MPI.Finalize()

@@ -1,3 +1,4 @@
+from multiprocessing import process
 from lammps import lammps
 import numpy as np
 import os
@@ -5,11 +6,11 @@ from mpi4py import MPI
 import glob
 
 
-def temp_md(filepath, temp=800, machine=''):
+def temp_md(proc,filepath, temp=800, machine=''):
 
     potfile = 'Potentials/test.0.eam.alloy'
 
-    lmp = lammps(name = machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine, cmdargs=['-m', str(proc),'-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
@@ -96,9 +97,9 @@ def temp_md(filepath, temp=800, machine=''):
     if not os.path.exists('../Migration_Data'):
         os.mkdir('../Migration_Data')
 
-    np.save('../Migration_Data/%s_xyz.npy' % filename, data_xyz)
-    np.save('../Migration_Data/%s_pe.npy' % filename, data_pe)
-    np.save('../Migration_Data/%s_v.npy' % filename, data_v)
+    np.save('../Migration_Data/%s_xyz_%d.npy' % filename, data_xyz, proc)
+    np.save('../Migration_Data/%s_pe_%d.npy' % filename, data_pe, proc)
+    np.save('../Migration_Data/%s_v_%d.npy' % filename, data_v, proc)
 
 
 
@@ -122,5 +123,5 @@ if __name__ == '__main__':
 
     for filename in glob.glob('../HeH_Clusters_New/V0H0He2_new.data'):
         print(filename)
-        temp_md(filename, 1000, '')
+        temp_md(rank, filename, 1000, '')
 

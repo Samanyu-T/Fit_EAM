@@ -359,11 +359,11 @@ def loss_func(sample, fitting_class, ref_formations, output_folder, genetic = Fa
         # Write the Loss and the Sample Data to files for archiving
         with open(os.path.join(output_folder,'loss.txt'), 'a') as file:
             
-            print(migration)
-            file.write('Loss: %f TIS: %f IIS: %f OIS: %f Interstitial_Binding: ' % (loss,
+            file.write('Loss: %f TIS: %f IIS: %f OIS: %f MIG: %f Interstitial_Binding: ' % (loss,
                                                     test_formations['V0H0He1']['val'], 
                                                     test_formations['V0H0He1_inter']['val'], 
-                                                    test_formations['V0H0He1_oct']['val']
+                                                    test_formations['V0H0He1_oct']['val'],
+                                                    migration
                                                 
                                                     )
                     )

@@ -15,9 +15,6 @@ with open('refs_formations.json', 'r') as file:
 color = ['red', 'blue', 'green', 'orange', 'cyan', 'pink', 'yellow']
 
 dft =  data_dict(dft_raw, eam, 2, 6, 6)
-eam['V0H0He1']['val'] -= 0.1
-eam['V0H0He2']['val'] -= 0.5
-eam['V0H0He3']['val'] -= 0.2
 
 y_data = []
 x_data = []
