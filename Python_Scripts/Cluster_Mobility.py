@@ -97,9 +97,9 @@ def temp_md(proc,filepath, temp=800, machine=''):
     if not os.path.exists('../Migration_Data'):
         os.mkdir('../Migration_Data')
 
-    np.save('../Migration_Data/%s_xyz_%d.npy' % filename, data_xyz, proc)
-    np.save('../Migration_Data/%s_pe_%d.npy' % filename, data_pe, proc)
-    np.save('../Migration_Data/%s_v_%d.npy' % filename, data_v, proc)
+    np.save('../Migration_Data/%s_xyz_%d.npy' % (filename, proc), data_xyz)
+    np.save('../Migration_Data/%s_pe_%d.npy' % (filename, proc), data_pe)
+    np.save('../Migration_Data/%s_v_%d.npy' % (filename, proc), data_v)
 
 
 
