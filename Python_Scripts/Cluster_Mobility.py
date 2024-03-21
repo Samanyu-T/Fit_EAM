@@ -42,7 +42,7 @@ def temp_md(proc,filepath, temp=800, machine=''):
 
     type = np.array( lmp.gather_atoms('type', 0 , 1) )  
     
-    N = 10000
+    N = 50000
 
     tstep = 10
 
