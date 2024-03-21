@@ -309,6 +309,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
     
+    np.savetxt('../MCMC_Data/mcmc_nh_%d.txt' % proc, surface_retention)
 
 
 if __name__ == '__main__':
