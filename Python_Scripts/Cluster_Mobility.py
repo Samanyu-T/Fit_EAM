@@ -90,7 +90,7 @@ def temp_md(proc,filepath, temp=800, machine=''):
 
         data_pe[i] = pe
 
-        lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % i)
+        # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % i)
 
     filename = os.path.basename(filepath).split('.')[0].split('_')[0]
 
