@@ -8,7 +8,7 @@ import ctypes
 import time
 from scipy import stats
 import glob
-
+import sys
 def get_tetrahedral_sites(R):
 
     tet_sites_0 = np.zeros((12,3))
@@ -189,7 +189,7 @@ def mcmc_optim_cluster(filepath, temp=800, machine=''):
     pe_final = lmp.get_thermo('pe')
 
     print('final energy: %f' % pe_final)
-
+    sys.stdout.flush()
     filename = os.path.basename(filepath).split('.')[0]
 
     lmp.command('write_data ../HeH_Clusters_New/%s_new.data' % filename)
