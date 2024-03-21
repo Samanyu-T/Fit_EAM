@@ -54,7 +54,7 @@ def mcmc_optim_cluster(filepath, temp=800, machine=''):
 
     potfile = 'Potentials/test.0.eam.alloy'
 
-    lmp = lammps(name = machine, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
+    lmp = lammps(name = machine)#, cmdargs=['-screen', 'none', '-echo', 'none', '-log', 'none'])
 
     lmp.command('# Lammps input file')
 
