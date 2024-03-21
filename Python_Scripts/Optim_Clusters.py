@@ -226,5 +226,5 @@ if __name__ == '__main__':
 
     for filename in glob.glob('../HeH_Clusters/V0H0He2.data'):
         print(filename)
-        mcmc_optim_cluster(filename, 1000, '')
+        mcmc_optim_cluster(filename, 1000, 'intel_cpu_intelmpi')
 
