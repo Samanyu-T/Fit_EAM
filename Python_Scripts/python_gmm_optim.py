@@ -266,31 +266,31 @@ def main(machine, max_time, write_dir, save_dir):
     bool_fit['He-He'] = True
     
     # Edit a new Covariance Matrix for the H-He potential
-    if me == 0:
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,g_iteration)):
-            cov_0 = np.loadtxt(cov_file)
-            cov_1 = np.diag([4, 8, 32, 4, 8, 32])
+    # if me == 0:
+    #     for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,g_iteration)):
+    #         cov_0 = np.loadtxt(cov_file)
+    #         cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
-            cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
-                           [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
+    #         cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
+    #                        [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
 
-            cov_name = os.path.basename(cov_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder,g_iteration, cov_name), cov)
+    #         cov_name = os.path.basename(cov_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder,g_iteration, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,g_iteration)):
-            mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
-            mean_1 = np.zeros((len(cov_1),1))
+    #     for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,g_iteration)):
+    #         mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
+    #         mean_1 = np.zeros((len(cov_1),1))
 
-            mean = np.vstack([mean_0, mean_1])
+    #         mean = np.vstack([mean_0, mean_1])
 
-            mean_name = os.path.basename(mean_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
+    #         mean_name = os.path.basename(mean_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
 
-    comm.Barrier()
+    # comm.Barrier()
 
     ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
-    for i in range(g_iteration, g_iteration + N_gaussian):
+    for i in range(8, g_iteration + N_gaussian):
 
         gsamples_folder = ''
 
@@ -309,7 +309,7 @@ def main(machine, max_time, write_dir, save_dir):
 
         t1 = time.perf_counter()
 
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=2*max_time,
+        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=1.98*max_time,
                                    write_dir=write_dir, sample_folder=gsamples_folder,
                                    gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
