@@ -68,9 +68,6 @@ def temp_md(proc,filepath, temp=800, machine=''):
 
     pe = lmp.get_thermo('pe')
 
-    xu = lmp.numpy.extract_atom('all')
-
-    print(xu)
     data_pe[0] = pe
 
     for i in range(1,N+1):

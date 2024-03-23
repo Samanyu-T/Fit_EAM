@@ -290,7 +290,7 @@ def main(machine, max_time, write_dir, save_dir):
 
     ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
-    for i in range(8, g_iteration + N_gaussian):
+    for i in range(10, g_iteration + N_gaussian):
 
         gsamples_folder = ''
 
