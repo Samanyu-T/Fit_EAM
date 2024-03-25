@@ -51,11 +51,11 @@ elif len(loss) > nprocs and N_simplex*nprocs > len(loss):
 
 else:
     part = N_simplex
-    sort_idx = np.argsort(loss).flatten()
+    sort_idx = np.argsort(loss.flatten())
     loss = loss[sort_idx]
     samples = samples[sort_idx]
     
-    print(loss.shape, samples[:2], sort_idx.shape)
+    print(loss.shape, samples[:2], sort_idx[:2])
 
     idx = 0
     for proc in range(nprocs):
