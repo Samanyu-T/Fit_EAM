@@ -16,7 +16,8 @@ for folder in folders:
 
 loss = np.hstack(lst_loss).reshape(-1, 1)
 samples = np.vstack(lst_samples)
-print(samples[:10])
+
+print(loss.shape,samples.shape)
 
 N_simplex = 10
 
@@ -53,6 +54,8 @@ else:
     sort_idx = np.argsort(loss).flatten()
     loss = loss[sort_idx]
     samples = samples[sort_idx]
+    
+    print(loss.shape,samples.shape)
 
     idx = 0
     for proc in range(nprocs):
