@@ -79,7 +79,7 @@ def main(file_pattern, data_folder, iter):
     print(gmm.means_)
 
     gmm_folder = '%s/GMM_%d' % (data_folder, iter)
-    
+
     if not os.path.exists(gmm_folder):
         os.mkdir(gmm_folder)
 
@@ -91,4 +91,4 @@ def main(file_pattern, data_folder, iter):
         np.savetxt(os.path.join(gmm_folder, 'Mean_%d.txt' % i),gmm.means_[i])
 
 if __name__ == '__main__':
-    main('../data_102/Gaussian_Samples_2/Core_*', '../data_102', 3)
+    main('../data_102/Gaussian_Samples_10/Core_*', '../data_102', 11)
