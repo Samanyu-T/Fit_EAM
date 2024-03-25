@@ -58,3 +58,4 @@ else:
         simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
         np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
         idx += part
+        print(idx)
