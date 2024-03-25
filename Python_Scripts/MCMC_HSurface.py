@@ -146,9 +146,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_h = len(all_h_idx)
     
-    n_ensemple = int(100)
+    n_ensemple = int(50)
 
-    n_samples = int(100)
+    n_samples = int(50)
 
     converged = False
     
@@ -308,7 +308,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     canonical[0] = pe_ref
 
     surface_retention[0] = N_h
-    
+
     np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
 
     np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
