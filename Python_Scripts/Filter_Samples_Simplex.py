@@ -55,7 +55,7 @@ else:
     loss = loss[sort_idx]
     samples = samples[sort_idx]
     
-    print(loss.shape, samples.shape, sort_idx.shape)
+    print(loss.shape, samples[:2], sort_idx.shape)
 
     idx = 0
     for proc in range(nprocs):
