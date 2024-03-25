@@ -146,4 +146,4 @@ if __name__ == '__main__':
     bool_fit['H-He'] = True
     bool_fit['He-He'] = True
 
-    optimize(n_knots, bool_fit, 0, '', '../Simplex', write_dir = '../Optim_Local')
+    optimize(n_knots, bool_fit, 0, '', '../Simplex', write_dir = '')

@@ -148,7 +148,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     
     n_ensemple = int(100)
 
-    n_samples = int(50)
+    n_samples = int(100)
 
     converged = False
     
@@ -294,17 +294,21 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
                 lmp.scatter_atoms('x', 1, 3, xyz_c)
 
-        res = stats.ks_2samp(canonical, samples)
+        res = stats.ttest_ind(canonical, samples, equal_var=False)
 
         print(res)
         sys.stdout.flush()
 
         if res.pvalue > (1-converge_thresh):
             converged = True
-
+        
     if not os.path.exists('../MCMC_Data'):
         os.mkdir('../MCMC_Data')
 
+    canonical[0] = pe_ref
+
+    surface_retention[0] = N_h
+    
     np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
 
     np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
@@ -336,7 +340,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    init_conc = np.linspace(0.25, 100, size)
+    init_conc = np.logspace(-0.6, 3, size)
 
     H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 
