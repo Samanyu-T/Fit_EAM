@@ -16,7 +16,7 @@ for folder in folders:
 
 loss = np.hstack(lst_loss).reshape(-1, 1)
 samples = np.vstack(lst_samples)
-print(lst_samples[0].shape)
+print(lst_samples[0][:10])
 
 N_simplex = 10
 
