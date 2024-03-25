@@ -16,7 +16,7 @@ for folder in folders:
 
 loss = np.hstack(lst_loss).reshape(-1, 1)
 samples = np.vstack(lst_samples)
-print(samples.shape)
+# print(samples.shape)
 
 N_simplex = 10
 
@@ -58,4 +58,5 @@ else:
     for proc in range(nprocs):
         simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
         np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
+        print(samples[idx: idx + part])
         idx += part
