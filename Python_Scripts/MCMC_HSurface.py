@@ -340,7 +340,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    init_conc = np.logspace(-0.6, 3, size)
+    init_conc = np.hstack([np.linspace(1, 3, size//2), np.logspace(2, 3, size - size//2)])
 
     H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 
