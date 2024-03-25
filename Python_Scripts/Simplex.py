@@ -105,7 +105,7 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
 
         for simplex_iteration, x_init in enumerate(x_init_arr):
             
-            print(x_init)
+            # print(x_init)
             simplex_iteration_folder = os.path.join(simplex_folder, 'x_init_%d' % simplex_iteration)
 
             if not os.path.exists(simplex_iteration_folder):
