@@ -189,7 +189,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
             h_idx = np.copy(all_h_idx[:slct_h])
             
-            displace = alattice*np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+            displace = alattice*np.random.normal(loc=0, scale=np.sqrt(2)/4, size=(len(h_idx),3))
 
             xyz[h_idx] += displace
 
@@ -280,7 +280,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
             h_idx = np.copy(all_h_idx[:slct_h])
             
-            displace = np.random.normal(loc=0, scale=1, size=(len(h_idx),3))
+            displace = alattice*np.random.normal(loc=0, scale=np.sqrt(2)/4, size=(len(h_idx),3))
 
             xyz[h_idx] += displace
 
