@@ -357,10 +357,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
     if not os.path.exists('../MCMC_Data'):
         os.mkdir('../MCMC_Data')
 
-    canonical[0] = pe_ref
-
-    surface_retention[0] = N_h
-
     acceptance_ratio /= len(pe_explored)
     
     print('Converged %d, Acceptance Ratio %f, Max Pe %f, Min Pe %f ,N_retain %d' % (N_h, acceptance_ratio, canonical.max(), canonical.min(), surface_retention[-1])) 
