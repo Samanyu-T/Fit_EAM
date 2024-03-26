@@ -96,25 +96,33 @@ def phonon_frequency(xyz_inter, size = 4 ,machine=''):
 
     eig = -np.linalg.eigvals(hess) 
 
+    print(eig)
+
     freq = np.sqrt(eig[eig > 0])
 
-    return freq
+    return freq, pe_ref
 
-freq = phonon_frequency([[], [], []])
+freq, pe_perf = phonon_frequency([[], [], []])
 
 print(freq)
 
-freq_saddle = phonon_frequency([[], [[3.35, 3.35, 3]], []])
+freq_tet_saddle, pe_tet_saddle = phonon_frequency([[], [[3.35, 3.35, 3]], []])
 
-freq_min = phonon_frequency([[], [[3.25, 3.5, 3]], []])
+freq_min, pe_min = phonon_frequency([[], [[3.25, 3.5, 3]], []])
 
-print(freq_saddle, freq_min, np.prod(freq_min)/np.prod(freq_saddle))
+freq_oct_saddle, pe_oct_saddle = phonon_frequency([[], [[3.5, 3.5, 3]], []])
+
+print('Hydrogen tet-tet', 'Hopping Freq:', np.prod(freq_min)/np.prod(freq_tet_saddle), 'Migration Barrier', pe_tet_saddle - pe_min)
+
+print('Hydrogen tet-oct-tet', 'Hopping Freq:', np.prod(freq_min)/np.prod(freq_oct_saddle), 'Migration Barrier', pe_oct_saddle - pe_min)
 
 
-freq_saddle = phonon_frequency([[], [], [[3.35, 3.35, 3]]])
+freq_tet_saddle, pe_tet_saddle = phonon_frequency([[], [], [[3.35, 3.35, 3]]])
 
+freq_min, pe_min = phonon_frequency([[], [], [[3.25, 3.5, 3]]])
 
-freq_min = phonon_frequency([[], [], [[3.25, 3.5, 3]]])
+freq_oct_saddle, pe_oct_saddle = phonon_frequency([[], [], [[3.5, 3.5, 3]]])
 
-print(freq_saddle, freq_min, np.prod(freq_min)/np.prod(freq_saddle))
+print('Helim tet-tet', 'Hopping Freq:',np.prod(freq_min)/np.prod(freq_tet_saddle), 'Migration Barrier', pe_tet_saddle - pe_min)
 
+print('Helim tet-oct-tet', 'Hopping Freq:', np.prod(freq_min)/np.prod(freq_oct_saddle*np.sqrt(3.63)), 'Migration Barrier', pe_oct_saddle - pe_min)
