@@ -101,7 +101,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
             sites.append(_p)
 
     N_h = np.clip(h_conc*len(surface)*1e-2, a_min=1, a_max=None).astype(int)
-
+    
     lmp.command('minimize 1e-9 1e-12 10 10')
 
     lmp.command('minimize 1e-9 1e-12 100 100')
@@ -146,6 +146,10 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     N_h = len(all_h_idx)
     
+    print(N_h)
+
+    exit()
+    
     n_ensemple = int(50)
 
     n_samples = int(50)
@@ -161,6 +165,8 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     surface_retention = np.zeros((n_ensemple,))
 
     counter = 0
+    
+    acceptance_ratio = 0
 
     while True: 
         
@@ -178,7 +184,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
             h_idx = np.copy(all_h_idx[:slct_h])
             
-            displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+            displace = np.random.normal(loc=0, scale=1, size=(len(h_idx),3))
 
             xyz[h_idx] += displace
 
@@ -220,6 +226,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
                 counter += 1
                 
+                acceptance_ratio += 1
             else:
                 
                 xyz[h_idx] -= displace
@@ -231,7 +238,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
         n_accept = 0
 
         if converged:
-            print('Converged %d' % N_h)
             break
             
         while n_accept < n_samples:
@@ -278,13 +284,15 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
                 
                 # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
 
-                samples[n_accept] = (pe_ref -2.121*N_h - pe_curr)/N_h
+                samples[n_accept] = (pe_ref + (-2.121*N_h) - pe_curr)/N_h
                 
                 surface_retention[n_accept] = n_h_surface
 
                 counter += 1
                 
                 n_accept += 1
+
+                acceptance_ratio += 1
 
             else:
                 
@@ -308,6 +316,10 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     canonical[0] = pe_ref
 
     surface_retention[0] = N_h
+
+    acceptance_ratio /= counter
+    
+    print('Converged %d, Acceptance Ratio %f' % (N_h, acceptance_ratio)) 
 
     np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
 
@@ -340,7 +352,7 @@ if __name__ == '__main__':
 
     alattice = 3.144221
 
-    init_conc = np.hstack([np.linspace(1, 3, size//2), np.logspace(2, 3, size - size//2)])
+    init_conc = np.hstack([np.linspace(0.25, 99, size//2), np.logspace(2, 3, size - size//2)])
 
     H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 

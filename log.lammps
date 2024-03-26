@@ -3,155 +3,156 @@ LAMMPS (2 Aug 2023)
 units metal
 atom_style atomic
 atom_modify map array sort 0 0.0
-boundary p p p
-lattice bcc 3.144221 orient x 1 1 1 orient y -1 2 -1 orient z -1 0 1
-Lattice spacing in x,y,z = 5.4459505 5.1344914 4.4466
-region r_simbox block -0.000000 10.000000 -0.000000 10.000000 -50.000000 60.000000 units lattice
-region r_atombox block -0.000100 10.000100 -0.000100 10.000100 -0.000100 10.000100 units lattice
-create_box 3 r_simbox
-Created orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
+read_data ../HeH_Clusters/V0H0He1.data
+Reading data file ...
+  orthogonal box = (-1.0380103e-06 -1.0380103e-06 -1.0380103e-06) to (22.009548 22.009548 22.009548)
   1 by 1 by 1 MPI processor grid
-create_atoms 1 region r_atombox
-Created 8400 atoms
-  using lattice units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.001 seconds
-mass 1 183.84
-mass 2 1.00784
-mass 3 4.002602
+  reading atoms ...
+  687 atoms
+  reading velocities ...
+  687 velocities
+  read_data CPU = 0.014 seconds
 pair_style eam/alloy
-pair_coeff * * Potentials/WHHe_test.eam.alloy W H He
+pair_coeff * * Potentials/test.0.eam.alloy W H He
 thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol
-minimize 1e-9 1e-12 10 10
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
   max neighbors/atom: 2000, page size: 100000
   master list distance cutoff = 6.8513889
   ghost atom cutoff = 6.8513889
-  binsize = 3.4256945, bins = 16 15 143
+  binsize = 3.4256945, bins = 7 7 7
   1 neighbor lists, perpetual/occasional/extra = 1 0 0
   (1) pair eam/alloy, perpetual
       attributes: half, newton on
       pair build: half/bin/atomonly/newton
       stencil: half/bin/3d
       bin: standard
-Per MPI rank memory allocation (min/avg/max) = 5.674 | 5.674 | 5.674 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         0   0             -73717.039     -2898.7854     -2401.8649     -536.08987      259.22344     -1.3237295e-11  2.1820149e-11  1367703.2    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -9.8884671e-12  7.0127893e-12  1367703.2    
-Loop time of 0.0327849 on 1 procs for 6 steps with 8400 atoms
+         0   0             -6133.14        1643.2824      1141.8046      1643.2826      4.1385151e-07 -7.1186385e-12  1.3953253e-06  10661.871    
+Loop time of 1.167e-06 on 1 procs for 0 steps with 687 atoms
 
-98.1% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = max force evaluations
-  Energy initial, next-to-last, final = 
-     -73717.0389634067  -73800.9591646821  -73827.5302523061
-  Force two-norm initial, final = 46.235793 21.90339
-  Force max component initial, final = 1.3692713 0.87674368
-  Final line search alpha, max atom move = 0.080025505 0.070161856
-  Iterations, force evaluations = 6 10
+85.7% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.031218   | 0.031218   | 0.031218   |   0.0 | 95.22
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.000208   | 0.000208   | 0.000208   |   0.0 |  0.63
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.001359   |            |       |  4.15
+Other   |            | 1.167e-06  |            |       |100.00
 
-Nlocal:           8400 ave        8400 max        8400 min
+Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
+Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         259480 ave      259480 max      259480 min
+Neighs:          23536 ave       23536 max       23536 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 259480
-Ave neighs/atom = 30.890476
+Total # of neighbors = 23536
+Ave neighs/atom = 34.259098
 Neighbor list builds = 0
 Dangerous builds = 0
-minimize 1e-9 1e-12 100 100
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+group hydrogen type 3
+1 atoms in group hydrogen
+displace_atoms hydrogen move 0.000000 0.000000 0.000001
+Displacing atoms ...
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-         6   0             -73827.53      -2194.1393     -2698.8959      370.97583      1379.1406     -4.1932718e-12  4.9712837e-12  1367703.2    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404     -3.649707e-12  -1.6510347e-11  1367703.2    
-Loop time of 0.307197 on 1 procs for 46 steps with 8400 atoms
+         0   0             -6133.14        1643.2824      1141.8046      1643.2826      4.1386005e-07 -7.1186385e-12 -0.0014647528   10661.871    
+Loop time of 5.42e-07 on 1 procs for 0 steps with 687 atoms
 
-98.9% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = energy tolerance
-  Energy initial, next-to-last, final = 
-     -73827.5302523061  -73934.8511134559  -73934.8511787951
-  Force two-norm initial, final = 21.90339 0.035133753
-  Force max component initial, final = 0.87674368 0.0007284121
-  Final line search alpha, max atom move = 1 0.0007284121
-  Iterations, force evaluations = 46 91
+738.0% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.29639    | 0.29639    | 0.29639    |   0.0 | 96.48
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0013348  | 0.0013348  | 0.0013348  |   0.0 |  0.43
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.009469   |            |       |  3.08
+Other   |            | 5.42e-07   |            |       |100.00
 
-Nlocal:           8400 ave        8400 max        8400 min
+Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           4975 ave        4975 max        4975 min
+Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         305260 ave      305260 max      305260 min
+Neighs:          23536 ave       23536 max       23536 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 305260
-Ave neighs/atom = 36.340476
+Total # of neighbors = 23536
+Ave neighs/atom = 34.259098
 Neighbor list builds = 0
 Dangerous builds = 0
-minimize 1e-9 1e-12 10000 10000
-Per MPI rank memory allocation (min/avg/max) = 6.057 | 6.057 | 6.057 Mbytes
+displace_atoms hydrogen move 0.000000 0.000001 -0.000001
+Displacing atoms ...
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
    Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
-        52   0             -73934.851     -1902.5338     -2271.5977     -4.9614077      2168.5404      1.2843467e-12 -7.5506788e-12  1367703.2    
-        53   0             -73934.851     -1902.5111     -2271.5772     -4.9105604      2168.5409     -5.373088e-12  -6.2936194e-12  1367703.2    
-Loop time of 0.00883292 on 1 procs for 1 steps with 8400 atoms
+         0   0             -6133.14        1643.2838      1141.8046      1643.2811      4.1386005e-07  1.4233132e-12  1.3953253e-06  10661.871    
+Loop time of 7.92e-07 on 1 procs for 0 steps with 687 atoms
 
-98.7% CPU use with 1 MPI tasks x no OpenMP threads
-
-Minimization stats:
-  Stopping criterion = energy tolerance
-  Energy initial, next-to-last, final = 
-     -73934.8511787951  -73934.8511787951  -73934.8512067018
-  Force two-norm initial, final = 0.035133753 0.022971107
-  Force max component initial, final = 0.0007284121 0.00057684295
-  Final line search alpha, max atom move = 1 0.00057684295
-  Iterations, force evaluations = 1 2
+126.3% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.008556   | 0.008556   | 0.008556   |   0.0 | 96.86
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 4.6625e-05 | 4.6625e-05 | 4.6625e-05 |   0.0 |  0.53
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.0002303  |            |       |  2.61
+Other   |            | 7.92e-07   |            |       |100.00
 
-Nlocal:           8400 ave        8400 max        8400 min
+Nlocal:            687 ave         687 max         687 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           5017 ave        5017 max        5017 min
+Nghost:           2373 ave        2373 max        2373 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:         307200 ave      307200 max      307200 min
+Neighs:          23536 ave       23536 max       23536 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 307200
-Ave neighs/atom = 36.571429
+Total # of neighbors = 23536
+Ave neighs/atom = 34.259098
 Neighbor list builds = 0
 Dangerous builds = 0
-create_atoms 2 single 29.155089 14.302496 0.000000 units box
-Created 1 atoms
-  using box units in orthogonal box = (-0 -0 -222.33) to (54.459505 51.344914 266.796)
-  create_atoms CPU = 0.000 seconds
-Total wall time: 0:00:04
+displace_atoms hydrogen move 0.000001 -0.000001 0.000000
+Displacing atoms ...
+run 0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 3.306 | 3.306 | 3.306 Mbytes
+   Step          Temp          PotEng          Pxx            Pyy            Pzz            Pxy            Pxz            Pyz           Volume    
+         0   0             -6133.14        1643.2824      1141.8046      1643.2826      0.0014665528  -7.1186385e-12  1.3953253e-06  10661.871    
+Loop time of 5e-07 on 1 procs for 0 steps with 687 atoms
+
+200.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 5e-07      |            |       |100.00
+
+Nlocal:            687 ave         687 max         687 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           2373 ave        2373 max        2373 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          23536 ave       23536 max       23536 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 23536
+Ave neighs/atom = 34.259098
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:00
