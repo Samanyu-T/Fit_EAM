@@ -230,7 +230,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
                     
             distance = np.linalg.norm(delta, axis = 1)
 
-            if rng <= acceptance and distance.max() > 2:
+            if rng <= acceptance and distance.max() > alattice*np.sqrt(2)/4:
                 
 
                 pe_curr = pe_test
@@ -322,7 +322,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
                     
             distance = np.linalg.norm(delta, axis = 1)
 
-            if rng <= acceptance and distance.max() > 2:
+            if rng <= acceptance and distance.max() > alattice*np.sqrt(2)/4:
 
                 pe_curr = pe_test
                 
@@ -408,11 +408,7 @@ if __name__ == '__main__':
 
     n_surface = 4*boxsize**2
 
-    nprocs = 112
-
     init_conc = np.ceil(n_surface*1e-2*np.hstack([np.linspace(0.25, 10, nprocs//3), np.logspace(1, 3, nprocs - nprocs//3)]))
-
-    print(init_conc[0], n_surface)
 
     H_surface_energy(boxsize, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 
