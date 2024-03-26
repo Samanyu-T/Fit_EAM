@@ -9,7 +9,9 @@ import sys
 
 
     
-def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800, machine='', proc = 0):
+def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, machine='', proc = 0):
+
+    N_h = int(N_h)
 
     max_h = 10
 
@@ -57,18 +59,18 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('mass 3 4.002602')
 
+    xyz = np.array(lmp.gather_atoms('x', 1, 3))
+    
+    xyz = xyz.reshape(len(xyz)//3, 3)
+
+    surface = xyz[np.logical_and(-1 < xyz[:, -1], xyz[:, -1] < 1)]
+
     lmp.command('pair_style eam/alloy' )
 
     lmp.command('pair_coeff * * %s W H He' % potfile)
 
     lmp.command('thermo_style custom step temp pe pxx pyy pzz pxy pxz pyz vol')
     
-    ref = np.array(lmp.gather_atoms('x', 1, 3))
-
-    ref = ref.reshape(len(ref)//3, 3)
-
-    surface = ref[(-2 < ref[:, 2]) & (ref[:, 2] < 2)]
-
     xlo = lmp.get_thermo('xlo')
     
     xhi = lmp.get_thermo('xhi')
@@ -99,8 +101,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
                 break
         if add: 
             sites.append(_p)
-
-    N_h = np.clip(h_conc*len(surface)*1e-2, a_min=1, a_max=None).astype(int)
     
     lmp.command('minimize 1e-9 1e-12 10 10')
 
@@ -108,7 +108,15 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     lmp.command('minimize 1e-9 1e-12 10000 10000')
 
+
     pe_ref = lmp.get_thermo('pe')
+
+    N_atoms = lmp.get_natoms()
+
+    lx = lmp.get_thermo('lx')
+
+    ly = lmp.get_thermo('ly')
+
 
     # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
@@ -128,8 +136,6 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     # lmp.command('write_dump all atom ../MCMC_Dump/init.atom')
 
-    pbc = lmp.get_thermo('lx')
-
     pe_curr = lmp.get_thermo('pe')
 
     pe_test = 0
@@ -143,13 +149,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     type = np.array( lmp.gather_atoms('type', 0 , 1) )
 
     all_h_idx = np.where(type != 1)[0]
-
-    N_h = len(all_h_idx)
-    
-    print(N_h)
-
-    exit()
-    
+        
     n_ensemple = int(50)
 
     n_samples = int(50)
@@ -168,6 +168,10 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
     
     acceptance_ratio = 0
 
+    dump_image = 0
+    
+    pbc = np.array([lx, ly, 1000])
+
     while True: 
         
         n_accept = 0
@@ -177,6 +181,99 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
             xyz = np.array(lmp.gather_atoms('x', 1, 3))
 
             xyz = xyz.reshape(len(xyz)//3 , 3)
+
+            prev_hxyz = xyz[all_h_idx]
+
+            np.random.shuffle(all_h_idx)
+
+            slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
+
+            h_idx = np.copy(all_h_idx[:slct_h])
+            
+            displace = alattice*np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
+
+            xyz[h_idx] += displace
+
+            # xyz = xyz - np.floor(xyz/pbc)*pbc
+
+            xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+            
+            lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+            lmp.command('minimize 1e-9 1e-12 10 10')
+
+            lmp.command('minimize 1e-9 1e-12 100 100')
+
+            lmp.command('minimize 1e-9 1e-12 10000 10000')
+
+            xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+            xyz = xyz.reshape(len(xyz)//3 , 3)
+
+            hxyz = xyz[all_h_idx]
+
+            pe_test = lmp.get_thermo('pe')
+
+            acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
+
+            rng = np.random.rand()
+
+            # print(pe_test - pe_curr)
+
+            n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
+
+            pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
+
+            delta = prev_hxyz - hxyz
+
+            delta = delta - np.round(delta/pbc)*pbc
+                    
+            distance = np.linalg.norm(delta, axis = 1)
+
+            if rng <= acceptance and distance.max() > 2:
+                
+
+                pe_curr = pe_test
+
+                # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
+
+                canonical[n_accept] = (pe_curr - (-8.949*N_atoms) - (-2.121*N_h))/(2*lx*ly)
+
+                # print(canonical[n_accept])
+
+                surface_retention[n_accept] = n_h_surface
+
+                n_accept += 1
+
+                counter += 1
+                
+                acceptance_ratio += 1
+
+
+                if n_accept % 15 == 10:
+                    lmp.command('write_dump all atom ../MCMC_Dump/Nh_%d_image_%d.atom' % (N_h, dump_image))
+                    dump_image += 1
+                
+            else:
+                
+                xyz[h_idx] -= displace
+
+                xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+                lmp.scatter_atoms('x', 1, 3, xyz_c)
+
+        n_accept = 0
+
+        if converged:
+            break
+            
+        while n_accept < n_samples:
+
+            xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+            xyz = xyz.reshape(len(xyz)//3 , 3)
+
+            prev_hxyz = xyz[all_h_idx]
 
             np.random.shuffle(all_h_idx)
 
@@ -200,6 +297,12 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
             lmp.command('minimize 1e-9 1e-12 10000 10000')
 
+            xyz = np.array(lmp.gather_atoms('x', 1, 3))
+
+            xyz = xyz.reshape(len(xyz)//3 , 3)
+
+            hxyz = xyz[all_h_idx]
+
             pe_test = lmp.get_thermo('pe')
 
             acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
@@ -212,79 +315,20 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
             pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
 
-            if rng <= acceptance:
-                
-                pe_curr = pe_test
 
-                # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
+            delta = prev_hxyz - hxyz
 
-                canonical[n_accept] = (pe_ref -2.121*N_h - pe_curr)/N_h
+            delta = delta - np.round(delta/pbc)*pbc
+                    
+            distance = np.linalg.norm(delta, axis = 1)
 
-                surface_retention[n_accept] = n_h_surface
-
-                n_accept += 1
-
-                counter += 1
-                
-                acceptance_ratio += 1
-            else:
-                
-                xyz[h_idx] -= displace
-
-                xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
-                lmp.scatter_atoms('x', 1, 3, xyz_c)
-
-        n_accept = 0
-
-        if converged:
-            break
-            
-        while n_accept < n_samples:
-
-            xyz = np.array(lmp.gather_atoms('x', 1, 3))
-
-            xyz = xyz.reshape(len(xyz)//3 , 3)
-
-            np.random.shuffle(all_h_idx)
-
-            slct_h = np.clip(len(all_h_idx), a_min=0, a_max=max_h)
-
-            h_idx = np.copy(all_h_idx[:slct_h])
-            
-            displace = np.random.normal(loc=0, scale=0.5, size=(len(h_idx),3))
-
-            xyz[h_idx] += displace
-
-            # xyz = xyz - np.floor(xyz/pbc)*pbc
-
-            xyz_c = xyz.astype(np.float64).ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-            
-            lmp.scatter_atoms('x', 1, 3, xyz_c)
-
-            lmp.command('minimize 1e-9 1e-12 10 10')
-
-            lmp.command('minimize 1e-9 1e-12 100 100')
-
-            lmp.command('minimize 1e-9 1e-12 10000 10000')
-
-            pe_test = lmp.get_thermo('pe')
-
-            acceptance = np.min([1, np.exp(-beta*(pe_test - pe_curr))])
-
-            rng = np.random.rand()
-
-            n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
-
-            pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
-
-            if rng <= acceptance:
+            if rng <= acceptance and distance.max() > 2:
 
                 pe_curr = pe_test
                 
                 # lmp.command('write_dump all atom ../MCMC_Dump/data_%d.atom' % counter)
 
-                samples[n_accept] = (pe_ref + (-2.121*N_h) - pe_curr)/N_h
+                samples[n_accept] = (pe_curr - (-8.949*N_atoms) - (-2.121*N_h))/(2*lx*ly)
                 
                 surface_retention[n_accept] = n_h_surface
 
@@ -317,9 +361,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, h_conc, temp=800
 
     surface_retention[0] = N_h
 
-    acceptance_ratio /= counter
+    acceptance_ratio /= len(pe_explored)
     
-    print('Converged %d, Acceptance Ratio %f' % (N_h, acceptance_ratio)) 
+    print('Converged %d, Acceptance Ratio %f, Max Pe %f, Min Pe %f ,N_retain %d' % (N_h, acceptance_ratio, canonical.max(), canonical.min(), surface_retention[-1])) 
 
     np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
 
@@ -334,7 +378,7 @@ if __name__ == '__main__':
 
     rank = comm.Get_rank()
 
-    size = comm.Get_size() 
+    nprocs = comm.Get_size() 
 
     data_folder = '../H_Surface_Data'
 
@@ -342,17 +386,37 @@ if __name__ == '__main__':
         if not os.path.exists(data_folder):
             os.mkdir(data_folder)
         
-        print('Start on %d Procs' % size)
+        print('Start on %d Procs' % nprocs)
 
     comm.Barrier()
     
+    ''' Use for 100 surface '''
+    # orientx = [1, 0, 0]
+    # orienty = [0, 1, 0]
+    # orientz = [0 ,0, 1]
+
+    ''' Use for 110 surface '''
+    # orientx = [1, 1, 0]
+    # orienty = [0, 0,-1]
+    # orientz = [-1,1, 0] 
+
+    ''' Use for 111 surface '''
     orientx = [1, 1, 1]
     orienty = [-1,2,-1]
     orientz = [-1,0, 1]
 
     alattice = 3.144221
 
-    init_conc = np.hstack([np.linspace(0.25, 99, size//2), np.logspace(2, 3, size - size//2)])
+    boxsize = 10
+    ''' For 100 use 1, 110 use 2, 111 use 4'''
 
-    H_surface_energy(10, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
+    n_surface = 4*boxsize**2
+
+    nprocs = 112
+
+    init_conc = np.ceil(n_surface*1e-2*np.hstack([np.linspace(0.25, 10, nprocs//3), np.logspace(1, 3, nprocs - nprocs//3)]))
+
+    print(init_conc[0], n_surface)
+
+    H_surface_energy(boxsize, alattice, orientx, orienty, orientz, init_conc[rank], 800, '', rank)
 
