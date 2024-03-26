@@ -149,9 +149,9 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
     all_h_idx = np.where(type != 1)[0]
         
-    n_ensemple = int(50)
+    n_ensemple = int(25)
 
-    n_samples = int(50)
+    n_samples = int(25)
 
     converged = False
     
