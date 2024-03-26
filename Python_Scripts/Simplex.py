@@ -120,7 +120,7 @@ def optimize(n_knots, bool_fit, proc, machine, simplex_folder, write_dir = ''):
 
             genetic = False
             write = True
-            maxiter = 5000
+            maxiter = 500
             x_star = minimize(loss_func, args=(fitting_class, ref_formations, simplex_iteration_folder, genetic, write), x0=x_init, method = 'Nelder-Mead', options={'maxiter': maxiter})
 
             # Write final optima to the output file

@@ -265,144 +265,144 @@ def main(machine, max_time, write_dir, save_dir):
     bool_fit['H-He'] = True
     bool_fit['He-He'] = True
     
-    # Edit a new Covariance Matrix for the H-He potential
-    if me == 0:
+    # # Edit a new Covariance Matrix for the H-He potential
+    # if me == 0:
 
-        gsamples_folder = '../data_102/Gaussian_Samples_6'
+    #     gsamples_folder = '../data_102/Gaussian_Samples_6'
 
-        GMM.main(os.path.join(gsamples_folder, 'Core_*'), data_folder, 7)
+    #     GMM.main(os.path.join(gsamples_folder, 'Core_*'), data_folder, 7)
 
-        for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,g_iteration)):
-            cov_0 = np.loadtxt(cov_file)
-            cov_1 = np.diag([4, 8, 32, 4, 8, 32])
+    #     for cov_file in glob.glob('%s/GMM_%d/Cov*' % (data_folder,g_iteration)):
+    #         cov_0 = np.loadtxt(cov_file)
+    #         cov_1 = np.diag([4, 8, 32, 4, 8, 32])
 
-            cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
-                           [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
+    #         cov = np.block([[cov_0, np.zeros((cov_0.shape[0], cov_1.shape[0]))], 
+    #                        [np.zeros((cov_1.shape[0], cov_0.shape[0])), cov_1]])
 
-            cov_name = os.path.basename(cov_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder,g_iteration, cov_name), cov)
+    #         cov_name = os.path.basename(cov_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder,g_iteration, cov_name), cov)
 
-        for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,g_iteration)):
-            mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
-            mean_1 = np.zeros((len(cov_1),1))
+    #     for mean_file in glob.glob('%s/GMM_%d/Mean*' % (data_folder,g_iteration)):
+    #         mean_0 = np.loadtxt(mean_file).reshape(-1, 1)
+    #         mean_1 = np.zeros((len(cov_1),1))
 
-            mean = np.vstack([mean_0, mean_1])
+    #         mean = np.vstack([mean_0, mean_1])
 
-            mean_name = os.path.basename(mean_file) 
-            np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
+    #         mean_name = os.path.basename(mean_file) 
+    #         np.savetxt('%s/GMM_%d/%s' % (data_folder, g_iteration, mean_name), mean)
 
-    comm.Barrier()
+    # comm.Barrier()
 
-    ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
+    # ### BEGIN GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
-    for i in range(g_iteration, g_iteration + N_gaussian):
+    # for i in range(g_iteration, g_iteration + N_gaussian):
 
-        gsamples_folder = ''
+    #     gsamples_folder = ''
 
-        if me == 0:
-            print('Start Gaussian Sampling %dth iteration' % i)
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('Start Gaussian Sampling %dth iteration' % i)
+    #         sys.stdout.flush()  
 
-            gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
+    #         gsamples_folder = os.path.join(data_folder, 'Gaussian_Samples_%d' % i)
 
-            if not os.path.exists(gsamples_folder):
-                os.mkdir(gsamples_folder)
+    #         if not os.path.exists(gsamples_folder):
+    #             os.mkdir(gsamples_folder)
 
-        request = comm.Ibarrier()  # Non-blocking barrier
+    #     request = comm.Ibarrier()  # Non-blocking barrier
 
-        gsamples_folder = comm.bcast(gsamples_folder, root = 0)
+    #     gsamples_folder = comm.bcast(gsamples_folder, root = 0)
 
-        t1 = time.perf_counter()
+    #     t1 = time.perf_counter()
 
-        Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=1.98*max_time,
-                                   write_dir=write_dir, sample_folder=gsamples_folder,
-                                   gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
+    #     Gaussian_Sampling.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, max_time=1.98*max_time,
+    #                                write_dir=write_dir, sample_folder=gsamples_folder,
+    #                                gmm_folder=os.path.join(data_folder,'GMM_%d' % i))
 
-        t2 = time.perf_counter()
+    #     t2 = time.perf_counter()
 
-        # Wait for the barrier to complete
-        request.Wait()
+    #     # Wait for the barrier to complete
+    #     request.Wait()
 
-        if me == 0:
-            print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
-            sys.stdout.flush()  
+    #     if me == 0:
+    #         print('End Gaussian Sampling %dth iteration it took %.2f' % (i, t2- t1))
+    #         sys.stdout.flush()  
 
-            t1 = time.perf_counter()
+    #         t1 = time.perf_counter()
 
-            GMM.main( os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
+    #         GMM.main( os.path.join(gsamples_folder,'Core_*'), data_folder, i + 1)
 
-            t2 = time.perf_counter()
+    #         t2 = time.perf_counter()
 
-            print('\n Clustering took %.2f s ' % (t2 - t1))
-            sys.stdout.flush() 
-        comm.Barrier()
+    #         print('\n Clustering took %.2f s ' % (t2 - t1))
+    #         sys.stdout.flush() 
+    #     comm.Barrier()
 
-    ### END GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
+    # ### END GAUSSIAN SAMPLING FOR H-HE POTENTIAL ###
 
-    g_iteration += N_gaussian
+    # g_iteration += N_gaussian
 
-    if me == 0:
-        print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
-        sys.stdout.flush()  
+    # if me == 0:
+    #     print('\n Gaussian Sampling took %.2f s \n Start Simplex' % (t2 - t1))
+    #     sys.stdout.flush()  
 
-        folders = glob.glob(os.path.join(data_folder, 'Gaussian_Samples_%d/Core_*' % (g_iteration - 1)))
+    #     folders = glob.glob(os.path.join(data_folder, 'Gaussian_Samples_%d/Core_*' % (g_iteration - 1)))
 
-        nprocs = len(folders)
+    #     nprocs = len(folders)
 
-        lst_samples = []
-        lst_loss = []
-        for folder in folders:
-            lst_loss.append(np.loadtxt(os.path.join(folder, 'Filtered_Loss.txt')))
-            lst_samples.append(np.loadtxt(os.path.join(folder, 'Filtered_Samples.txt')))
+    #     lst_samples = []
+    #     lst_loss = []
+    #     for folder in folders:
+    #         lst_loss.append(np.loadtxt(os.path.join(folder, 'Filtered_Loss.txt')))
+    #         lst_samples.append(np.loadtxt(os.path.join(folder, 'Filtered_Samples.txt')))
 
-        loss = np.hstack(lst_loss).reshape(-1, 1)
-        samples = np.vstack(lst_samples)
+    #     loss = np.hstack(lst_loss).reshape(-1, 1)
+    #     samples = np.vstack(lst_samples)
 
-        N_simplex = 10
+    #     N_simplex = 10
 
-        for proc in range(nprocs):
-            simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
-            if not os.path.exists(simplex_folder):
-                os.makedirs(simplex_folder, exist_ok=True)
+    #     for proc in range(nprocs):
+    #         simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
+    #         if not os.path.exists(simplex_folder):
+    #             os.makedirs(simplex_folder, exist_ok=True)
 
-        if nprocs >= len(loss):
+    #     if nprocs >= len(loss):
 
-            for i in range(len(loss)):
-                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
-                np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[i])
+    #         for i in range(len(loss)):
+    #             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
+    #             np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[i])
 
-            for i in range(len(loss), nprocs):
-                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
-                with open('%s/Simplex_Init.txt' % simplex_folder, 'w') as file:
-                    file.write('')
+    #         for i in range(len(loss), nprocs):
+    #             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % i)
+    #             with open('%s/Simplex_Init.txt' % simplex_folder, 'w') as file:
+    #                 file.write('')
 
-        elif len(loss) > nprocs and N_simplex*nprocs > len(loss):
-            part = len(loss) // nprocs
-            idx = 0
+    #     elif len(loss) > nprocs and N_simplex*nprocs > len(loss):
+    #         part = len(loss) // nprocs
+    #         idx = 0
 
-            for proc in range(nprocs - 1):
-                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
-                np.savetxt('%s/Simplex_Init.txt' % folders[proc], samples[idx: idx + part])
-                idx += part
+    #         for proc in range(nprocs - 1):
+    #             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
+    #             np.savetxt('%s/Simplex_Init.txt' % folders[proc], samples[idx: idx + part])
+    #             idx += part
 
-            simplex_folder = '%s/Simplex/Core_%d' % (data_folder, nprocs-1)
-            np.savetxt('%s/Simplex_Init.txt' % folders[proc], samples[idx:])
+    #         simplex_folder = '%s/Simplex/Core_%d' % (data_folder, nprocs-1)
+    #         np.savetxt('%s/Simplex_Init.txt' % folders[proc], samples[idx:])
 
-        else:
-            part = N_simplex
-            sort_idx = np.argsort(loss.flatten())
-            loss = loss[sort_idx]
-            samples = samples[sort_idx]
+    #     else:
+    #         part = N_simplex
+    #         sort_idx = np.argsort(loss.flatten())
+    #         loss = loss[sort_idx]
+    #         samples = samples[sort_idx]
             
-            idx = 0
-            for proc in range(nprocs):
-                simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
-                np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
-                # print(samples[idx: idx + part])
-                idx += part
+    #         idx = 0
+    #         for proc in range(nprocs):
+    #             simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % proc)
+    #             np.savetxt('%s/Simplex_Init.txt' % simplex_folder, samples[idx: idx + part])
+    #             # print(samples[idx: idx + part])
+    #             idx += part
 
 
-    comm.Barrier()
+    # comm.Barrier()
 
     simplex_folder = os.path.join(data_folder, 'Simplex/Core_%d' % me)
     Simplex.optimize(n_knots=n_knots, bool_fit=bool_fit, proc=me, machine=machine, simplex_folder=simplex_folder, write_dir=write_dir)
