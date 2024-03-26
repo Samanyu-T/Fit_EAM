@@ -7,7 +7,6 @@ import time
 from scipy import stats
 import sys
 
-
     
 def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, machine='', proc = 0):
 
@@ -311,7 +310,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
             # print(pe_test - pe_curr)
 
-            n_h_surface = sum( (-3*alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < 3*alattice) )
+            n_h_surface = sum( (alattice < xyz[all_h_idx, 2]) & (xyz[all_h_idx, 2] < alattice) )
 
             pe_explored.append((pe_ref -2.121*N_h - pe_test)/N_h)
 
