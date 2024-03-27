@@ -8,7 +8,7 @@ me = comm.Get_rank()
 
 nprocs = comm.Get_size() 
 
-data_folder = '../'
+data_folder = '../data_102'
 
 
 n_knots = [1,0,2]
