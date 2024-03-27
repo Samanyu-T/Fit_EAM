@@ -12,7 +12,7 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
     N_h = int(N_h)
 
-    max_h = 10
+    max_h = 2
 
     surface = 100
 
@@ -265,7 +265,14 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
 
         if converged:
             break
-            
+        
+        np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
+
+        np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
+
+        np.savetxt('../MCMC_Data/mcmc_nh_%d.txt' % proc, surface_retention)
+
+     
         while n_accept < n_samples:
 
             xyz = np.array(lmp.gather_atoms('x', 1, 3))
@@ -360,11 +367,11 @@ def H_surface_energy(size, alattice, orientx, orienty, orientz, N_h, temp=800, m
     
     print('Converged %d, Acceptance Ratio %f, Max Pe %f, Min Pe %f ,N_retain %d' % (N_h, acceptance_ratio, canonical.max(), canonical.min(), surface_retention[-1])) 
 
-    np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
+    # np.savetxt('../MCMC_Data/mcmc_explore_%d.txt' % proc, pe_explored)
 
-    np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
+    # np.savetxt('../MCMC_Data/mcmc_unique_%d.txt' % proc, canonical)
     
-    np.savetxt('../MCMC_Data/mcmc_nh_%d.txt' % proc, surface_retention)
+    # np.savetxt('../MCMC_Data/mcmc_nh_%d.txt' % proc, surface_retention)
 
 
 if __name__ == '__main__':
